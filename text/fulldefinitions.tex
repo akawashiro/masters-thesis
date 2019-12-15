@@ -1,0 +1,397 @@
+\subsection{Syntax}
+
+\begin{align*}
+	\textrm{Terms}             &  & M,N,L,O,P                & ::= c \mid x \mid \lambda x:\tau.M\ \mid M\ M \mid \TB_\alpha M                                                                                    \\
+	                           &  &                          & \ \ \ \ \mid \TBL_\alpha M \mid \Lambda\alpha.M \mid M\ A \mid M\ \varepsilon \mid \%_\alpha M                                                                       \\
+	\textrm{Types}             &  & \tau,\sigma,\rho,\pi,\xi & ::= X \mid \Pi x:\tau.\tau \mid \tau\ M \mid \TW_{\alpha} M \mid \F\alpha.\tau                                                                     \\
+	\textrm{Kinds}             &  & K,J,I,H,G                & ::= * \mid \Pi x:\tau.K                                                                                                                            \\
+	\textrm{Type environments} &  & \Gamma                   & ::= \emptyset \mid \Gamma,x:\tau@A\\
+	\textrm{Signature}         &  & \Sigma                   & ::= \emptyset \mid \Sigma,X::K\\
+	                           &  &                          & \ \ \ \ \mid \Sigma,c:\tau\\
+	\textrm{Stage variables}   &  &                          & \alpha,\beta,\gamma,...                                                                                                                            \\
+	\textrm{Stage}             &  &                          & A,B,C,...                                                                                                                                          \\
+	\textrm{Variables}         &  &                          & x,y,z,...                                                                                                                                          \\
+	\textrm{Type variables}    &  &                          & X,Y,Z,...                                                                                                                                          \\
+\end{align*}
+
+\subsection{Reduction}
+
+\figheader{Term reduction}{\rulefbox{M \longrightarrow N}}
+\begin{center}
+	\begin{align*}
+		 & (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N]                             \\
+		 & \TBL_\alpha (\TB_\alpha M)\longrightarrow_\blacklozenge M                             \\
+		 & (\Lambda \alpha.M)\ A \longrightarrow_\Lambda M[\alpha \mapsto A]
+	\end{align*}
+\end{center}
+%And take a minimum compatible relationship on terms.
+
+\subsection{Type System}
+
+\figheader{Well-formed signatures}{\rulefbox{\vdash\Sigma}}
+{\small
+\begin{center}
+  \infrule{
+  }{
+    \vdash \emptyset
+  }
+  \hfil
+  \infrule{
+    \vdash \Sigma \andalso
+    \V K \iskind @ \varepsilon \andalso
+    X\notin\textit{dom}(\Sigma)
+  }{
+    \vdash \Sigma, X::K
+  }
+  \\[2mm]
+  \infrule{
+    \vdash \Sigma \andalso
+    \V \tau :: * @ \varepsilon \andalso
+    c\notin\textit{dom}(\Sigma)
+  }{
+   \vdash \Sigma, c:\tau
+ }
+\end{center}
+}
+\figheader{Well-formed type environments}{\rulefbox{\V \Gamma}}
+
+{\small
+\begin{center}
+  \infrule{
+  }{
+    \V \emptyset
+  }
+  \hfil
+  \infrule{
+    \V \Gamma \andalso
+    \Gamma \V \tau :: * @ A \andalso
+    x\notin\textit{dom}(\Sigma)
+  }{
+   \V \Gamma, x:\tau@A
+ }
+\end{center}
+}
+
+\figheader{Well-formed kinds}{\rulefbox{\Gamma \vdash K\iskind @A}}
+{\small
+\begin{center}
+  \infrule[\WStar]{
+  }{
+    \G\V*\iskind @A
+  } \hfil
+  \infrule[\WAbs]{
+    \G\V \tau::*@A \andalso \G,x:\tau@A\V K\iskind @A
+  }{
+    \G\V(\Pi x:\tau.K)\iskind @A
+  }
+\end{center}
+}
+
+\figheader{Kinding}{\rulefbox{\G \V \tau::K @ A}}
+{\small
+\begin{center}
+  \infrule[{\KTConst}]{
+    X::K \in \Sigma % \andalso
+    % \G\V K\iskind @A
+  }{
+    \G \V X::K@A
+  } \\[2mm]
+  \infrule[{\KAbs}]{
+    \G\V \tau :: *@A \andalso \G,x:\tau@A\V \sigma::J@A
+  }{
+    \G\V(\Pi x:\tau.\sigma) :: (\Pi x:\tau.J)@A
+  } \\[2mm]
+  \infrule[{\KApp}]{
+    \G\V \sigma:: (\Pi x:\tau.K)@A \andalso \G\V M:\tau@A
+  }{
+    \G\V \sigma\ M::K[x\mapsto M]@A
+  } \\[2mm]
+  \infrule[{\KConv}]{
+    \G\V \tau::K@A \andalso
+    \G\V K\equiv J@A
+  }{
+    \G\V \tau::J@A
+  } \hfil
+  \infrule[{\KTW}]{
+    \G\V \tau::*@A\alpha
+  }{
+    \G\V\TW_\alpha \tau::*@A
+  }\\[2mm]
+  \infrule[{\KGen}]{
+    \G\V \tau::K@A \andalso
+    \alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A)
+  }{
+    \G\V\forall\alpha.\tau::K@A
+  } \hfil
+  \infrule[{\KCsp}]{
+    \G\V \tau::*@A
+  }{
+    \G\V \tau::*@A\alpha
+  }
+\end{center}
+}
+
+\figheader{Typing}{\rulefbox{\G\V M:\tau @A}}
+{\small
+\begin{center}
+  \infrule[{\TConst}]{
+    c:\tau \in \Sigma \andalso
+    % \G\V \tau::*@A
+  }{
+    \G \V c:\tau@A
+  }\andalso
+  \infrule[{\TVar}]{
+    x:\tau@A \in \G \andalso
+    % \G\V \tau::*@A
+  }{
+    \G \V x:\tau@A
+  } \\[2mm]
+  \infrule[\TAbs]{
+    \G\V \sigma::*@A \andalso
+    \G,x:\sigma@A\V M:\tau@A
+  }{
+    \G\V(\lambda (x:\sigma).M):(\Pi (x:\sigma).\tau)@A
+  } \\[2mm]
+  \infrule[{\textsc{T-App}}]{
+    \G\V M:(\Pi (x:\sigma).\tau)@A \andalso
+    \G\V N:\sigma@A
+  }{
+    \G\V M\ N : \tau[x\mapsto N]@A
+  } \\[2mm]
+  \infrule[{\textsc{T-Conv}}]{
+    \G\V M:\tau@A \andalso
+    \G\V \tau\equiv \sigma :: K@A
+  }{
+    \G\V M:\sigma@A
+  } \\[2mm]
+  \infrule[{\TTB}]{
+    \G\V M:\tau@{A\alpha}
+  }{
+    \G\V\TB_{\alpha}M:\TW_{\alpha}\tau@A
+  } \andalso
+  \infrule[{\TTBL}]{
+    \G\V M:\TW_{\alpha}\tau@A
+  }{
+    \G\V\TBL_{\alpha}M:\tau@{A\alpha}
+  } \\[2mm]
+  \infrule[\TGen]{
+    \G\V M:\tau@A \andalso
+    \alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A)
+  }{
+    \G\V\Lambda\alpha.M:\forall\alpha.\tau@A
+  } \\[2mm]
+  \infrule[\TIns]{
+    \G\V M:\forall\alpha.\tau@A
+  }{
+    \G\V M\ A:\tau[\alpha \mapsto A]@A
+  } \hfil
+  \infrule[\TCsp]{
+    \G\V M:\tau@A
+  }{
+    \G\V \%_\alpha M:\tau@{A\alpha}
+  }
+\end{center}
+}
+
+\figheader{Kind Equivalence}{\rulefbox{\G\V K\E J@A}}
+{\small
+\begin{center}
+  \infrule[{\QKAbs}]{
+    \G\V \tau \E \sigma :: *@A \andalso
+    \G,x:\tau@A \V K \E J@A
+  }{
+    \G\V\Pi x:\tau.K \E \Pi x:\sigma.J@A
+  } \\[2mm]
+  \infrule[{\textsc{QK-Csp}}]{
+    \G\V K \E J@A
+  }{
+    \G\V K \E J@{A\alpha}
+  } \hfil
+  \infrule[\QKRefl]{
+    \G\V K \iskind @A
+  }{
+    \G\V K\E K@A
+  } \\[2mm]
+  \infrule[\QKSym]{
+    \G\V K \E J@A
+  }{
+    \G\V J \E K@A
+  } \hfil
+  \infrule[\QKTrans]{
+    \G\V K \E J@A \andalso
+    \G\V J \E I@A
+  }{
+    \G\V K \E I@A
+  }
+\end{center}
+}
+\figheader{Type Equivalence}{\rulefbox{\G\V S\E T :: K @A}}
+{\small
+\begin{center}
+  \infrule[{\QTAbs}]{
+    \G\V \tau \E \sigma :: *@A \andalso
+    \G,x:\tau@A \V \rho \E \pi :: *@A
+  }{
+    \G\V\Pi x:\tau.\rho \E \Pi x:\sigma.\pi :: *@A
+  } \\[2mm]
+  \infrule[{\QTApp}]{
+    \G\V \tau \E \sigma :: (\Pi x:\rho.K)@A \andalso
+    \G\V M \E N : \rho @A
+  }{
+    \G\V \tau\ M \E \sigma\ N :: K[x \mapsto M]@A
+  } \\[2mm]
+  \infrule[\QTTW]{
+    \G\V \tau \E \sigma :: *@{A\alpha}
+  }{
+    \G\V \TW_{\alpha} \tau \E \TW_{\alpha} \sigma :: *@A
+  } \\[2mm]
+  \infrule[\QTGen]{
+    \G\V \tau \E \sigma :: *@A \andalso
+    \alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A)
+  }{
+    \G\V \forall\alpha.\tau \E  \forall\alpha.\sigma :: *@A
+  } \\[2mm]
+  \infrule[\QTCsp]{
+    \G\V \tau \E \sigma :: *@A
+  }{
+    \G\V \tau \E \sigma :: *@{A\alpha}
+  }
+  \infrule[\QTRefl]{
+    \G\V \tau::K@A
+  }{
+    \G\V \tau\E\tau :: K@A
+  } \hfil
+  \infrule[\QTSym]{
+    \G\V \tau \E \sigma :: K@A
+  }{
+    \G\V \sigma \E \tau :: K@A
+  } \\[2mm]
+  \infrule[\QTTrans]{
+    \G\V \tau \E \sigma :: K@A \andalso
+    \G\V \sigma \E \rho  :: K@A
+  }{
+    \G\V \tau \E \rho  :: K@A
+  }
+\end{center}
+}
+
+\figheader{Term Equivalence}{\rulefbox{\G\V M\E N : \tau @A}}
+{\small
+\begin{center}
+  \infrule[\QAbs]{
+    \G\V \tau \E \sigma :: *@A \andalso
+    \G,x:\tau@A \V M \E N : \rho @A
+  }{
+    \G\V\lambda x:\tau.M \E \lambda x:\sigma.N : (\Pi x:\tau.\rho)@A
+  } \\[2mm]
+  \infrule[\QApp]{
+    \G\V M \E L : (\Pi x:\sigma.\tau)@A \andalso
+    \G\V N \E O : \sigma@A
+  }{
+    \G\V M\ N \E L\ O : \tau[x \mapsto N]@A
+  } \\[2mm]
+  \infrule[\QTB]{
+    \G\V M \E N : \tau@{A\alpha}
+  }{
+    \G\V \TB_\alpha M \E \TB_\alpha N : \TW_\alpha \tau@A
+  } \hfil
+  \infrule[{\QTBL}]{
+    \G\V M \E N : \TW_\alpha \tau@A
+  }{
+    \G\V \TBL_\alpha M \E \TBL_\alpha N : \tau@{A\alpha}
+  } \\[2mm]
+  \infrule[{\QGen}]{
+    \G\V M\E N : \tau@A \andalso
+    \alpha \notin \FTV(\G)\cup\FTV(A)
+  }{
+    \G\V \Lambda\alpha.M \E \Lambda\alpha.N : \forall\alpha.\tau@A
+  } \\[2mm]
+  \infrule[{\QIns}]{
+    \G\V M \E N:\forall\alpha.\tau@A
+  }{
+    \G\V M\ A \E N\ A : \tau[\alpha \mapsto A]@A
+  }\hfil
+  \infrule[\QCsp]{
+    \G\V M \E N : \tau @A
+  }{
+    \G\V\%_\alpha M \E \%_\alpha N : \tau@{A\alpha}
+  } \\[2mm]
+  \infrule[\QRefl]{
+    \G\V M:\tau@A
+  }{
+    \G\V M\E M : \tau@A
+  } \hfil
+  \infrule[\QSym]{
+    \G\V M\E N : \tau@A
+  }{
+    \G\V N\E M : \tau@A
+  } \\[2mm]
+  \infrule[\QTrans]{
+    \G\V M\E N : \tau@A \andalso
+    \G\V N\E L : \tau@A
+  }{
+    \G\V M\E L : \tau@A
+  } \\[2mm]
+  \infrule[{\QBeta}]{
+    \G,x:\sigma@A\V M:\tau@A \andalso
+    \G\V N:\sigma@A
+  }{
+    \G\V(\lambda x:\sigma.M)\ N\E M[x\mapsto N] : \tau[x \mapsto N]@A
+  } \\[2mm]
+  % \infrule[{\QEta}]{
+  %   \G\V M:(\Pi x:\sigma.\tau)@A \andalso
+  %   x\notin \text{FV}(M)
+  % }{
+  %   \G\V(\lambda x:\sigma.M\ x)\E M: (\Pi x:\sigma.\tau)@A
+  % } \\[2mm]
+  \infrule[{\QTBLTB}]{
+    \G\V M \E N : \tau@A
+  }{
+    \G\V \TBL_\alpha(\TB_\alpha M) \E N : \tau @A
+  } \\[2mm]
+  \infrule[{\QLambda}]{
+    \G\V (\Lambda\alpha.M) : \forall\alpha.\tau@A
+  }{
+    \G\V (\Lambda\alpha.M)\ B \E M[\alpha \mapsto B] : \tau[\alpha \mapsto B]@A
+  } \\[2mm]
+  \infrule[{\QPercent}]{
+    \G\V M:\tau@{A\alpha} \andalso
+    \G\V M:\tau@A
+  }{
+    \G\V\%_\alpha M \E M : \tau@{A\alpha}
+  }
+\end{center}
+}
+% \begin{cm}
+% 	Term equivalence is exists because of {$\textsc{QT-App}$}.
+% \end{cm}
+
+% \begin{cm}{Comment on \textsc{Q-\%}\\}
+% 	We can use \textsc{Q-\%} expressions like a number literal expressions.\\
+% 	Thus, $\G\V 5 :\text{Int} @A$ and $\G\V 5 : \text{Int} @ A\alpha$.\\
+% 	Or closure expressions like the id function.\\
+% \end{cm}
+
+% \begin{cm}{Comment on \textsc{Q-\%}\\}
+%  This rule is equivalent to a following rule.
+%  \begin{center}
+%      \infrule{\G\V\%_\alpha M::\tau@{A\alpha} \andalso \G\V N:\tau@{A\alpha} \andalso \G\V M \E N : \tau@A}
+%      {\G\V\%_\alpha M \E N : \tau@{A\alpha}}{\textsc{Q-\%-2}} \andalso
+%  \end{center}
+%  Because
+%  \begin{center}
+%      $$
+%      \infer[\textsc{Q-Trans}]
+%      {\G\V\%_\alpha M \E N : \tau@{A\alpha}}
+%      {
+%         \infer[\textsc{Q-\%}]
+%         {\G\V\%_\alpha N \E N@{A\alpha}}
+%         {\G\V N:\sigma@{A\alpha} \andalso \G\V N:T'_2@A}
+%         \andalso
+%         \infer[\textsc{Q-Csp}]
+%         {\G\V\%_\alpha M \E \%N : \tau@{A\alpha}}
+%         {\G\V M \E N : \tau@{A}}
+%      }
+%      $$
+%  \end{center}
+% \end{cm}

@@ -1,0 +1,124 @@
+% !TEX root = ../main.tex
+
+\section{Related Work}
+\label{sec:related-work}
+
+% Practical research on multi-stage programming
+
+MetaOCaml is a programming language with quoting, unquoting, run, and CSP.
+Kiselyov~\cite{8384206} describes many applications of MetaOCaml, including
+filtering in signal processing, matrix-vector product, and a DSL compiler.
+
+% The history of multi-stage programming
+
+Theoretical studies on multi-stage programming owe a lot to seminal work by
+Davies and Pfenning~\cite{DaviesPfenning01JACM} and
+Davies~\cite{davies1996temporal}, who found Curry-Howard correspondence
+between multi-stage calculi and modal logic. In particular, Davies'
+$\lambda^\circ$~\cite{davies1996temporal} has been a basis for several
+multi-stage calculi with quasi-quotation. $\lambda^\circ$ did not have
+operators for run and CSP; a few
+studies~\cite{benaissa1999logical,MoggiTahaBenaissaSheard99ESOP} enhanced and
+improved $\lambda^\circ$ towards the development of a type-safe multi-stage
+calculus with quasi-quotation, run, and CSP, which were proposed by Taha and
+Sheard as constructs for multi-stage programming~\cite{MetaML}. 
+Finally, Taha and Nielsen invented the concept of environment
+classifiers~\cite{taha2003environment} and developed a typed calculus
+$\lambda^\alpha$, which was equipped with all the features above in a type
+sound manner and formed a basis of earlier versions of MetaOCaml. Different
+approaches to type-safe multi-stage programming with slightly different
+constructs for composing and running code values have been studied by Kim,
+Yi, and Calcagno~\cite{DBLP:conf/popl/KimYC06} and Nanevski and
+Pfenning~\cite{DBLP:journals/jfp/NanevskiP05}.
+
+Later, Tsukada and Igarashi~\cite{Tsukada} found correspondence
+between a variant of \(\lambda^\alpha\) called $\lambda^\TW$
+and modal logic and showed that run could be represented as a special
+case of application of a transition abstraction ($\Lambda\alpha.M$) to
+the empty sequence $\varepsilon$.  Hanada and
+Igarashi~\cite{Hanada2014} developed \LTP as an extension
+$\lambda^\TW$ with CSP.
+% and discuss code residualization which
+% allows us to dump the quoted code into an external file.
+
+% The history of dependent types
+
+There is much work on dependent types and most of it is affected by
+the pioneering work by Martin-L\"{o}f~\cite{martin1973intuitionistic}.
+Among many dependent type systems such as
+$\lambda^\Pi$~\cite{Meyer1986}, The Calculus of
+Constructions~\cite{coquand:inria-00076024}, and Edinburgh
+LF~\cite{harper1993framework}, we base our work on \LLF~\cite{attapl}
+(which is quite close to $\lambda^\Pi$ and Edinburgh LF) due to its
+simplicity.  It is well known that dependent types are useful to
+express detailed properties of data structures at the type level such
+as the size of data structures~\cite{Xi98} and typed abstract syntax
+trees~\cite{DBLP:conf/dsl/LeijenM99,DBLP:conf/popl/XiCC03}.  The
+vector addition discussed in Section~\ref{sec:formal} is also such an
+example.
+
+% Applications of dependent types
+
+% Practical applications of dependent types have been also studied. One can use
+% dependent types in programming languages such as Idris~\cite{brady2013idris}
+% or interactive theorem provers such as Coq~\cite{09thecoq} based on
+% \cite{coquand:inria-00076024}. In Xi and Pfenning~\cite{Xi98}, they extended
+% SML with restricted dependent types and succeeded in reducing the bounds
+% checking of arrays. In Xi and Harper~\cite{xi2001dependently}, they design a
+% type system for an assembly language and it is useful for speed up. Xi also
+% gave dead code elimination and loop unrolling as applications of dependent
+% types~\cite{xi1999dependent}.
+
+% Comparison with other works
+
+% Although there are studies on combinations of multi-stage programming and
+% other programming features such as mutable cells~\cite{kiselyov2016refined}
+% and control operators~\cite{KameyamaKiselyovShan09PEPM,oishi2017staging}, a
+% combination with dependent types has been little studied.
+
+%%%%%% dependent types for (compile-time) code generation
+
+The use of dependent types for code generation is studied by
+Chlipala~\cite{chlipala2010ur} and Ebner et
+al.~\cite{DBLP:journals/pacmpl/EbnerURAM17}.  They use inductive types
+to guarantee well-formedness of generated code.  Aside from the lack
+of quasi-quotation, their systems are for heterogeneous
+meta-programming and compile-time code generation and they do not
+support features for run-time code generation such as run and CSP, as \LMD{} does.
+
+%%%% index/dependent types for MSP
+
+We discuss earlier attempts at incorporating dependent types into
+multi-stage programming.  Pasalic and Taha~\cite{pasalic2002tagless}
+designed \(\lambda_{H\circ}\) by introducing the concept of stage into
+an existing dependent type system
+\(\lambda_H\)~\cite{zhong2002certified}.  However,
+\(\lambda_{H\circ}\) is equipped with neither run nor CSP.  Forgarty,
+Pasalic, Siek and Taha~\cite{fogarty2007concoqtion} extended the type
+system of MetaOCaml with indexed types.  With this extension, types
+can be indexed with a Coq term.  Chen and Xi~\cite{chen2003meta}
+introduced code types augmented with information on types of free
+variables in code values in order to prevent code with free variables
+from being evaluated.  These systems separate the language of type
+indices from the term language.  As a result, they do not enjoy
+full-spectrum dependent types but are technically simpler because
+there is no need to take stage of types into account.  Brady and
+Hammond~\cite{brady2006dependently} have discussed a combination of
+(full-spectrum) dependently typed programming with staging in the
+style of MetaOCaml to implement a staged interpreter, which is
+statically guaranteed to generate well-typed code.  However, they
+focused on concrete programming examples and there is no theoretical
+investigation of the programming language they used.
+
+Berger and Tratt~\cite{martin2015HGRTMP} gave program logic for
+\(\text{Mini-ML}^\square_e\)~\cite{DaviesPfenning01JACM}, which would
+allow fine-grained reasoning about the behavior of code generators.
+However, it cannot manipulate open code which ours can deal with.
+
+% 他の方法としてどのようなものが考えられたか
+
+% Although we define type equivalence of \LMD with composition of equivalence
+% rules, there is another candidate to define, which gives reduction on types
+% and compare the results of reduction such as~\cite{sorensen2006lectures}.
+% This method is better than one of \LMD because equivalence rules become
+% simple. However, we reject it because it cannot handle CSP flexibly.

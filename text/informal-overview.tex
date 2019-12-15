@@ -1,0 +1,212 @@
+% !TEX root = ../main.tex
+
+\section{Informal Overview of \LMD \label{sec:informal-overview}}
+
+We describe our calculus \LMD informally.  \LMD is based on
+\LTP~\cite{Hanada2014} by Hanada and Igarashi and so we start with a review of 
+\LTP.
+
+% \red{\LTP\cite{Hanada2014}が頻発するが同一論文の複数回引用に何かルールはあるのか?}
+% \AI{ないです．たしかにあんまりつけるとうるさいですね．2.1 の冒頭とかは文ごと不要なのでは？}
+\subsection{\LTP}
+
+% quote and unquote
+
+In \LTP, brackets (quasi-quotation) and escape (unquote) are written
+$\TB_\alpha M$ and $\TBL_\alpha M$, respectively.  For example,
+$\TB_\alpha (1 + 1)$ represents code of expression $1 + 1$ and thus
+evaluates to itself.  Escape $\TBL_\alpha M$ may appear under
+$\TB_\alpha$; it evaluates $M$ to a code value and splices it into the
+surrounding code fragment.  Such splicing is expressed by the
+following reduction rule:
+\begin{align*}
+	\TBL_\alpha (\TB_\alpha M) \longrightarrow M .
+\end{align*}
+% Using the type constructor $\TW_\alpha$ for code values, the type of
+% $\TB_\alpha M$ is given $\TW_\alpha \tau$ if $M$ has type $\tau$; the type
+% of $\TBL_\alpha M$ is $\tau$ if $M$ has $\TW_\alpha \tau$.
+
+The subscript $\alpha$ in $\TB_\alpha$ and $\TBL_\alpha$ is a \textit{stage
+  variable}\footnote{%
+  In Hanada and Igarashi~\cite{Hanada2014}, it was called a
+  \textit{transition variable}, which is derived from correspondence
+  to modal logic, studied by Tsukada and Igarashi~\cite{Tsukada}.} and
+a sequence of stage variables is called a \textit{stage}.  Intuitively,
+a stage represents the depth of nested brackets.  Stage variables can be
+abstracted by $\Lambda\alpha.M$ and instantiated by an application
+$M\ A$ to stages.  For example,
+$\Lambda\alpha.\TB_\alpha ((\lambda x:\I.x+10)\ 5)$ is a code value,
+where \(\alpha\) is abstracted.  If it is applied to \(A = \alpha_1 \cdots \alpha_n\), \(\TB_\alpha\) becomes \(\TB_{\alpha_1} \cdots \TB_{\alpha_n}\); in particular,
+if \(n = 0\), \(\TB_\alpha\) disappears.  So, an
+application of $\Lambda\alpha.\TB_\alpha ((\lambda x:\I.x+10)\ 5)$
+to the empty sequence \(\varepsilon\) reduces to
+(unquoted) \((\lambda x:\I.x+10)\ 5\) and to 15.  In other words, application of a
+\(\Lambda\)-abstraction to $\varepsilon$ corresponds to \texttt{run}.
+% If \(\alpha\) is instantiated with, say, \(\beta\gamma\), then
+% \(\TB_\alpha\) becomes nested brackets \(\TB_{\beta} \TB_\gamma\).
+This is expressed by the following reduction rule:
+\begin{align*}
+	(\Lambda\alpha.M)\ A \longrightarrow M[\alpha\mapsto A]
+\end{align*}
+where stage substitution \([\alpha \mapsto A]\) manipulates the nesting of
+\(\TB_\alpha\) and \(\TBL_\alpha\) (and also \(\%_\alpha\) as we see later).
+
+Cross-stage persistence (CSP), which is an important feature of \LTP,
+is a primitive to embed values (not necessarily code values) into a
+code value.  For example, a \LTP-term
+\[
+  M_1 = \lambda x:\I.\Lambda\alpha.(\TB_\alpha ((\%_\alpha x) * 2))
+\]
+takes an integer \(x\) as an input and returns a code value, into
+which \(x\) is embedded.  If $M_1$ is applied to $38 + 4$ as in
+\[
+  M_2 = (\lambda x:\I.\Lambda\alpha.(\TB_\alpha ((\%_\alpha x) * 2)))\ (38 + 4),
+\]
+then it evaluates to
+\(M_3 = \Lambda\alpha.(\TB_\alpha ((\%_\alpha 42) * 2))\).  According
+to the semantics of \LTP, the subterm $\%_\alpha 42$ means that it
+waits for the surrounding code to be run (by an application to
+$\varepsilon$) and so it does not reduce further.  If \(M_3\) is run
+by application to \(\varepsilon\), substitution of \(\varepsilon\) for
+\(\alpha\) eliminates \(\TB_\alpha\) and \(\%_\alpha\) and so
+\(42 * 2\), which reduces to 84, is obtained.
+CSP is practically important because
+one can call library functions from inside quotations.  
+
+The type system of \LTP uses code types---the type of code of type
+\(\tau\) is written \(\TW_\alpha \tau\)---for typing \(\TB_\alpha\),
+\(\TBL_\alpha\) and \(\%_\alpha\).  It takes stages into account: a
+variable declaration (written $x:\tau@A$) in a type environment is associated with its
+declared stage $A$ as well as its type $\tau$ and the type judgement of \LTP is of
+the form $\G \vdash M : \tau@A$, in which $A$ stands for the stage
+of term $M$.\footnote{%
+  In Hanada and Igarashi~\cite{Hanada2014}, it is written
+  $\G \vdash^A M : \tau$.
+  }
+For example,
+$y:\I@\alpha \vdash (\lambda x:\I.y) : \I \to \I @ \alpha$ holds, but
+$y:\I@\alpha \vdash (\lambda x:\I.y) : \I \to \I @ \varepsilon$ does
+not because the latter uses $y$ at stage \(\varepsilon\) but $y$ is
+declared at $\alpha$.  Quotation \(\TB_\alpha M\) is given type
+\(\TW_\alpha \tau\) at stage \(A\) if \(M\) is given type \(\tau\) at
+stage \(A\alpha\); unquote \(\TBL_\alpha M\) is given type \(\tau\)
+at stage \(A\alpha\) if \(M\) is given type \(\TW_\alpha \tau\) at
+stage \(A\alpha\); and CSP \(\%_\alpha M\) is give type \(\tau\)
+at stage \(A\alpha\) if \(M\) is given type \(\tau\) at \(A\).
+These are expressed by the following typing rules.
+\begin{center}
+	\infrule{\G\vdash M:\tau @{A\alpha}}{\G\vdash \TB_{\alpha}M:\TW_{\alpha}\tau @A} \hfil
+	\infrule{\G\vdash M:\TW_{\alpha}\tau @A}{\G\vdash \TBL_{\alpha}M:\tau @{A\alpha}} \hfil
+	\infrule{\G\vdash M: \tau @A}{\G\vdash \%_{\alpha}M:\tau @{A\alpha}}
+\end{center}
+% \TTB, corresponding to brackets, means 
+% if $M$ is typed $\tau$ at stage $A\alpha$ then $\TB_{\alpha}M$, quoted $M$, is typed $\TW_{\alpha}\tau$ at $A$.
+% \TTBL\ is converse of \TTB.
+
+% CSP
+
+
+% Omitting Residualization
+% この段落は3章のM eのあとに、この制限の結果として...という形で入れる
+
+% There is another important feature called program residualization in \LTP.
+% It means that a generated code can be dumped into a file.
+% We can load the dumped file and run it.
+% The difficulty arises when program residualization is used with CSP.
+% Transition variables are classified into two kinds in \LTP in order to deal with this difficulty.
+
+% \subsection{\LLF}
+
+% % \LLF
+% \LLF is a simple system of dependent types introduced in \cite{attapl}.
+% It is made from Edinburgh LF\cite{harper1993framework} by omitting signatures and include declarative equality judgements.
+% Hence, all constants and base types are declared in the signature.
+% The \LLF type theory generalizes simply typed lambda calculus
+% by replacing the function type $\tau\to\sigma$ with the dependent function type $\Pi x:\tau.\sigma$.
+
+% % Kind, Well-formed kind
+% In addition to ordinary typing rules like simply typed lambda calculus,
+% there are kinding rules, well-formed kinding rules, term equivalence rules, type equivalence rules, and kind equivalence rules in \LLF.
+% Kinding rules and well-formed kinding rules are 
+% introduced in order to prohibit making illegal types such as $\textrm{Vector}\ \textrm{true}$.
+% For a well-formed type $\tau$, $\G \vdash \tau :: K$ means that $\tau$ has a kind $K$ under the environment $\G$ and 
+% for a well-formed kind $K$, $\G \vdash K$ means that $K$ is a well-formed kind under an environment $\G$.
+
+% % Type Equality
+% Type equality rules are needed because the type equivalence is not obvious unlike simply typed lambda calculus.
+% For example, $\textrm{Vector}\ 7$ should be equivalent to $\textrm{Vector}\ (3+4)$
+% but they are not equivalent seemingly. Thus, we must define equivalence rules.
+% In \LLF, equivalence is expressed with a symbol of $\E$.
+% $\G \vdash M \E N$ means a term $M$ and a term $N$ are equivalent under the environment $\G$.
+% $\G \vdash \tau \E \sigma$ means a type $\tau$ and a type $\sigma$ are equivalent under the environment $\G$.
+% $\G \vdash K \E J$ means a kind $K$ and a kind $J$ are equivalent under the environment $\G$.
+
+\subsection{Extending \LTP with Dependent Types}
+
+In this paper, we add a simple form of dependent types---{\`a} la
+Edinburgh LF~\cite{harper1993framework} and \LLF~\cite{attapl}---to \LTP.
+Types can be indexed by terms as in \texttt{Vector} in
+Section~\ref{sec:intro} and \(\lambda\)-abstractions can be given
+dependent function types of the form \(\Pi x:\tau. \sigma\) but we do
+not consider type operators (such as $\texttt{list } \tau$) or
+abstraction over type variables.  We introduce kinds to classify
+well-formed types and equivalences for kinds, types, and terms---as
+in other dependent type systems---but we have to address a question
+how the notion of stage (should) interact with kinds and types.
+
+On the one hand, base types such as \(\I\) should be able to be used
+at every stage as in \LTP so that
+\(\lambda x:\I.\Lambda \alpha. \TB_\alpha \lambda y:\I.M\) is a valid
+term (here, \(\I\) is used at \(\varepsilon\) and \(\alpha\)).
+Similarly for indexed types such as Vector 4.  On the other hand, it
+is not immediately clear how a type indexed by a variable, which can be used only
+at a declared stage, can be used.  For example,
+consider
+\[\TB_\alpha (\lambda x:\I. (\TBL_\alpha (\lambda y:\text{Vector
+  }x.M)N) )
+  \text{ and }
+  \lambda x:\I. \TB_\alpha (\lambda y:\text{Vector }x.M).
+\]
+Is Vector\ \(x\) a legitimate type at \(\varepsilon\) (and \(\alpha\),
+resp.)  even if \(x:\I\) is declared at stage \(\alpha\) (and
+\(\varepsilon\), resp.)?  We will give our answer to this question in two
+steps.
+
+First, type-level constants such as \(\I\) and Vector can be used at
+every stage in \LMD.  Technically, we introduce a signature that
+declares kinds of type-level constants and types of constants.  For
+example, a signature for the Boolean type and constants is given as
+follows $\B::*, \text{true}:\B, \text{false}:\B$ (where $*$ is the
+kind of proper types).  Declarations in a signature are not
+associated to particular stages; so they can be used at every stage.
+
+Second, an indexed type such as Vector\ 3 or Vector\ $x$ is well
+formed only at the stage(s) where the index term is well-typed.  Since
+constant \(3\) is well-typed at every stage (if it is declared in the
+signature), Vector\ 3 is a well-formed type at every stage, too.
+However, Vector\ $M$ is well-formed only at the stage where index term
+$M$ is typed.  Thus, the kinding judgment
+of \LMD takes the form \(\G\V \tau :: K @ A\), where stage $A$ stands for
+where \(\tau\) is well-formed.  For example,
+given \(\text{Vector}:: \I \rightarrow *\) in the signature \(\Sigma\),
+\(x:\I@\varepsilon \V \text{Vector }x :: * @\varepsilon\) can be
+derived but
+neither
+\(x:\I@\alpha \V \text{Vector }x :: * @\varepsilon\)
+nor 
+\(x:\I@\varepsilon \V \text{Vector }x :: * @\alpha\)
+can be.
+
+Apparently, the restriction above sounds too severe, because a term like
+\(\lambda x:\I. \TB_\alpha (\lambda y:\text{Vector }x.M) \), which models a
+typical code generator which takes the size $x$ and returns code for vector
+manipulation specialized to the given size, will be rejected. It seems crucial
+for \(y\) to be given a type indexed by $x$. We can address this problem by
+CSP---In fact, $\text{Vector }x$ is not well formed at $\alpha$ under
+$x:\I@\varepsilon$ but $\text{Vector }(\%_\alpha x)$ is!  Thus, we can still
+write \(\lambda x:\I. \TB_\alpha (\lambda y:\text{Vector }(\%_\alpha x).M) \)
+for the typical sort of code generators.
+
+Our decision that well-formedness of types takes stages of index terms
+into account will lead to the introduction of CSP at the type level
+and special equivalence rules, as we will see later.

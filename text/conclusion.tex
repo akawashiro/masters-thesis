@@ -1,0 +1,18 @@
+% !TEX root = ../main.tex
+
+\section{Conclusion \label{sec:conclusion}}
+
+We have proposed a new multi-stage calculus \LMD with dependent types,
+which make it possible for programmers to express finer-grained
+properties about the behavior of code values.  The combination leads
+to augmentation of almost all judgments in the type system with stage
+information.  CSP and type equivalence (specially tailored for CSP) are
+keys to expressing dependently typed practical code generators.  We
+have proved basic properties of \LMD, including preservation,
+confluence, strong normalization for full reduction, and progress for
+staged reduction.
+
+Developing a typechecking algorithm for \LMD is left for future
+work.  We expect that most of the development is straightforward,
+except for implicit CSP at the type-level and \%-erasing equivalence
+rules.

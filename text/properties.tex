@@ -1,0 +1,169 @@
+% !TEX root = ../main.tex
+
+\section{Properties of \LMD \label{sec:properties}}
+
+In this section, we show the basic properties of \LMD: preservation, strong
+normalization, confluence for full reduction, and progress for staged
+reduction.
+
+% Substitution Lemma
+
+The Substitution Lemma in \LMD{} is a little more complicated than usual
+because there are eight judgment forms and two kinds of substitution.
+The Term Substitution Lemma states that term substitution $[z \mapsto M]$
+preserves derivability of judgments. The Stage Substitution Lemma
+states similarly for stage substitution $[\alpha\mapsto A]$.
+
+We let $\mathcal{J}$ stand for the judgments $K \iskind @A$, $\tau::K@A$,
+$M:\tau@A$, $K \E J @ A$, $\tau \E \sigma @ A$, and
+$M \E N : \tau @ A$.  Substitutions $\mathcal{J}[z \mapsto M]$ and
+$\mathcal{J}[\alpha \mapsto A]$ are defined in a straightforward
+manner.  Using these notations, the two substitution lemmas are stated as follows:
+
+We proved the next two leammas by simultaneous induction on derivations.
+
+\begin{lemma}[Term Substitution]
+  If $\G, z:\xi@B, \D \V \mathcal{J}$ and $\G\V N:\xi @B$, then $\G, (\D[z \mapsto N]) \V \mathcal{J}[z \mapsto N]$.  Similarly, if $\V \G, z:\xi@B, \D$ and
+  $\G\V N:\xi @B$, then $\V \G, (\D[z \mapsto N])$.
+\end{lemma}
+
+\begin{lemma}[Stage Substitution]
+	If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
+\end{lemma}
+
+% Inversion Lemma
+
+The following Inversion Lemma is needed to prove the main theorems.
+As usual~\cite{TAPL}, the Inversion Lemma enables us to infer the types of subterms of a term from the shape of the term.
+
+\begin{lemma}[Inversion]\ 
+	\begin{enumerate}
+		\item If $\G \V (\lambda x:\sigma.M) : \rho$ then there are $\sigma'$ and $\tau'$ such that
+		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$.
+		\item If $\G \V \TB_\alpha M : \tau@A$ then 
+		      there is $\sigma$ such that $\tau = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$.
+		  \item If $\G \V \Lambda\alpha.M : \tau$ then 
+		  there is $\sigma$ such that $\sigma = \forall\alpha.\sigma$ and $\G \V M : \sigma@A$.% and $\alpha \notin \FTV(\G) \cup \FV(A)$.
+	\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  Each item is strengthened by statements about type equivalence.
+  For example, the first statement is augmented by
+  \begin{quotation}
+    If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$, then there exist
+    $\sigma'$ and $\tau'$ such that $\rho = \Pi x:\sigma'.\tau'$ and
+    $\G \V \sigma \E \sigma' : K @A$ and
+    $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
+  \end{quotation}
+  and its symmetric version.  Then, they are proved simultaneously by induction on derivations.
+  Similarly for the others.
+  \qed
+\end{proof}
+
+
+% Preservation
+
+Thanks to Term/Stage Substitution and Inversion, we can prove Preservation easily.
+
+\begin{theorem}[Preservation]
+	If $\G\V M:\tau @A$ and $M \longrightarrow M'$, then $\G\V M':\tau @A$.
+\end{theorem}
+
+\begin{proof}
+	First, there are three cases for $M \longrightarrow M'$.
+	They are $M \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M \longrightarrow_\blacklozenge M'$.
+	For each case, we can use straightforward induction on typing derivations.
+        \qed
+	% Difficult cases are \TApp, \TTBL, and \TIns.
+	% We need Inversion Lemmas for them.
+\end{proof}
+
+% Strong Normalization
+
+Strong Normalization is also an important property, which guarantees that
+no typed term has an infinite reduction sequence.
+Following standard proofs (see, e.g., \cite{harper1993framework}), we prove this theorem by translating \LMD to the simply typed lambda calculus.
+
+\begin{theorem}[Strong Normalization]
+	If $\G\V M_1:\tau@A$ then there is no infinite sequence $(M_i)_{i\ge1}$ of terms such that
+	$M_i \longrightarrow M_{i+1}$ for $i\ge 1$.
+\end{theorem}
+
+\begin{proof}
+	In order to prove this theorem, we define a translation $(\cdot)^\natural$ from \LMD\ to the simply typed lambda calculus.
+	Second, we prove the $\natural$-translation preserves typing and reduction.
+	Then, we can prove Strong Normalization of \LMD from Strong Normalization of the simply typed lambda calculus.
+ \qed
+\end{proof}
+
+Confluence is a property that any reduction sequences from one typed term converge.
+Since we have proved Strong Normalization, we can use Newman's Lemma~\cite{DBLP:books/daglib/0092409} to prove Confluence.
+
+\begin{theorem}[Confluence]
+	For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$ then
+	there exists $M'''$ that satisfies $M' \longrightarrow^* M'''$ and $M'' \longrightarrow^* M'''$.
+\end{theorem}
+
+\begin{proof}
+  We can easily show Weak Church-Rosser.  Use Newman's Lemma.
+	% Because we proved Strong Normalization of \LMD, 
+	% we can use Newman's lemma to prove Confluence of \LMD.
+	% Then, what we must show is Weak Church-Rosser Property now.
+	% When we consider two different redexes in a \LMD term, they can only be disjoint, or one is a part of the other.
+	% In short, they are never overlapped each other.
+	% So, we can reduce one of them after we reduce another.
+ \qed
+\end{proof}
+
+Now, we turn our attention to staged semantics.  First, the staged
+reduction relation is a subrelation of full reduction, so Subject
+Reduction holds also for the staged reduction.
+
+\begin{theorem}
+  If $M \longrightarrow_s M'$, then $M \longrightarrow M'$.
+\end{theorem}
+\begin{proof}
+  Easy.
+ \qed
+\end{proof}
+
+The following theorem Unique Decomposition ensures that every typed
+term is either a value or can be uniquely decomposed to an evaluation
+context and a redex, ensuring that a well-typed term is not
+immediately stuck and the staged semantics is deterministic.
+
+\begin{theorem}[Unique Decomposition]
+  If $\G$ does not have any variable declared at stage $\varepsilon$ 
+  and $\G \V M : \tau @ A$, then either
+  \begin{enumerate}
+  \item $ M \in V^A$, or
+  \item $M$ can be uniquely decomposed into an evaluation context and a redex, that is, there uniquely exist $B, E^A_B$, and $R^B$ such that $M = E^A_B[R^B]$.
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+  We can prove by straightforward induction on typing derivations.
+%  Main cases are \TApp, \TTBL, and \TIns, where we use Inversion.
+  \qed
+\end{proof}
+
+The type environment $\G$ in the statement usually has to be empty;
+in other words, the term has to be closed.  The condition is relaxed here
+because variables at stages higher than \(\varepsilon\) are considered
+symbols.  In fact, this relaxation is required for proof by induction
+to work.
+
+% This theorem is important because it guarantees
+% that the evaluation context decides a redex to reduce deterministically.
+% Specifically speaking, this theorem guarantee that 
+% when you write a interpreter using the evaluation context of \LMD,
+% your interpreter works just as intended.
+      
+Progress is a corollary of Unique Decomposition.
+
+\begin{corollary}[Progress]
+	If $\G$ does not have any variable declared at stage $\varepsilon$ and $\G \V M : \tau  @ A$, then
+	$ M \in V^A $ or there exists $M'$ such that $M \longrightarrow_s M'$.
+\end{corollary}
+
