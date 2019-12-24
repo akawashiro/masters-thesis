@@ -1,0 +1,2252 @@
+% \AI{Put a comma before ``then''.}
+% \AI{A period is needed for each statement (because it's a sentence).}
+% \AI{TAPL gives plenty of examples of how to write proofs.}
+$\mathcal{J}$ is a meta-variable for judgments.
+We say type environment \(\G\) is a sub-sequence of type environment \(\D\)
+if and only if we can get \(\G\) from \(\D\) by deleting some or no variables without changing the order of the remaining elements.
+\begin{lemma}[Weakening]
+	If \(\G \V \mathcal{J}@A\) and \(\G\) is a sub-sequence of \(\D\), then \(\D \V J@A\).
+	% \AI{Apply similar changes and remove \%.}
+	% \red{このコメントはどういう意味ですか?}
+\end{lemma}
+
+\begin{proof}
+	By straightforward induction on the derivation of typing, kinding, well-formed kinding,
+	term equivalence, type equivalence or kind equivalence.
+	We show only representative cases.
+
+	\begin{rneqncase}{\WAbs{}}{
+			\mathcal{J} = (\Pi x:\tau.K)\iskind @A \\
+			\G \V \tau :: * @ A & \G,x:\tau@A \V K \iskind @A
+		}
+		By the induction hypothesis, we have
+		\begin{align*}
+			 & \D \V \tau::*@A &  & \D, x:\tau@A \V K \iskind @ A
+		\end{align*}
+		from which $\D\V (\Pi x:\tau.K) \iskind @ A$ follows by $\WAbs$.
+	\end{rneqncase}
+
+	\begin{rneqncase}{\KAbs{}}{
+			\mathcal{J} = (\Pi x:\tau.) :: (\Pi x:\tau.J)@A \\
+			\G \V \tau::*@A &  & \G,x:\tau@A\V \sigma :: J @ A.
+		}
+		By the induction hypothesis, we have
+		\begin{align*}
+			 & \D \V \tau::*@A &  & \D,x:\tau@A\V \sigma :: J @ A
+		\end{align*}
+		from which $\D \V (\Pi x:\tau.) :: (\Pi x:\tau.J)@A$ follows.
+	\end{rneqncase}
+
+	\begin{rneqncase}{
+			\QTAbs{}}{
+			\mathcal{J} = \rho \E \pi :: * @ A \\
+			\G\V \tau \E \sigma :: *@A  & \G,x:\tau@A \V \rho \E \pi :: *@A.
+		}
+		By the induction hypothesis, we have
+		\begin{align*}
+			 & \D\V \tau \E \sigma :: *@A &  & \D,x:\tau@A \V \rho \E \pi :: *@A
+		\end{align*}
+		from which \( \D\V \rho \E \pi :: * @ A \) follows.
+	\end{rneqncase}
+	\end{proof}
+
+\begin{lemma}[Term Substitution]
+    \label{lemma:TermSubstitution}
+	If $\G, z:\xi@B, \D \V \mathcal{J}$ and $\G\V P:\xi @B$, then $\G, \D[z \mapsto P] \V \mathcal{J}[z \mapsto P]$.  Similarly, if $\V \G, z:\xi@B, \D$ and
+	$\G\V P:\xi @B$, then $\V \G, \D[z \mapsto P]$.
+\end{lemma}
+
+\begin{proof}
+	Proved simultaneously by induction on derivations with case analysis on the last rule used.
+	We show only representative cases.
+		{
+			\newcommand{\SB}{[z \mapsto P]}
+			\newcommand{\GG}{\G}
+			\newcommand{\GGV}{\G \V}
+
+			\begin{rneqncase}{\TVar{}}{
+					\mathcal{J} = y:\tau@A\\
+					y:\tau@A \in (\G, z:\xi@B, \D).
+				}
+				\begin{itemize}
+					\item If $y:\tau@A \in \G$ or $y:\tau@A \in \D$, then it is obvious that $y:\tau\SB@A \in \GG$.
+					      \(\G,\D\SB \V y\SB:\tau\SB@A\) from \TVar.
+
+					\item If $y:\tau@A = z:\xi@B$, then
+					      $y = z$, $\tau = \xi$, and $A = B$.
+					      From the well-formedness of \( \G, z:\xi@B,\D \), there is no $z$ in $\xi$.
+					      Therefore, $\tau\SB = \xi\SB = \xi$.
+					      It is obvious that $y\SB = z\SB = P$.
+					      Thus, $\G \V y\SB : \tau\SB@A$.
+					      By Weakening, $\G,\D\SB \V y\SB : \tau\SB@A$
+
+				\end{itemize}
+			\end{rneqncase}
+
+			\begin{rneqncase}{\WAbs{}}{
+					\mathcal{J} =  (\Pi x:\tau.K) \iskind @A\\
+					\G, z:\xi@B, \D \V \tau::*@A & \G, z:\xi@B, \D, x:\tau \V K \iskind@A.
+				}
+				We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
+				By the induction hypothesis,
+				\begin{align*}
+					 & \G,\D\SB \V \tau\SB::*@A &  & \G,\D\SB, x:\tau\SB \V K\SB \iskind@.
+				\end{align*}
+				$\G,\D\SB \V (\Pi x:\tau\SB.K\SB) \iskind @A$ from \WAbs{} and
+				it is equivalent to $\G,\D\SB \V (\Pi x:\tau.K)\SB \iskind @A$.
+			\end{rneqncase}
+
+			\begin{rneqncase}{\TApp{}}{
+					\mathcal{J} = M\ N:\tau[x\mapsto N]@A\\
+					\G, z:\xi@B, \D \V M:\Pi(x:\sigma).\tau@A & \G, z:\xi@B, \D \V N:\sigma@A
+				}
+				We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
+				By the induction hypothesis,
+				\begin{align*}
+					 & \G, \D\SB \V M\SB: (\Pi(x:\sigma).\tau)\SB@A \\
+					 & \G,\D\SB\V N\SB: \sigma\SB@A.
+				\end{align*}
+				and \(\G, \D\SB \V M\SB: (\Pi(x:\sigma).\tau)\SB@A\) is equivalent to \( \G, \D\SB \V M\SB: (\Pi(x:\sigma\SB).\tau\SB)@A \).
+				From \TApp, \(\G,\D\SB (M\SB\ N\SB): \tau\SB[x \mapsto N\SB]@A\) and this is equivalent to
+				\(\G,\D\SB \V (M\ N)\SB: \tau[x \mapsto N]\SB@A\).
+			\end{rneqncase}
+		}
+	
+\end{proof}
+
+% \iffullversion
+% \begin{itemize}
+
+% 	\newcommand{\SB}{[z \mapsto P]}
+% 	\newcommand{\GG}{\G}
+% 	\newcommand{\GGV}{\G \V}
+
+
+% 	\item \WStar
+
+% 	      From the definition of \WStar, we can get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\WStar]
+% 	      {\GGV * \iskind @A}
+% 	      {}
+
+% 	\item \WAbs
+
+% 	      We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
+
+% 	      We have two derivation trees from the premise.
+
+% 	      $\mathcal{D}_1$ = \infer[\WAbs]
+% 	      {\G, z:\xi@B, \D \V (\Pi x:\tau.K) \iskind @A}
+% 	      {\G, z:\xi@B, \D \V T::*@A \andalso \G, z:\xi@B, \D, x:\tau \V K \iskind@A}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\G \V P:\xi@B}
+% 	      {\vdots}\
+
+% 	      We can get $\mathcal{D}_3$ by use the induction hypothesis to $\mathcal{D}_1$
+
+% 	      $\mathcal{D}_3$ = \infer[\WAbs]
+% 	      {\GGV (\Pi x:\tau\SB.K\SB) \iskind @A}
+% 	      {
+% 	      	\infer[]{\GGV T\SB::*@A}{\vdots} \andalso
+% 	      	\infer[]{\GG, x:\tau\SB \V K\SB \iskind@}{\vdots}
+% 	      	}\\
+
+% 	      Following relationship is obvious.\\
+% 	      $\GGV (\Pi x:\tau\SB.K\SB) \iskind @A$\\
+% 	      is equivalent with\\
+% 	      $\GGV (\Pi x:\tau.K)\SB \iskind @A$.\\
+
+% 	      Then, we can get $\mathcal{D}'_3$ from $\mathcal{D}_3$.
+
+% 	      $\mathcal{D}'_3$ = \infer[\WAbs]
+% 	      {\GGV (\Pi x:\tau.K)\SB \iskind @A}
+% 	      {
+% 	      	\infer[]{\GGV T\SB::*@A}{\vdots} \andalso
+% 	      	\infer[]{\GG, x:\tau\SB \V K\SB \iskind@}{\vdots}
+% 	      	}\\
+% 	      \AI{$\mathcal{D}'_3$ is the same as $\mathcal{D}_3$ because substitution is a meta-level operation.}
+
+% 	      \AI{Your proofs are good but people prefer to treat judgments
+% 	      	as if they are English sentences and treat derivations
+% 	      implicitly (even when the proof is by induction on derivations.  So, I would write these cases as follows.}
+% 	\item[] Case \WStar{} where $K = *$.  The conclusion is immediate since $K[z \mapsto P] = *$.
+
+% 	\item[] Case \WAbs{} where $K = \Pi x:\tau.K_0$ and 
+% 	      \begin{align*}
+% 	      	  & \G, z:\xi@B, \D \V T::*@A &   & \G, z:\xi@B, \D, x:\tau \V K \iskind@A. 
+% 	      \end{align*}
+
+% 	      %	We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
+
+% 	      By the induction hypothesis, we have
+% 	      \begin{align*}
+% 	      	  & \GGV T\SB::*@A &   & \GG, x:\tau\SB \V K\SB \iskind@ 
+% 	      \end{align*}
+% 	      from which $\GGV (\Pi x:\tau\SB.K\SB) \iskind @A$ follows by \WAbs.
+% 	      We have $\Pi x:\tau\SB.K\SB = (\Pi x:\tau.K)\SB$ by definition.
+
+% 	\item \WCsp
+
+% 	      From the induction hypothesis, we can get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV K\SB \iskind @A}
+% 	      {\vdots}
+
+% 	      Use \WCsp,
+
+% 	      $\mathcal{D}_2$ = \infer[\WCsp]
+% 	      {\GGV K\SB \iskind @A\alpha}
+% 	      {\mathcal{D}_1}
+
+% 	\item \WTW
+
+% 	      From the induction hypothesis, we can get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV K\SB \iskind @A\alpha}
+% 	      {\vdots}
+
+% 	      Use \WTW,
+
+% 	      $\mathcal{D}_2$ = \infer[\WTW]
+% 	      {\GGV K\SB \iskind @A\alpha}
+% 	      {\mathcal{D}_1}
+
+% 	\item \KVar
+
+% 	      From the induction hypothesis, we can get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV K\SB \iskind @A\alpha}
+% 	      {\vdots}
+
+% 	      And we can easily show that $X::K\SB@A \in \GG$.
+
+% 	      Then we can use \KVar\ and get $\mathcal{D}_2$.
+
+% 	      $\mathcal{D}_2$ = \infer[\KVar]
+% 	      {\GGV X :: K\SB @A}
+% 	      {X::K\SB@A \in \GG \andalso \mathcal{D}_1}
+
+% 	\item \KAbs
+
+% 	      From the induction hypothesis, we can get $\mathcal{D}_1$ and $\mathcal{D}_2$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB :: * @ A}
+% 	      {\vdots}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GG, x:\tau\SB@A\V \sigma\SB::J\SB@A}
+% 	      {\vdots}
+
+% 	      Use \KAbs,
+
+% 	      $\mathcal{D}_3$ = \infer[\KAbs]
+% 	      {\GGV (\Pi x:\tau\SB.\sigma\SB)::(\Pi x:\tau\SB.J\SB)@A}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	      We can arrange the substitution.
+
+% 	      $\mathcal{D}'_3$ = \infer[\KAbs]
+% 	      {\GGV (\Pi x:\tau.\sigma)\SB::(\Pi x:\tau.J)\SB@A}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	\item \KApp
+
+% 	      Because the last rule is \KApp, we have a derivation tree $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\KApp]
+% 	      {\G, z:\xi@B, \D\V \sigma\ M :: K[x \mapsto M]}
+% 	      {\infer[]
+% 	      	{\G, z:\xi@B, \D\V \sigma::(\Pi x:\tau.K)@A}{\vdots} \andalso
+% 	      	\infer[]
+% 	      	{\G, z:\xi@B, \D\V M:\tau@A}
+% 	      	{\vdots}}
+
+% 	      From the induction hypothesis, we can get $\mathcal{D}_2$ and $\mathcal{D}_3$.
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV \sigma\SB::(\Pi x:\tau.K)\SB@A}
+% 	      {\vdots}
+
+% 	      Because $x \neq z$, we can write
+
+% 	      $\mathcal{D}'_2$ = \infer[]
+% 	      {\GGV \sigma\SB::(\Pi x:\tau\SB.K\SB)@A}
+% 	      {\vdots}
+
+% 	      $\mathcal{D}_3$ = \infer[]
+% 	      {\GGV M\SB:\tau\SB@A}
+% 	      {\vdots}
+
+% 	      Use \KApp,
+
+% 	      $\mathcal{D}_4$ = \infer[\KApp]
+% 	      {\GGV (\sigma\SB\ M\SB)::K\SB[x \mapsto M]@A}
+% 	      {\mathcal{D}'_2 \andalso \mathcal{D}_3}
+
+% 	      There is no $x$ in $P$ and no $z$ in $M$ because of freshness. So we can rewrite the $\mathcal{D}_4$.
+
+% 	      $\mathcal{D}_4$ = \infer[\KApp]
+% 	      {\GGV (\sigma\ M)\SB::K[x \mapsto M]\SB@A}
+% 	      {\mathcal{D}'_2 \andalso \mathcal{D}_3}
+
+% 	\item \KConv
+
+% 	      From the induction hypothesis, we have $\mathcal{D}_1$ and $\mathcal{D}_2$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB : K[z\mapsto P]@A}
+% 	      {\vdots}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV K\SB \E J\SB @A}
+% 	      {\vdots}
+
+% 	      Use \KConv,
+
+% 	      $\mathcal{D}_2$ = \infer[\KConv]
+% 	      {\GGV \tau\SB : J[z\mapsto P]@A}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	\item \KTW
+
+% 	      From the induction hypothesis, we have $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB :: K\SB @ A\alpha}
+% 	      {\vdots}
+
+% 	      Use \KTW,
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV \TW_\alpha \tau\SB :: K\SB @ A}
+% 	      {\mathcal{D}_1}
+
+% 	\item \KTWL
+
+% 	      From the induction hypothesis, we have $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \TW_\alpha \tau\SB :: K\SB @ A\alpha}
+% 	      {\vdots}
+
+% 	      Use \KTWL,
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV \tau\SB :: K\SB @ A\alpha}
+% 	      {\mathcal{D}_1}
+
+% 	\item \KGen
+
+% 	      From the induction hypothesis, we have $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB :: K\SB @ A}
+% 	      {\vdots}
+
+% 	      And we can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+
+% 	      Use \KGen,
+
+% 	      $\mathcal{D}_2$ = \infer[\KGen]
+% 	      {\GGV \forall\alpha.\tau\SB :: K\SB @ A}
+% 	      {\mathcal{D}_1 \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	\item \KCsp
+
+% 	      From the induction hypothesis, we have $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB :: K\SB @ A}
+% 	      {\vdots}
+
+% 	      Use \KCsp,
+
+% 	      $\mathcal{D}_2$ = \infer[\KCsp]
+% 	      {\GGV \tau\SB :: K\SB @ A\alpha}
+% 	      {\GGV \tau\SB :: K\SB @ A}
+
+% 	      \fi
+
+% 	\item \TVar
+
+% 	      We have two derivation trees from the premise.
+
+% 	      $\mathcal{D}_1$ = \infer[\TVar]
+% 	      {\G, z:\xi@B \V y:\tau@A}
+% 	      {y:\tau@A \in \G, z:\xi@B  \andalso \infer[]{\G, z:\xi@B \V \tau::*@A}{\vdots}}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\G \V P:\xi@B}
+% 	      {\vdots}\\
+
+% 	      We can get $\mathcal{D}_3$ by use the induction hypothesis to $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_3$ = \infer[]
+% 	      {\GGV \tau\SB::*\SB@A}
+% 	      {\vdots}\\
+
+% 	      \begin{itemize}
+% 	      	\item $y:\tau@A \in \G$ or $y:\tau@A \in \D$
+
+% 	      	      $\mathcal{D}_4$ is obvious.
+
+% 	      	      $\mathcal{D}_4$ = $y:\tau\SB@A \in \GG$
+
+% 	      	      Get $\mathcal{D}_5$ by using \TVar\ for $\mathcal{D}_3$, $\mathcal{D}_4$.
+
+% 	      	      $\mathcal{D}_5$ = \infer[]
+% 	      	      {\GGV y\SB:\tau\SB@A}
+% 	      	      {\mathcal{D}_4 \andalso \mathcal{D}_5}
+
+% 	      	\item $y:\tau@A = z:\xi@B$
+
+% 	      	      In this case,
+% 	      	      \begin{itemize}
+% 	      	      	\item $y = z$ \AI{Needs a comma.}
+% 	      	      	\item $\tau = \xi$ \AI{Needs ``, and''.}
+% 	      	      	\item $A = B$ \AI{Needs a period.  In general, you have to be able read as if it's a usual sentence.  Usual grammar rules apply.}
+% 	      	      \end{itemize}
+
+
+% 	      	      Because there is no $z$ in $\xi$, $\tau\SB = \xi\SB = \xi$.
+% 	      	      And it is obvious that $y\SB = z\SB = P$.
+
+% 	      	      From $\mathcal{D}_2$, $\G \V y\SB : \tau\SB@A$. Use Weakening lemma, \AI{By Weakening,} $\GGV y\SB : \tau\SB$.
+% 	      \end{itemize}
+
+% 	      From and \TVar\\
+% 	      $\GGV y\SB:\tau\SB$
+
+% 	      \iffullversion
+
+% 	\item \TAbs
+
+% 	      From the induction hypothesis and \TAbs, we get
+
+% 	      $\mathcal{D}_1$ = \infer[\TAbs]
+% 	      {\GGV (\lambda y:\sigma\SB.M\SB):(\Pi y:\sigma\SB.\tau\SB)@A}
+% 	      {\infer[]{\GGV \sigma\SB::*@A}{\vdots} \andalso \infer[]{\GG, y:\sigma\SB@A \V M\SB:\tau\SB@A}{\vdots}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\TAbs]
+% 	      {\GGV (\lambda y:\sigma.M)\SB:(\Pi y:\sigma.\tau)\SB@A}
+% 	      {\infer[]{\GGV \sigma\SB::*@A}{\vdots} \andalso \infer[]{\GG, y:\sigma\SB@A \V M\SB:\tau\SB@A}{\vdots}}
+
+% 	\item \TApp
+
+% 	      We have a derivation trees from the premise.
+
+% 	      $\mathcal{D}_1$ = \infer[\TApp]
+% 	      {\G, z:\xi@B, \D \V M\ L:\tau[y\mapsto L]@A}
+% 	      {\infer[]{\G, z:\xi@B, \D \V M:\Pi(y:\rho).\tau@A \andalso \G, z:\xi@B, \D \V L:\rho@A}{\vdots}}
+
+% 	      We get 2 trees from the induction hypothesis and $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV M\SB: (\Pi(y:\rho).\tau)\SB@A}
+% 	      {\vdots}
+
+% 	      and
+
+% 	      $\mathcal{D}_3$ = \infer[]
+% 	      {\GGV L\SB: \rho\SB@A}
+% 	      {\vdots}
+
+% 	      \red{distribute the substitution} in $\mathcal{D}_2$
+
+% 	      $\mathcal{D'}_2$ = \infer[]
+% 	      {\GGV M\SB: (\Pi(y:\rho\SB).\tau\SB)@A}
+% 	      {\vdots}
+
+% 	      From $\mathcal{D'}_2$ and $\mathcal{D}_3$
+
+% 	      $\mathcal{D}_4$ = \infer[\TApp]
+% 	      {\GGV (M\SB\ L\SB): \tau\SB[y \mapsto L]@A}
+% 	      {\mathcal{D'}_2 \andalso \mathcal{D}_3}
+
+% 	      \red{We can transform the conclusion of $\mathcal{D}_4$ into} \\
+% 	      $\GGV (M\ L)\SB: \tau[y \mapsto L]\SB@A$
+
+% 	\item \TConv
+
+% 	      We have 2 derivation trees from the premise and the induction hypothesis.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV t\SB:T\SB@A}
+% 	      {\vdots}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV T\SB \E T'\SB@A}
+% 	      {\vdots}
+
+% 	      And then \\
+% 	      \infer[\TConv]
+% 	      {\GGV t\SB:T'\SB@A}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	\item \TTB
+
+% 	      From the induction hypothesis and \TTB, we get
+
+% 	      $\mathcal{D}_3$ = \infer[\TTB]
+% 	      {\GGV \TB_\alpha M\SB:\tau\SB@A}
+% 	      {\infer[]{\GGV M\SB:\tau\SB@A\alpha}{\vdots}}
+
+% 	\item \TTBL
+
+% 	      From the induction hypothesis and \TTBL, we get
+
+% 	      $\mathcal{D}_3$ = \infer[\TTBL]
+% 	      {\GGV \TBL_\alpha M\SB:\tau\SB@A}
+% 	      {
+% 	      	\infer[]{\GGV M\SB: \TW_\alpha \tau\SB@A\alpha}{\vdots}
+% 	      }
+
+% 	\item \TGen
+
+% 	      From the induction hypothesis, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV M\SB:\tau\SB@A}
+% 	      {\vdots}
+
+% 	      And we can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+
+% 	      Use \TGen,
+
+% 	      $\mathcal{D}_2$ = \infer[\TGen]
+% 	      {\GGV (\Lambda\alpha.M)\SB:(\forall\alpha.\tau)\SB@A}
+% 	      {\mathcal{D}_1 \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	\item \TIns
+
+% 	      From the induction hypothesis, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV M\SB:(\forall\alpha.\tau)\SB@A}
+% 	      {\vdots}
+
+% 	      Use \TIns,
+
+% 	      $\mathcal{D}_2$ = \infer[\TIns]
+% 	      {\GGV (M\ \varepsilon)\SB:\tau\SB@A}
+% 	      {\mathcal{D}_1}
+
+% 	\item \TCsp
+
+% 	      From the induction hypothesis, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV M\SB:\tau\SB@A}
+% 	      {\vdots}
+
+% 	      Use \TCsp,
+
+% 	      $\mathcal{D}_2$ = \infer[\TCsp]
+% 	      {\GGV (\%_\alpha M)\SB:\tau\SB@A\alpha}
+% 	      {\mathcal{D}_1}
+
+% 	\item \QKAbs
+
+% 	      From the induction hypothesis and \QKAbs, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKAbs]
+% 	      {\GGV (\Pi x:\tau.K)\SB \E (\Pi x:\sigma.J)\SB@A}
+% 	      {\infer[]{\GGV \tau\SB \E \sigma\SB :: *@A}{\vdots} \andalso
+% 	      	\infer[]{\GG,x:\tau@A \V K\SB\E J\SB@A}{\vdots} }
+
+% 	\item \QKCsp
+
+% 	      From the induction hypothesis and \QKCsp, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKCsp]
+% 	      {\GGV K\SB \E J\SB @A\alpha}
+% 	      {\infer[]{\GGV K\SB \E J\SB @A}{\vdots}}
+
+% 	\item \QKRefl
+
+% 	      From the induction hypothesis and \QKRefl, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKRefl]
+% 	      {\GGV K\SB \E K\SB @A}
+% 	      {\infer[]{\GGV K\SB \iskind @A}{\vdots}}
+
+% 	\item \QKSym
+
+% 	      From the induction hypothesis and \QKSym, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKSym]
+% 	      {\GGV J\SB\E K\SB@A}
+% 	      {\GGV K\SB\E J\SB@A}
+
+% 	\item \QKTrans
+
+% 	      From the induction hypothesis and \QKTrans, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKTrans]
+% 	      {\GGV K\SB\E I\SB@A}
+% 	      {\GGV K\SB\E J\SB@A \andalso \GGV J\SB\E I\SB@A}
+
+% 	\item \QTAbs
+
+% 	      From the induction hypothesis and, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTAbs]
+% 	      {\GG \Pi x:\tau\SB.\rho\SB \E \Pi x:\sigma\SB.\pi\SB@A}
+% 	      {\ID{\GG \tau\SB \E \sigma\SB@A} \andalso \ID{\G, \D, x:\tau \V \rho\SB \E \pi\SB}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QTAbs]
+% 	      {\GG (\Pi x:\tau.\rho)\SB \E (\Pi x:\sigma.\pi)\SB@A}
+% 	      {\ID{\GG \tau\SB \E \sigma\SB@A} \andalso \ID{\G, \D, x:\tau \V \rho\SB \E \pi\SB}}
+
+% 	\item \QTApp
+
+% 	      From the induction hypothesis and \QTApp, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTApp]
+% 	      {\GGV\tau\SB\ M\SB \E \sigma\SB\ N\SB@A}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB :: (\Pi x:\rho.K)@A} \andalso \ID{\GGV M\SB\E N\SB:\rho@A}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QTApp]
+% 	      {\GGV(\pi\ M)\SB \E (\sigma\ N)\SB@A}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB :: (\Pi x:\rho.K)@A} \andalso \ID{\GGV M\SB\E N\SB:\rho@A}}
+
+% 	\item \QTTW
+
+% 	      From the induction hypothesis and \QTTW, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTTW]
+% 	      {\GGV(\TW_\alpha \tau)\SB\E(\TW_\alpha\sigma)\SB@A}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB@A\alpha}}
+
+% 	\item \QTGen
+
+% 	      We can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+% 	      From the induction hypothesis and \QTGen, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTGen]
+% 	      {\GGV (\forall\alpha.\tau)\SB \E (\forall\alpha.\sigma)\SB@A}
+% 	      {\ID{\GGV \tau\SB \E \sigma\SB@A} \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	\item \QTCsp
+
+% 	      From the induction hypothesis and \QTCsp, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTCsp]
+% 	      {\GGV\tau\SB \E \sigma\SB@A\alpha}
+% 	      {\ID{\GGV\tau\SB \E \sigma\SB@A}}
+
+% 	\item \QTRefl
+
+% 	      From the induction hypothesis and \QTRefl, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTRefl]
+% 	      {\GGV\tau\SB\E\tau\SB@A}
+% 	      {\ID{\GGV\tau\SB::K\SB@A}}
+
+% 	\item \QTSym
+
+% 	      From the induction hypothesis and \QTSym, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTSym]
+% 	      {\GGV\sigma\SB\E\tau\SB@A}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB@A}}
+
+% 	\item \QTTrans
+
+% 	      From the induction hypothesis and \QTTrans, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTTrans]
+% 	      {\GGV \tau\SB\E\rho\SB@A}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB@A} \andalso \ID{\GGV\sigma\SB\E\rho\SB@A}}
+
+% 	\item \QAbs
+
+% 	      From the induction hypothesis and \QAbs, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QAbs]
+% 	      {\GGV \Pi x:\tau\SB.\rho\SB \E \Pi x:\sigma\SB.\pi\SB@A}
+% 	      {\ID{\GGV\tau\SB \E \sigma\SB :: * @A} \andalso \ID{\GG,x:\tau\SB@A\V\rho\SB \E \pi\SB@A}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QAbs]
+% 	      {\GGV (\Pi x:\tau.\rho)\SB \E (\Pi x:\sigma.\pi)\SB@A}
+% 	      {\ID{\GGV\tau\SB \E \sigma\SB :: * @A} \andalso \ID{\GG,x:\tau\SB@A\V\rho\SB \E \pi\SB@A}}
+
+% 	\item \QApp
+
+% 	      From the induction hypothesis
+
+% 	      $\mathcal{D}_1$ = \ID{\GGV M\SB \E L\SB :: (\Pi x:\sigma.\tau)\SB@A}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \ID{\GGV M\SB \E L\SB :: (\Pi x:\sigma\SB.\tau\SB)@A}
+
+% 	      Using \QApp to $\mathcal{D}'_1$ and the induction hypothesis, we get $\mathcal{D}_2$.
+
+% 	      $\mathcal{D}_2$ = \infer[\QApp]
+% 	      {\GGV M\SB\ N\SB \E L\SB\ O\SB @A}
+% 	      {\mathcal{D}'_1 \andalso \ID{\GGV N\SB \E O\SB : \sigma\SB @A}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_2$ = \infer[\QApp]
+% 	      {\GGV (M\ N)\SB \E (L\ O)\SB @A}
+% 	      {\mathcal{D}'_1 \andalso \ID{\GGV N\SB \E O\SB : \sigma\SB @A}}
+
+% 	\item \QTB
+
+% 	      From the induction hypothesis and \QTB, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTB]
+% 	      {\GGV\TB_\alpha M\SB \E \TB_\alpha N\SB @A}
+% 	      {\GGV M\SB \E N\SB @A\alpha}
+
+% 	\item \QTBL
+
+% 	      From the induction hypothesis and \QTBL, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTBL]
+% 	      {\GGV\TBL_\alpha M\SB \E \TBL_\alpha N\SB@A\alpha}
+% 	      {\GGV M\SB \E N\SB : \TW_\alpha \tau@A}
+
+% 	\item \QGen
+
+% 	      We can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+% 	      From the induction hypothesis and \QGen, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QGen]
+% 	      {\GGV\Lambda\alpha.M\SB \E \Lambda\alpha.N\SB@A}
+% 	      {\ID{\GGV M\SB \E N\SB @A} \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	\item \QIns
+
+% 	      From the induction hypothesis and \QIns, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QIns]
+% 	      {\GGV M\SB \E N\SB : \TW_\alpha.\tau @A}
+% 	      {\ID{\GGV M\SB\ \varepsilon \E N\SB\ \varepsilon @A }}
+
+% 	\item \QCsp
+
+% 	      From the induction hypothesis and \QCsp, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QCsp]
+% 	      {\GGV \%_\alpha M\SB \E \%_\alpha N\SB @A}
+% 	      {\ID{\GGV M\SB \E N\SB @A\alpha}}
+
+% 	\item \QRefl
+
+% 	      From the induction hypothesis and \QRefl, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QRefl]
+% 	      {\GGV M\SB \E M\SB @A}
+% 	      {\ID{\GGV M\SB : \tau\SB @A}}
+
+% 	\item \QSym
+
+% 	      From the induction hypothesis and \QSym, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QSym]
+% 	      {\GGV N\SB \E M\SB @A}
+% 	      {\ID{\GGV M\SB \E N\SB @A}}
+
+% 	\item \QTrans
+
+% 	      From the induction hypothesis and \QTrans, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTrans]
+% 	      {\GGV M\SB \E L\SB @A}
+% 	      {\ID{\GGV M\SB \E N\SB @A } \andalso \ID{\GGV N\SB \E L\SB @A}}
+
+% 	\item \QBeta
+
+% 	      From the induction hypothesis and \QBeta, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QBeta]
+% 	      {\GGV (\lambda x:\sigma\SB:M\SB)\ N\SB \E (M\SB)[x \mapsto N\SB]@A}
+% 	      {\ID{\GG, x: \sigma\SB@A \V M\SB:\tau\SB@A} \andalso \ID{\GGV N\SB:\sigma\SB @A }}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QBeta]
+% 	      {\GGV ((\lambda x:\sigma:M)\ N)\SB \E (M[x \mapsto N])\SB@A}
+% 	      {\ID{\GG, x: \sigma\SB@A \V M\SB:\tau\SB@A} \andalso \ID{\GGV N\SB:\sigma\SB @A }}
+
+% 	\item \QEta
+
+% 	      From the induction hypothesis and \QEta, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QEta]
+% 	      {\GGV (\lambda x:\sigma\SB.M\SB\ x) \E M\SB@A}
+% 	      {\ID{\GGV M\SB : (\Pi x:\sigma\SB.\tau\SB)@A} \andalso x \notin \FV(M\SB)}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_2$ = \infer[\QEta]
+% 	      {\GGV (\lambda x:\sigma.M\ x)\SB \E M\SB@A}
+% 	      {\ID{\GGV M\SB : (\Pi x:\sigma\SB.\tau\SB)\SB@A} \andalso x \notin \FV(M\SB)}
+
+% 	\item \QTBLTB
+
+% 	      From the induction hypothesis and \QTBLTB, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTBLTB]
+% 	      {\GGV \TBL_\alpha \TB_\alpha M\SB \E N\SB@A}
+% 	      {\ID{\GGV M\SB \E N\SB @A}}
+
+% 	\item \QLambda
+
+% 	      From the induction hypothesis and \QLambda, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QLambda]
+% 	      {\GGV (\Lambda\alpha.M\SB)\ \varepsilon \E M\SB[\alpha \mapsto \varepsilon]}
+% 	      {\ID{\GGV (\Lambda\alpha.M\SB) : \forall\alpha.\tau\SB @A}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QLambda]
+% 	      {\GGV ((\Lambda\alpha.M)\ \varepsilon)\SB \E M[\alpha \mapsto \varepsilon]\SB}
+% 	      {\ID{\GGV (\Lambda\alpha.M\SB) : \forall\alpha.\tau\SB @A}}
+
+
+% 	\item \QPercent
+
+% 	      From the induction hypothesis and \QPercent, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QPercent]
+% 	      {\GGV \%_\alpha M\SB \E M\SB @ A\alpha}
+% 	      {\ID{\GGV M\SB : \tau\SB @A\alpha} \andalso \ID{\GGV M\SB : \sigma\SB @A} }
+
+% \end{itemize}
+% \fi
+
+\begin{lemma}[Stage Substitution]
+	If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
+\end{lemma}
+
+\begin{proof}
+	Proved simultaneously by induction on derivations with case analysis on the last rule used.
+	We show only representative cases.
+		{
+			\newcommand{\SB}{[\beta \mapsto B]}
+			\newcommand{\GG}{\G\SB}
+			\newcommand{\GGV}{\G\SB \V}
+
+			\begin{rneqncase}{\TGen{}}{
+					\mathcal{J} = \Lambda\alpha.M:\forall\alpha.\tau@A\\
+					\G\V M:\tau@A & \alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A).
+				}
+				We can assume $\alpha \notin B$ because $\alpha$ is a bound variable.
+				By the induction hypothesis, we have \(\G\SB\V M\SB:\tau\SB@A\).
+				We can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+				Then, \(\GGV (\Lambda\alpha.M)\SB:(\forall\alpha.\tau)\SB@A\SB\) by \TGen.
+			\end{rneqncase}
+
+			\begin{rneqncase}{\KTW{}}{
+					\mathcal{J} = \G\V \TW_\alpha \tau :: * @ A\\
+					\G\V \tau :: * @ A\alpha.
+				}
+				\begin{itemize}
+					\item If $\alpha \neq \beta$,\\
+					      \( \GGV \tau\SB :: *\SB @ A\alpha\SB \) from the induction hypothesis.
+					      \( \GGV \TW_\alpha \tau\SB :: *\SB @ A\SB \) from \KTW.
+
+					\item If $\alpha = \beta$, \\
+					      \( \GGV \tau\SB :: *\SB @ A\alpha\SB \) from the induction hypothesis and
+					      it is identical to \( \GGV \tau\SB :: * @ AB \).
+					      We can get \( \GGV \TW_B \tau\SB :: * @ A \) after repeatedly using \KTW{}.
+
+				\end{itemize}
+			\end{rneqncase}
+
+			\begin{rneqncase}{\QGen{}}{
+					\mathcal{J} = \Lambda\alpha.M \E \Lambda\alpha.N : \forall\alpha.\tau@A\\
+					\G\V M\E N : \tau@A &  \alpha \notin \FTV(\G)\cup\FTV(A).
+				}
+				From the induction hypothesis, \( \GGV M\SB \E N\SB : \tau\SB@A\SB \).
+				We can assume \(\alpha \notin B \) because \(\alpha\) is a bound variable.
+				Thus, \( \alpha \notin \FTV(\G\SB)\cup\FTV(A\SB) \).
+				\( \GGV \Lambda\alpha.M\SB \E \Lambda\alpha.N\SB : \tau\SB@A\SB \) from \QGen{} and
+				it is identical to \( \GGV (\Lambda\alpha.M)\SB \E (\Lambda\alpha.N)\SB : \tau\SB@A\SB \).
+			\end{rneqncase}
+		}
+	
+\end{proof}
+
+% \iffullversion
+% \begin{itemize}
+
+% 	\newcommand{\SB}{[\beta \mapsto B]}
+% 	\newcommand{\GG}{\G\SB}
+% 	\newcommand{\GGV}{\G\SB \V}
+
+
+% 	\item \WStar
+
+% 	      From the definition of \WStar, we can get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\WStar]
+% 	      {\GGV * \iskind @A\SB}
+% 	      {}
+
+% 	\item \WAbs
+
+% 	      From the induction hypothesis and \WAbs, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\WAbs]
+% 	      {\GGV (\Pi x:\tau.K)\SB \iskind @A}
+% 	      {
+% 	      	\ID{\GGV \tau\SB::*@A\SB} \andalso
+% 	      	\ID{\GG, x:\tau\SB \V K\SB \iskind@}
+% 	      }
+
+% 	\item \WCsp
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \WCsp, we can get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\WCsp]
+% 	      	      {\GGV K\SB \iskind @A\alpha\SB}
+% 	      	      {\ID{\GGV K\SB \iskind @A\SB}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \WTW
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \WTW, we can get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\WTW]
+% 	      	      {\GGV K\SB \iskind @A\SB}
+% 	      	      {\ID{\GGV K\SB \iskind @A\alpha\SB}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \KVar
+
+% 	      We can easily show that $X::K\SB \in \GG$.
+% 	      From the induction hypothesis and \KVar, we can get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\KVar]
+% 	      {\GGV X :: K\SB @A\SB}
+% 	      {X::K\SB \in \GG \andalso \ID{\GGV K\SB \iskind @A\SB}}
+
+% 	\item \KAbs
+
+% 	      From the induction hypothesis, we can get $\mathcal{D}_1$ and $\mathcal{D}_2$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB :: * @ A\SB}
+% 	      {\vdots}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GG, x:\tau\SB@A\V \sigma\SB::J\SB@A\SB}
+% 	      {\vdots}
+
+% 	      Use \KAbs,
+
+% 	      $\mathcal{D}_3$ = \infer[\KAbs]
+% 	      {\GGV (\Pi x:\tau\SB.\sigma\SB)::(\Pi x:\tau\SB.J\SB)@A\SB}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	      We can arrange the substitution.
+
+% 	      $\mathcal{D}'_3$ = \infer[\KAbs]
+% 	      {\GGV (\Pi x:\tau.\sigma)\SB::(\Pi x:\tau.J)\SB@A\SB}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	\item \KApp
+
+% 	      From the induction hypothesis and \KApp, we can get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\KApp]
+% 	      {\GGV (\sigma\SB\ M\SB)::K\SB[x \mapsto M\SB]@A\SB}
+% 	      {\ID{\GGV \sigma\SB::(\Pi x:\tau\SB.K\SB)@A\SB} \andalso \ID{\GGV M\SB:\tau\SB@A}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\KApp]
+% 	      {\GGV (\sigma\ M)\SB::K[x \mapsto M]\SB@A\SB}
+% 	      {\ID{\GGV \sigma\SB::(\Pi x:\tau\SB.K\SB)@A\SB} \andalso \ID{\GGV M\SB:\tau\SB@A\SB}}
+
+% 	\item \KConv
+
+% 	      From the induction hypothesis, we have $\mathcal{D}_1$ and $\mathcal{D}_2$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB : K[z\mapsto P]@A\SB}
+% 	      {\vdots}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV K\SB \E J\SB @A\SB}
+% 	      {\vdots}
+
+% 	      Use \KConv,
+
+% 	      $\mathcal{D}_2$ = \infer[\KConv]
+% 	      {\GGV \tau\SB : J[z\mapsto P]@A\SB}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	\item \KTW
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis, we have $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[]
+% 	      	      {\GGV \tau\SB :: K\SB @ A\alpha\SB}
+% 	      	      {\vdots}
+
+% 	      	      Use \KTW,
+
+% 	      	      $\mathcal{D}_2$ = \infer[]
+% 	      	      {\GGV \TW_\alpha \tau\SB :: K\SB @ A\SB}
+% 	      	      {\mathcal{D}_1}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \KTWL
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis, we have $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[]
+% 	      	      {\GGV \TW_\alpha \tau\SB :: K\SB @ A\alpha\SB}
+% 	      	      {\vdots}
+
+% 	      	      Use \KTWL,
+
+% 	      	      $\mathcal{D}_2$ = \infer[]
+% 	      	      {\GGV \tau\SB :: K\SB @ A\alpha\SB}
+% 	      	      {\mathcal{D}_1}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+
+% 	\item \KGen
+
+% 	      From the induction hypothesis, we have $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV \tau\SB :: K\SB @ A\SB}
+% 	      {\vdots}
+
+% 	      And we can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+
+% 	      Use \KGen,
+
+% 	      $\mathcal{D}_2$ = \infer[\KGen]
+% 	      {\GGV \forall\alpha.\tau\SB :: K\SB @ A\SB}
+% 	      {\mathcal{D}_1 \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	\item \KCsp
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \KCsp, we have $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\KCsp]
+% 	      	      {\GGV \tau\SB :: K\SB @ A\alpha\SB}
+% 	      	      {\ID{\GGV \tau\SB :: K\SB @ A\SB}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \TVar
+
+% 	      We can easily prove $x:\tau\SB \in \GG$.
+
+% 	      From the induction hypothesis and \TVar, we have $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV x:\tau\SB @A\SB}
+% 	      {x:\tau\SB \in \GG \andalso \ID{\GGV \tau\SB::*@A\SB}}
+
+% 	\item \TAbs
+
+% 	      From the induction hypothesis and \TAbs, we get
+
+% 	      $\mathcal{D}_1$ = \infer[\TAbs]
+% 	      {\GGV (\lambda x:\sigma\SB.M\SB):(\Pi x:\sigma\SB.\tau\SB)@A\SB}
+% 	      {\ID{\GGV \sigma\SB::*@A\SB} \andalso \ID{\GG, x:\sigma\SB@A\SB \V M\SB:\tau\SB@A\SB}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\TAbs]
+% 	      {\GGV (\lambda x:\sigma.M)\SB:(\Pi x:\sigma.\tau)\SB@A\SB}
+% 	      {\ID{\GGV \sigma\SB::*@A\SB} \andalso \ID{\GG, x:\sigma\SB@A\SB \V M\SB:\tau\SB@A\SB}}
+
+% 	\item \TApp
+
+% 	      We have a derivation trees from the premise.
+
+% 	      $\mathcal{D}_1$ = \infer[\TApp]
+% 	      {\G, z:\xi@B, \D \V M\ L:\tau[y\mapsto L]@A}
+% 	      {\infer[]{\G, z:\xi@B, \D \V M:\Pi(y:\rho).\tau@A \andalso \G, z:\xi@B, \D \V L:\rho@A}{\vdots}}
+
+% 	      We get 2 trees from the induction hypothesis and $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV M\SB: (\Pi(y:\rho).\tau)\SB@A}
+% 	      {\vdots}
+
+% 	      and
+
+% 	      $\mathcal{D}_3$ = \infer[]
+% 	      {\GGV L\SB: \rho\SB@A}
+% 	      {\vdots}
+
+% 	      \red{distribute the substitution} in $\mathcal{D}_2$
+
+% 	      $\mathcal{D'}_2$ = \infer[]
+% 	      {\GGV M\SB: (\Pi(y:\rho\SB).\tau\SB)@A}
+% 	      {\vdots}
+
+% 	      From $\mathcal{D'}_2$ and $\mathcal{D}_3$
+
+% 	      $\mathcal{D}_4$ = \infer[\TApp]
+% 	      {\GGV (M\SB\ L\SB): \tau\SB[y \mapsto L]@A}
+% 	      {\mathcal{D'}_2 \andalso \mathcal{D}_3}
+
+% 	      \red{We can transform the conclusion of $\mathcal{D}_4$ into} \\
+% 	      $\GGV (M\ L)\SB: \tau[y \mapsto L]\SB@A$
+
+% 	\item \TConv
+
+% 	      We have 2 derivation trees from the premise and the induction hypothesis.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV t\SB:T\SB@A}
+% 	      {\vdots}
+
+% 	      $\mathcal{D}_2$ = \infer[]
+% 	      {\GGV T\SB \E T'\SB@A}
+% 	      {\vdots}
+
+% 	      And then \\
+% 	      \infer[\TConv]
+% 	      {\GGV t\SB:T'\SB@A}
+% 	      {\mathcal{D}_1 \andalso \mathcal{D}_2}
+
+% 	\item \TTB
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+% 	      	      From the induction hypothesis and \TTB, we get
+
+% 	      	      $\mathcal{D}_1$ = \infer[\TTB]
+% 	      	      {\GGV \TB_\alpha M\SB:\tau\SB@A\SB}
+% 	      	      {\infer[]{\GGV M\SB:\tau\SB@A\alpha\SB}{\vdots}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \TTBL
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+% 	      	      From the induction hypothesis and \TTBL, we get
+
+% 	      	      $\mathcal{D}_3$ = \infer[\TTBL]
+% 	      	      {\GGV \TBL_\alpha M\SB:\tau\SB@A\SB}
+% 	      	      {
+% 	      	      	\infer[]{\GGV M\SB: \TW_\alpha \tau\SB@A\alpha\SB}{\vdots}
+% 	      	      }
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \TGen
+
+% 	      From the induction hypothesis, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[]
+% 	      {\GGV M\SB:\tau\SB@A\SB}
+% 	      {\vdots}
+
+% 	      And we can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+
+% 	      Use \TGen,
+
+% 	      $\mathcal{D}_2$ = \infer[\TGen]
+% 	      {\GGV (\Lambda\alpha.M)\SB:(\forall\alpha.\tau)\SB@A\SB}
+% 	      {\mathcal{D}_1 \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	\item \TIns
+
+% 	      We can assume $\alpha \neq \beta$ because $\alpha$ appears only in $M:\forall\alpha.\tau$ and we can rename $\alpha$ to an arbitary name.
+
+% 	      From the induction hypothesis and \TIns, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\TIns]
+% 	      {\GGV (M\ \varepsilon)\SB:\tau\SB@A\SB}
+% 	      {\ID{\GGV M\SB:(\forall\alpha.\tau)\SB@A\SB}}
+
+% 	\item \TCsp
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \TCsp, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_2$ = \infer[\TCsp]
+% 	      	      {\GGV (\%_\alpha M)\SB:\tau\SB@A\alpha}
+% 	      	      {\ID{\GGV M\SB:\tau\SB@A}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QKAbs
+
+% 	      From the induction hypothesis and \QKAbs, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKAbs]
+% 	      {\GGV (\Pi x:\tau.K)\SB \E (\Pi x:\sigma.J)\SB@A\SB}
+% 	      {\infer[]{\GGV \tau\SB \E \sigma\SB :: *@A\SB}{\vdots} \andalso
+% 	      	\infer[]{\GG,x:\tau@A \V K\SB\E J\SB@A\SB}{\vdots} }
+
+% 	\item \QKCsp
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \QKCsp, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\QKCsp]
+% 	      	      {\GGV K\SB \E J\SB @A\alpha\SB}
+% 	      	      {\infer[]{\GGV K\SB \E J\SB @A\SB}{\vdots}}
+
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QKRefl
+
+% 	      From the induction hypothesis and \QKRefl, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKRefl]
+% 	      {\GGV K\SB \E K\SB @A\SB}
+% 	      {\infer[]{\GGV K\SB \iskind @A\SB}{\vdots}}
+
+% 	\item \QKSym
+
+% 	      From the induction hypothesis and \QKSym, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKSym]
+% 	      {\GGV J\SB\E K\SB@A\SB}
+% 	      {\GGV K\SB\E J\SB@A\SB}
+
+% 	\item \QKTrans
+
+% 	      From the induction hypothesis and \QKTrans, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QKTrans]
+% 	      {\GGV K\SB\E I\SB@A\SB}
+% 	      {\GGV K\SB\E J\SB@A\SB \andalso \GGV J\SB\E I\SB@A\SB}
+
+% 	\item \QTAbs
+
+% 	      From the induction hypothesis and, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTAbs]
+% 	      {\GGV \Pi x:\tau\SB.\rho\SB \E \Pi x:\sigma\SB.\pi\SB@A\SB}
+% 	      {\ID{\GGV \tau\SB \E \sigma\SB :: *@A\SB} \andalso \ID{\GG, x:\tau\SB@A\SB \V \rho\SB \E \pi\SB @A\SB}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}_1$ = \infer[\QTAbs]
+% 	      {\GGV (\Pi x:\tau.\rho)\SB \E (\Pi x:\sigma.\pi)\SB@A\SB}
+% 	      {\ID{\GGV \tau\SB \E \sigma\SB :: *@A\SB} \andalso \ID{\GG, x:\tau\SB@A\SB \V \rho\SB \E \pi\SB @A\SB}}
+
+% 	\item \QTApp
+
+% 	      From the induction hypothesis and \QTApp, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTApp]
+% 	      {\GGV\pi\SB\ M\SB \E \sigma\SB\ N\SB@A\SB}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB :: (\Pi x:\rho\SB.K\SB)@A\SB} \andalso \ID{\GGV M\SB\E N\SB:\rho\SB@A\SB}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}_1$ = \infer[\QTApp]
+% 	      {\GGV(\pi\ M)\SB \E (\sigma\ N)\SB@A\SB}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB :: (\Pi x:\rho\SB.K\SB)@A\SB} \andalso \ID{\GGV M\SB\E N\SB:\rho\SB@A\SB}}
+
+% 	\item \QTTW
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \QTTW, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\QTTW]
+% 	      	      {\GGV(\TW_\alpha \tau)\SB\E(\TW_\alpha\sigma)\SB@A\SB}
+% 	      	      {\ID{\GGV\tau\SB\E\sigma\SB@A\alpha\SB}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QTGen
+
+% 	      We can assume $\alpha \neq \beta$ because $\alpha$ appears only in $M:\forall\alpha.\tau$ and we can rename $\alpha$ to an arbitary name.
+
+% 	      We can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+% 	      From the induction hypothesis and \QTGen, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTGen]
+% 	      {\GGV (\forall\alpha.\tau)\SB \E (\forall\alpha.\sigma)\SB@A\SB}
+% 	      {\ID{\GGV \tau\SB \E \sigma\SB@A\SB} \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	\item \QTCsp
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \QTCsp, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\QTCsp]
+% 	      	      {\GGV\tau\SB \E \sigma\SB@A\alpha\SB}
+% 	      	      {\ID{\GGV\tau\SB \E \sigma\SB@A\SB}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QTRefl
+
+% 	      From the induction hypothesis and \QTRefl, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTRefl]
+% 	      {\GGV\tau\SB\E\tau\SB@A\SB}
+% 	      {\ID{\GGV\tau\SB::K\SB@A\SB}}
+
+% 	\item \QTSym
+
+% 	      From the induction hypothesis and \QTSym, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTSym]
+% 	      {\GGV\sigma\SB\E\tau\SB@A\SB}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB@A\SB}}
+
+% 	\item \QTTrans
+
+% 	      From the induction hypothesis and \QTTrans, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTTrans]
+% 	      {\GGV \tau\SB\E\rho\SB@A\SB}
+% 	      {\ID{\GGV\tau\SB\E\sigma\SB@A\SB} \andalso \ID{\GGV\sigma\SB\E\rho\SB@A\SB}}
+
+% 	\item \QAbs
+
+% 	      From the induction hypothesis and \QAbs, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QAbs]
+% 	      {\GGV \Pi x:\tau\SB.\rho\SB \E \Pi x:\sigma\SB.\pi\SB@A\SB}
+% 	      {\ID{\GGV\tau\SB \E \sigma\SB :: * @A\SB} \andalso \ID{\GG,x:\tau\SB@A\SB\V\rho\SB \E \pi\SB@A\SB}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QAbs]
+% 	      {\GGV (\Pi x:\tau.\rho)\SB \E (\Pi x:\sigma.\pi)\SB@A\SB}
+% 	      {\ID{\GGV\tau\SB \E \sigma\SB :: * @A\SB} \andalso \ID{\GG,x:\tau\SB@A\SB\V\rho\SB \E \pi\SB@A\SB}}
+
+% 	\item \QApp
+
+% 	      From the induction hypothesis
+
+% 	      $\mathcal{D}_1$ = \ID{\GGV M\SB \E L\SB :: (\Pi x:\sigma.\tau)\SB@A\SB}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \ID{\GGV M\SB \E L\SB :: (\Pi x:\sigma\SB.\tau\SB)@A\SB}
+
+% 	      Using \QApp\ to $\mathcal{D}'_1$ and the induction hypothesis, we get $\mathcal{D}_2$.
+
+% 	      $\mathcal{D}_2$ = \infer[\QApp]
+% 	      {\GGV M\SB\ N\SB \E L\SB\ O\SB @A\SB}
+% 	      {\mathcal{D}'_1 \andalso \ID{\GGV N\SB \E O\SB : \sigma\SB @A\SB}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_2$ = \infer[\QApp]
+% 	      {\GGV (M\ N)\SB \E (L\ O)\SB @A\SB}
+% 	      {\mathcal{D}'_1 \andalso \ID{\GGV N\SB \E O\SB : \sigma\SB @A\SB}}
+
+% 	\item \QTB
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \QTB, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\QTB]
+% 	      	      {\GGV\TB_\alpha M\SB \E \TB_\alpha N\SB @A\SB}
+% 	      	      {\GGV M\SB \E N\SB @A\alpha\SB}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QTBL
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \QTBL, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\QTBL]
+% 	      	      {\GGV\TBL_\alpha M\SB \E \TBL_\alpha N\SB@A\alpha\SB}
+% 	      	      {\GGV M\SB \E N\SB : \TW_\alpha \tau@A\SB}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QGen
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      We can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+% 	      	      From the induction hypothesis and \QGen, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\QGen]
+% 	      	      {\GGV\Lambda\alpha.M\SB \E \Lambda\alpha.N\SB@A\SB}
+% 	      	      {\ID{\GGV M\SB \E N\SB @A\SB} \andalso \alpha \notin \FTV(\GG) \cup \FTV(A)}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QIns
+
+% 	      We can assume $\alpha \neq \beta$ because $\alpha$ appears only in $M:\forall\alpha.\tau$ and we can rename $\alpha$ to an arbitary name.
+
+% 	      From the induction hypothesis and \QIns, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QIns]
+% 	      {\GGV M\SB\ \varepsilon \E N\SB \ \varepsilon @A\SB }
+% 	      {\ID{\GGV M\SB \E N\SB : (\forall\alpha.\tau\SB) @A\SB}}
+
+% 	\item \QCsp
+
+% 	      \begin{itemize}
+
+% 	      	\item $\alpha \neq \beta$
+
+% 	      	      From the induction hypothesis and \QCsp, we get $\mathcal{D}_1$.
+
+% 	      	      $\mathcal{D}_1$ = \infer[\QCsp]
+% 	      	      {\GGV \%_\alpha M\SB \E \%_\alpha N\SB @A\SB}
+% 	      	      {\ID{\GGV M\SB \E N\SB @A\alpha\SB}}
+
+% 	      	\item $\alpha = \beta$
+
+% 	      	      The conclusion is identical with the induction hypothesis.
+
+% 	      \end{itemize}
+
+% 	\item \QRefl
+
+% 	      From the induction hypothesis and \QRefl, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QRefl]
+% 	      {\GGV M\SB \E M\SB @A\SB}
+% 	      {\ID{\GGV M\SB : \tau\SB @A\SB}}
+
+% 	\item \QSym
+
+% 	      From the induction hypothesis and \QSym, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QSym]
+% 	      {\GGV N\SB \E M\SB @A\SB}
+% 	      {\ID{\GGV M\SB \E N\SB @A\SB}}
+
+% 	\item \QTrans
+
+% 	      From the induction hypothesis and \QTrans, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTrans]
+% 	      {\GGV M\SB \E L\SB @A\SB}
+% 	      {\ID{\GGV M\SB \E N\SB @A\SB } \andalso \ID{\GGV N\SB \E L\SB @A\SB}}
+
+% 	\item \QBeta
+
+% 	      From the induction hypothesis and \QBeta, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QBeta]
+% 	      {\GGV (\lambda x:\sigma\SB:M\SB)\ N\SB \E (M\SB)[x \mapsto N\SB]@A\SB}
+% 	      {\ID{\GG, x: \sigma\SB@A\SB \V M\SB:\tau\SB@A\SB} \andalso \ID{\GGV N\SB:\sigma\SB @A\SB }}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QBeta]
+% 	      {\GGV ((\lambda x:\sigma:M)\ N)\SB \E (M[x \mapsto N])\SB@A\SB}
+% 	      {\ID{\GG, x: \sigma\SB@A\SB \V M\SB:\tau\SB@A\SB} \andalso \ID{\GGV N\SB:\sigma\SB @A\SB }}
+
+% 	\item \QEta
+
+% 	      From the induction hypothesis and \QEta, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QEta]
+% 	      {\GGV (\lambda x:\sigma\SB.M\SB\ x) \E M\SB@A\SB}
+% 	      {\ID{\GGV M\SB : (\Pi x:\sigma\SB.\tau\SB)@A\SB} \andalso x \notin \FV(M\SB)}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_2$ = \infer[\QEta]
+% 	      {\GGV (\lambda x:\sigma.M\ x)\SB \E M\SB@A\SB}
+% 	      {\ID{\GGV M\SB : (\Pi x:\sigma\SB.\tau\SB)\SB@A\SB} \andalso x \notin \FV(M\SB)}
+
+% 	\item \QTBLTB
+
+% 	      From the induction hypothesis and \QTBLTB, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QTBLTB]
+% 	      {\GGV \TBL_\alpha \TB_\alpha M\SB \E N\SB@A\SB}
+% 	      {\ID{\GGV M\SB \E N\SB @A\SB}}
+
+% 	\item \QLambda
+
+% 	      From the induction hypothesis and \QLambda, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QLambda]
+% 	      {\GGV (\Lambda\alpha.M\SB)\ \varepsilon \E M\SB[\alpha \mapsto \varepsilon]}
+% 	      {\ID{\GGV (\Lambda\alpha.M\SB) : \forall\alpha.\tau\SB @A\SB}}
+
+% 	      Arrange substitutions,
+
+% 	      $\mathcal{D}'_1$ = \infer[\QLambda]
+% 	      {\GGV ((\Lambda\alpha.M)\ \varepsilon)\SB \E M[\alpha \mapsto \varepsilon]\SB}
+% 	      {\ID{\GGV (\Lambda\alpha.M\SB) : \forall\alpha.\tau\SB @A\SB}}
+
+% 	\item \QPercent
+
+% 	      From the induction hypothesis and \QPercent, we get $\mathcal{D}_1$.
+
+% 	      $\mathcal{D}_1$ = \infer[\QPercent]
+% 	      {\GGV \%_\alpha M\SB \E M\SB @ A\alpha}
+% 	      {\ID{\GGV M\SB : \tau\SB @A\alpha\SB} \andalso \ID{\GGV M\SB : \sigma\SB @A\SB} }
+
+% \end{itemize}
+% \fi
+
+\begin{lemma}[Agreement]
+    \label{lemma:Agreement}
+	\begin{enumerate}
+		\item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
+		\item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
+		\item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
+		\item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
+		\item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
+	\end{enumerate}
+\end{lemma}
+\begin{proof}
+
+	We can prove using induction on the derivation tree.
+	We show some cases as examples.
+
+	\begin{rneqncase}{\TCsp{}}{
+            \G\V \%_\alpha M :: \tau @A\alpha \text{ is derived from } \G\V M :: \tau @A \text{ and } \G \V \tau :: * @ A\alpha
+		}
+		\( \G \V \tau :: * @ A\alpha \) is obvious.
+	\end{rneqncase}
+	\begin{rneqncase}{\QBeta{}}{
+			\G\V(\lambda x:\sigma.M)\ N\E M[x\mapsto N] : \tau[x \mapsto N]@A \text{ is derived from }\\
+			\G,x:\sigma@A\V M:\tau@A \text{ and } \G\V N:\sigma@A.
+		}
+		From \TAbs{} and \TApp, \( \G\V(\lambda x:\sigma.M)\ N : \tau[x \mapsto N]@A \).
+		From Term Substitution, \( \G\V M[x\mapsto N] : \tau[x \mapsto N]@A \).
+	\end{rneqncase}
+	
+\end{proof}
+
+We generalize Inversion Lemma to use induction.
+\begin{lemma}[Inversion Lemma for $\Pi$ Type]
+	\begin{enumerate}
+		\item If $\G \V (\lambda x:\sigma.M) : \rho$, then there are $\sigma'$ and $\tau'$ such that
+		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$.
+		\item If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$, then there are $\sigma', \tau', K$, and $J$ such that
+		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma' : K @A$, and $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
+		\item If $\G \V (\Pi x:\sigma.\tau) \E \rho : K @A$, then there are $\sigma', \tau', K$, and $J$ such that
+		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma' : K @A$, and $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
+	\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+	We can prove using induction on the derivation tree.
+	We show a few main cases.
+
+	\begin{rneqncase}{\TAbs{}}{
+			\G\V \sigma::*@A \text{ and } \G,x:\sigma@A\V M:\tau@A.
+		}
+		We can take $\sigma$ and $\tau$ as $\sigma'$ and $\tau'$ in the statement.
+	\end{rneqncase}
+
+	\begin{rneqncase}{\TConv{}}{
+			\G \V (\lambda x:\sigma.M) : \rho@A \text{ and } \G \V \rho \E (\Pi x:\sigma'.\tau)@A.
+		}
+		There are $\sigma'$ and $\tau'$ such that
+		$\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$
+		by the induction hypothesis.
+	\end{rneqncase}
+
+	\begin{rneqncase}{\QTRefl{}}{}
+		There two cases for the conclusion.
+		\begin{itemize}
+			\item If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$,
+			      we can use the third statement of the lemma as the induction hypothesis.
+			\item If $\G \V (\Pi x:\sigma.\tau) \E \rho : K @A$,
+			      we can use the second statement of the lemma as the induction hypothesis.
+		\end{itemize}
+	\end{rneqncase}
+	
+\end{proof}
+
+\begin{lemma}[Inversion Lemma for $\TW$ type]
+	\begin{item}
+	      \item If $\G \V \TB_\alpha M : \tau@A$, then
+	      there is $\sigma$ such that $\tau = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$.
+	      \item If $\G \V \rho \E \TW_\alpha \tau : K @A$, then there are $\tau', K$, and $J$ such that
+	      $\rho = \TW_\alpha \tau'$ and $\G \V \tau \E \tau' : K @A$.
+	      \item If $\G \V \TW_\alpha \tau \E \rho : K @A$, then there are $\tau', K$, and $J$ such that
+	      $\rho = \TW_\alpha \tau'$ and $\G \V \tau \E \tau' : K @A$.
+	\end{item}
+\end{lemma}
+
+\begin{proof}
+	We can prove using induction on the derivation tree.
+	We show some cases as examples.
+
+	\begin{rneqncase}{\TTB{}}{\G \V M : \sigma'@A\alpha.}
+		We can take $\sigma'$ as $\sigma$.
+	\end{rneqncase}
+	\begin{rneqncase}{\TConv{}}{
+			\G \V \TB_\alpha M : \tau'@A \text{ and } \G\V\tau' \E \tau :: K@A.
+		}
+		There is $\sigma$ such that $\tau' = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$
+		by using the induction hypothesis to \( \G \V \TB_\alpha M : \tau' @A\).
+		There are $\sigma'$ and $K'$ such that $\tau = \TW_\alpha \sigma'$ and $\G \V \sigma \E \sigma' : K @ A$
+		by using the induction hypothesis to \( \G \V \TW_\alpha \sigma : \tau :: K' @A\).
+		Finally, $\G \V M : \sigma' @ A $ by \TConv.
+	\end{rneqncase}
+	
+\end{proof}
+
+\begin{lemma}[Inversion for $\Lambda$ Type]
+	\begin{item}
+	      \item If $\G \V \Lambda\alpha.M : \tau$, then
+	      there is $\sigma$ such that $\sigma = \forall\alpha.\sigma$ and $\G \V M : \sigma@A$.% and $\alpha \notin \FTV(\G) \cup \FV(A)$.
+	      \item If $\G \V \rho \E \forall\alpha.\tau : K @A$, then there are $\tau', K$ such that
+	      $\rho = \forall\alpha.\tau'$ and $\G \V \tau \E \tau' : K @A$.
+	      \item If $\G \V \forall\alpha.\tau \E \rho : K @A$, then there are $\tau', K$ such that
+	      $\rho = \forall\alpha.\tau'$ and $\G \V \tau \E \tau' : K @A$.
+	\end{item}
+\end{lemma}
+
+\begin{proof}
+	We can prove using induction on the derivation tree.
+	% We show some cases as examples.
+
+	% \begin{itemize}
+	% 	\newcommand{\MC}[1]{\mathcal{#1}}
+	% 	\item \textit{Case} \TGen\ where $\G\V M:\sigma'@A$.\\
+	% 	      We can take $\sigma'$ as $\sigma$.	      	      		      	      	      	      
+	% \end{itemize}
+	
+\end{proof}
+
+\begin{lemma}[Inversion Lemma for Application]
+	\begin{item}
+	      \item If $\G \V (\lambda x:\sigma.M)\ N: \tau@A$ then there are $x$ and $\rho$ such that
+	      $\G, x:\sigma \V M : \rho @A$ and $\G \V N:\sigma @ A$.
+	\end{item}
+\end{lemma}
+
+\begin{proof}
+	We can prove using induction on the derivation tree.
+	% We show some cases as examples.
+	% \begin{itemize}
+	% 	\item \textit{Case} \TConv{} where $\G \V (\lambda x:\sigma.M)\ N: \rho@A$ and $\G \V \rho \E \tau : K @A$.
+	% 		  By using the induction hypothesis to $\G \V (\lambda x:\sigma.M)\ N: \rho@A$, 
+	% 		  we get $\G, x:\sigma \V M : \pi @A$ and $\G \V N:\sigma @ A$.
+	% 	      Then, we can fix $x, \pi$ as $x, \rho$ in the statement correspondingly.
+	% \end{itemize}
+	
+\end{proof}
+
+\begin{theorem}[Preservation on $\beta$-Reduction]
+    \label{theorem:PreservationOnBetaReduction}
+	If $\G\V M:\tau@A$ and $M \longrightarrow_{\beta} M'$, then $\G\V M':\tau@A$.
+\end{theorem}
+
+\begin{proof}
+	{
+		We can prove using induction on the type derivation tree.
+		We show some cases as examples.
+		\newcommand{\LB}{\longrightarrow_{\beta}}
+		\begin{rneqncase}{\TApp{}}{}
+			The shape of the reduction is one of following three.
+			\begin{itemize}
+				\item $(\lambda x:\sigma.N)\ L \LB N[x\mapsto L]$.\\
+				      Because the last rule of the type derivation tree is \TApp,
+				      we have $\G \V (\lambda x:\sigma.N) : (\Pi x:\sigma'.\tau')@A$ and
+				      $\G \V L:\sigma' @A$.
+				      By using Inversion Lemma for $\Pi$ type to $\G \V (\lambda x:\sigma.N) : (\Pi x:\sigma'.\tau')@A$,
+				      we get $\G, x:\sigma \V N:\tau$ and $\G \V \sigma \E \sigma'$ and $\G ,x:\sigma \V \tau \E \tau'@A$.
+				      By \TConv , $\G \V L:\sigma @A$.
+				      By Term Substitution Lemma,
+				      we get $\G \V N[x\mapsto L]:\tau[x\mapsto L]$.
+
+				\item $M\ N \LB M'\ N$.\\
+				      From the induction hypothesis and \TApp, the type is preserved for the reduction.
+				\item $M\ N \LB M\ N'$.\\
+				      From the induction hypothesis and \TApp, the type is preserved for the reduction.
+			\end{itemize}
+		\end{rneqncase}
+	}
+	
+\end{proof}
+% \begin{itemize}
+% \newcommand{\LB}{\longrightarrow_{\beta}}
+
+% \item \textit{Case} \TApp{} where the shape of the reduction is one of following three.
+%   \begin{itemize}
+%       \item $(\lambda x:\sigma.N)\ L \LB N[x\mapsto L]$.\\
+%             Because the last rule of the type derivation tree is \TApp,
+%             we have $\G \V (\lambda x:\sigma.N) : (\Pi x:\sigma'.\tau')@A$ and
+%             $\G \V L:\sigma' @A$.
+%             By using Inversion Lemma for $\Pi$ type to $\G \V (\lambda x:\sigma.N) : (\Pi x:\sigma'.\tau')@A$,
+%             we get $\G, x:\sigma \V N:\tau$ and $\G \V \sigma \E \sigma'$ and $\G ,x:\sigma \V \tau \E \tau'@A$.
+%             By \TConv , $\G \V L:\sigma @A$.
+%             By Term Substitution Lemma,
+%             we get $\G \V N[x\mapsto L]:\tau[x\mapsto L]$.
+
+%       \item $M\ N \LB M'\ N$.\\
+%             From the induction hypothesis and \TApp, the type is preserved for the reduction.
+%       \item $M\ N \LB M\ N'$.\\
+%             From the induction hypothesis and \TApp, the type is preserved for the reduction.
+%   \end{itemize}
+
+%       \iffullversion
+% \item \TVar
+%       In this case, there is no reduction from $x$.
+% \item \TAbs
+%       We can assume the reduction has following shape.
+%       $\lambda x:\sigma.M \LB \lambda x:\sigma.M'$
+%       From the induction hypothesis and \TAbs, the type is preserved for the reduction.
+% \item \TConv
+%       We can assume the reduction has following shape.
+%       $M \LB M'$
+%       From the induction hypothesis and \TConv, the type is preserved for the reduction.
+% \item \TTB
+%       We can assume the reduction has following shape.
+%       $\TB M \LB \TB M'$
+%       From the induction hypothesis and \TTB, the type is preserved for the reduction.
+% \item \TTBL
+%       We can assume the reduction has following shape.
+%       $\TBL M \LB \TBL M'$
+%       From the induction hypothesis and \TTBL, the type is preserved for the reduction.
+% \item \TGen
+%       We can assume the reduction has following shape.
+%       $\Lambda\alpha. M \LB \Lambda\alpha. M'$
+%       From the induction hypothesis and \TGen, the type is preserved for the reduction.
+% \item \TIns
+%       We can assume the reduction has following shape.
+%       $M\ \varepsilon \LB M'\ \varepsilon$
+%       From the induction hypothesis and \TIns, the type is preserved for the reduction.
+% \item \TCsp
+%       We can assume the reduction has following shape.
+%       $\%_\alpha M \LB \%_\alpha M'$
+%       From the induction hypothesis and \TCsp, the type is preserved for the reduction.
+%       \fi
+% \end{itemize}
+
+\begin{theorem}[Preservation on $\blacklozenge$-Reduction]
+    \label{theorem:PreservationOnBlackReduction}
+	If $\G\V M:\tau@A$ and $M\longrightarrow_\blacklozenge N$, then $\G\V N:\tau@A$\\
+\end{theorem}
+
+\begin{proof}
+	{
+		We can prove using induction on the type derivation tree.
+		We show the case of \TTBL{} as examples.
+		Other cases are easy.
+		\newcommand{\R}{\longrightarrow_{\blacklozenge}}
+		\begin{rneqncase}{\TTBL{}}{}
+			There are two cases for $\R$.
+			\begin{itemize}
+				\item $\TBL\TB M \R M$.\\
+				      Because the last rule is \TTBL, we have $\G \V \TB M : \TW_\alpha \tau @A$.
+				      By using Inversion Lemma for $\TW$ type to $\G \V \TB M : \TW_\alpha \tau @A$,
+				      we get $\G \V M : \tau @A$
+				\item $\TBL M \R \TBL M'$.\\
+				      We can use the induction hypothesis and \TTBL.
+			\end{itemize}
+		\end{rneqncase}
+		
+	}
+\end{proof}
+
+\begin{theorem}[Preservation on $\Lambda$ Reduction]
+    \label{theorem:PreservationOnLambdaReduction}
+	If $\G\V M:\tau@A$ and $M \longrightarrow_{\Lambda} N$, then $\G\V N:\tau@A$.
+\end{theorem}
+
+\begin{proof}
+	{
+		\newcommand{\R}{\longrightarrow_{\Lambda}}
+		We can prove using induction on the type derivation tree.
+		We show the case of \TIns{}{} as examples.
+		Other cases are easy.
+		\begin{rneqncase}{\TIns{}}{}
+			There are two cases $\R$.
+			\begin{itemize}
+				\item $(\Lambda\alpha.M)\ B \R M[\alpha \mapsto B]$\\
+				      Because the last rule is \TIns{}, we have $\G \V \Lambda\alpha.M\ : \forall\alpha.\tau @ A$.
+				      By using Inversion Lemma for $\Lambda$ type to $\G \V \Lambda\alpha.M\ : \forall\alpha.\tau @ A$,
+				      we obtain $\G \V M : \tau @ A$.
+				      By using Stage Substitution Lemma to $\G \V M : \tau @ A$,
+				      we obtain $\G[\alpha \mapsto B] \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A[\alpha \mapsto B]$.
+				      $\alpha$ is a bound variable therefore we can assume $\alpha \notin \FTV(\G) \cup \FTV(A)$.
+				      So, we can rewrite $\G[\alpha \mapsto B] \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A[\alpha \mapsto B]$ to
+				      $\G \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A$.
+				\item $M\ B \R M'\ B$\\
+				      By the induction hypothesis and \TIns.
+			\end{itemize}
+		\end{rneqncase}
+		
+	}
+\end{proof}
+
+\begin{corollary}[Preservation on level 0 reduction]
+    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
+\end{corollary}
+
+\begin{proof}
+    We can get as a corollary of Theorem \ref{theorem:PreservationOnBetaReduction}, \ref{theorem:PreservationOnBlackReduction}, and \ref{theorem:PreservationOnLambdaReduction}.
+\end{proof}
+
+\begin{dfn}[$\natural$ translation]
+	The $\natural$ translation is a translation from $\lambda^\text{MD}$ to $\lambda^\to$.
+	\begin{itemize}
+		\item Term
+		      \begin{flalign*}
+			      \natural(x) &= x & \\
+			      \natural(\lambda x:\tau.M) &= \lambda x:\natural(\tau).\natural(M) & \\
+			      \natural(M\ N) &= \natural(M)\ \natural(N)& \\
+			      \natural(\TB_\alpha M) &= \natural(M) & \\
+			      \natural(\TBL_\alpha M) &= \natural(M)& \\
+			      \natural(\Lambda\alpha.M) &= \natural(M)& \\
+			      \natural(M\ B) &= \natural(M) &
+		      \end{flalign*}
+		\item Type
+		      \begin{flalign*}
+			      \natural(X) &= X & \\
+			      \natural(\Pi x:\tau.\sigma) &= \natural(\tau) \to \natural(\sigma) & \\
+			      \natural(\tau\ x) &= \natural(\tau) & \\
+			      \natural(\TW_\alpha \tau) &= \natural(\tau) & \\
+			      \natural(\forall \alpha.\tau) &= \natural(\tau) &
+		      \end{flalign*}
+		\item Kind
+		      \begin{flalign*}
+			      \natural(K) &= * &
+		      \end{flalign*}
+		\item Context
+		      \begin{flalign*}
+			      \natural(\phi) &= \phi & \\
+			      \natural(\G, x:T@A) &= \natural(\G), \natural(x):\natural(\tau) & \\
+			      \natural(\G, X:K@A) &= \natural(\G) &
+		      \end{flalign*}
+	\end{itemize}
+\end{dfn}
+
+\begin{lemma}[Preservation of Equality in $\natural$]
+	If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
+\end{lemma}
+
+\begin{proof}
+	We can prove using induction on the type derivation tree.
+	\end{proof}
+
+\begin{lemma}[Preservation of Typing in $\natural$]
+	If $\G \V M:\tau@A$ in $\lambda^{\text{MD}}$ then $\natural(\G) \V \natural(M): \natural(\tau)$ in $\lambda^\to$.
+\end{lemma}
+
+\begin{proof}
+	We can prove using induction on the type derivation tree.
+	We show the case of \TApp{} and \TConv{} as examples.
+	Other cases are easy.
+	\begin{rneqncase}{\TApp{}}{
+			\G \V M : (\Pi(x:\sigma).\tau) @ A \text{ and } \G \V N :\sigma @A
+		}
+		From the induction hypothesis, we have $\natural(\G) \V \natural(M) : \natural(\sigma) \to \natural(\tau)$ and $\natural(\G) \V \natural(N) : \natural(\sigma)$.
+		Use the Application rule in $\lambda^\to$, we get $\natural(\G) \V \natural(M)\ \natural(N) : \natural(\tau)$.
+		Because $\natural(M)\ \natural(N) = \natural(M\ N)$ from the definition of $\natural$, $\natural(\G) \V \natural(M\ N) : \natural(\tau)$ in $\lambda^\to$.
+	\end{rneqncase}
+	\begin{rneqncase}{\TConv{}}{
+			\G\V M:\tau@A \text{ and } \G\V \tau\E\sigma@A
+		}
+		By using Preservation of typing in $\natural$ to $\G\V \tau\E\sigma@A$, we get $\natural(\tau) = \natural(\sigma)$.
+		$\natural(\G) \V \natural(M):\natural(\tau)$ from the induction hypothesis.
+		Then, $\natural(\G) \V \natural(M):\natural(\sigma)$.
+	\end{rneqncase}
+	
+\end{proof}
+
+\begin{lemma}[Preservation of Substitution in $\natural$]
+	If $\G, x:\sigma \V M:\tau@A$ and $\G \V N:\sigma@A$ in $\lambda^{\text{MD}}$
+	then $\natural(M[x \mapsto N])$ = $\natural(M)[x\mapsto\natural(N)]$
+\end{lemma}
+
+\begin{proof}
+	We prove by induction on the type derivation tree of $\G, x:\sigma \V M:\tau@A$.
+	\end{proof}
+
+\begin{lemma}[Preservation of $\beta$-Reduction in $\natural$]
+	If $\G \V M:\tau@A$ and $M \longrightarrow_\beta N$ in $\lambda^{\text{MD}}$
+	then $\natural(M) \longrightarrow_\beta^+ \natural(N)$.
+\end{lemma}
+
+\begin{proof}
+	{
+		We prove by induction on the derivation of $\beta$ reduction of \LMD.
+		We show only the main case.
+		\newcommand{\R}{\longrightarrow_{\beta}}
+		\begin{rneqncase}{$(\lambda x:\tau.M)\ N \R M[x \mapsto N]$}{}
+			From the definition of $\natural$,
+			$\natural((\lambda x:\tau.M)\ N)$ = $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$.
+			Because $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$ is a typed term in $\lambda^\to$,
+			we can do $\beta$ reduction from it.
+			As a result of the reduction, we get $\natural(M)[x\mapsto\natural(N)]$.
+			From Preservation of substitution in $\natural$, $\natural(M[x \mapsto N])$ = $\natural(M)[x\mapsto\natural(N)]$.
+		\end{rneqncase}
+		
+	}
+\end{proof}
+
+\begin{lemma}[Preservation of $\Lambda$-Reduction in $\natural$]
+	If $\G \V M:\tau@A$ and $M \longrightarrow_\beta N$ in $\lambda^{\text{MD}}$
+	then $\natural(M)$ =  $\natural(N)$.
+\end{lemma}
+
+\begin{proof}
+	We prove by induction on the derivation of $\Lambda$-reduction of \LMD.
+	We show only the main case.
+	\begin{itemize}
+		\item \textit{Case} \( (\Lambda\alpha.M)\ A \longrightarrow_\Lambda M[\alpha\mapsto A] \).\\
+		      By the definition of $\natural$, \(\natural((\Lambda\alpha.M)\ A) = \natural(M)\).
+		      Because \(\natural(M)\) does not contain \(\alpha\), \(\natural(M[\alpha\mapsto A]) = \natural(M)\).
+	\end{itemize}
+	
+\end{proof}
+
+\begin{lemma}[Preservation of $\blacklozenge$-Reduction in $\natural$]
+	If $\G \V M:\tau@A$ and $M \longrightarrow_\blacklozenge N$ in $\lambda^{\text{MD}}$
+	then $\natural(M)$ =  $\natural(N)$.
+\end{lemma}
+
+\begin{proof}
+	We prove by induction on the derivation of $\blacklozenge$-reduction of \LMD.
+	We show only the main case.
+	\begin{itemize}
+		\item \textit{Case} \( \TBL_\alpha \TB_\alpha M \longrightarrow_\blacklozenge M \).\\
+		      By the definition of $\natural$, \(\natural(\TBL_\alpha \TB_\alpha M) = \natural(M)\).
+	\end{itemize}
+	
+\end{proof}
+
+\begin{lemma}[Strong Normalization of Level 0 Reduction]
+    \label{lemma:StrongNormalizationofLevel0Reduction}
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_{0} M_{i+1}$ for $i\ge 1$
+\end{lemma}
+
+\begin{proof}
+	If there is an infinite reduction sequence in $\lambda^{\text{MD}}$
+	then there are infinite beta reductions in the sequence.
+	This is because reductions other than $\beta$-reduction reduce the size of a term.
+
+	Then, we show Strong Normalization by proof by contradiction.
+	We assume that there is an infinite reduction in a typed \LMD from typed term $M$.
+	We can construct a typed term of simply typed lambda calculus $\natural(M)$ from Preservation of Typing in $\natural$ and
+	$\natural(M)$ has infinite reductions from Preservation of Reduction in $\natural$.
+	However, $\lambda^\to$ has a property of Strong Normalization, so there is no infinite reductions.
+\end{proof}
+
+\begin{lemma}[Strong Normalization of Level $n$ Reduction]
+    \label{lemma:StrongNormalizationofLevelnReduction}
+    \( n \) is a arbitary integer which is greater than 0.
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_n M_{i+1}$ for $i\ge 1$.
+\end{lemma}
+
+\begin{proof}
+    If \( \G\V M:\tau@A \) then there are \( \G', \sigma \) and \( B \) such that \( \G' \V N : \sigma @ B \) for any level \( n \) subterm \( N \). This is because \( N \) is embedded into \( M \) using \KApp or \TApp. Then, \( N \) is strong nomalizing because of Lemma \ref{lemma:StrongNormalizationofLevel0Reduction}.
+\end{proof}
+
+
+\begin{theorem}[Strong Normalization]
+    \label{theorem:StrongNormalization}
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow M_{i+1}$ for $i\ge 1$
+\end{theorem}
+
+\begin{proof}
+    Maximum value of levels of subterms of \( M \) is finite because the size
+    of \( M \) is finite. So the maximum length of \( \{ M_i \} \) is finite
+    from Lemma \ref{lemma:StrongNormalizationofLevel0Reduction} and
+    \ref{lemma:StrongNormalizationofLevelnReduction}.
+\end{proof}
+
+\begin{lemma}[Confluence of Level 0 Reduction]
+    \label{lemma:ConfluenceofLevel0Reduction}
+	For any term $M$, if $M \longrightarrow_0^* M'$ and $M \longrightarrow_0^* M''$,
+	there exists $M'''$ that satisfies $M' \longrightarrow_0^* M'''$ and $M'' \longrightarrow_0^* M'''$.
+\end{lemma}
+
+\begin{proof}
+    Because we show the Strong Normalization of $\lambda^{\text{MD}}$, we can
+    use Newman's lemma to prove Church-Rosser Property of
+    $\lambda^{\text{MD}}$.  Then, what we must show is Weak Church-Rosser
+    Property.  When we consider two different redexes in a
+    $\lambda^{\text{MD}}$ term, they can only be disjoint, or one is a part of
+    the other.  In short, they never overlap each other.  So, we can reduce one
+    of them after we reduce another.
+\end{proof}
+
+\begin{lemma}[Confluence of Level n Reduction]
+    \label{lemma:ConfluenceofLevelnReduction}
+	For any term $M$, if $M \longrightarrow_n^* M'$ and $M \longrightarrow_n^* M''$,
+	there exists $M'''$ that satisfies $M' \longrightarrow_n^* M'''$ and $M'' \longrightarrow_n^* M'''$.
+\end{lemma}
+
+\begin{proof}
+    Same as Lemma \ref{lemma:StrongNormalizationofLevelnReduction}.
+\end{proof}
+
+\begin{theorem}[Confluence]
+    \label{theorem:Confluence}
+	For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$,
+	there exists $M'''$ that satisfies $M' \longrightarrow^* M'''$ and $M'' \longrightarrow^* M'''$.
+\end{theorem}
+
+\begin{proof}
+    Same as Theorem \ref{theorem:StrongNormalization} using Lemma
+    \ref{lemma:ConfluenceofLevel0Reduction} and
+    \ref{lemma:ConfluenceofLevelnReduction}.
+\end{proof}
+
+\begin{lemma}[Unique Decomposition]
+	If $\G$ does not have any variable declared at stage $\varepsilon$
+	and $\G \V M : \tau @ A$, then either
+	\begin{enumerate}
+		\item $ M \in V^A$, or
+		\item $M$ can be uniquely decomposed into an evaluation context and a redex, that is, there uniquely exist $B, E^A_B$, and $R^B$ such that $M = E^A_B[R^B]$.
+	\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+	{
+	We prove by induction on the type derivation tree of $\G \V M:\tau@A$.
+
+	\begin{rneqncase}{\TVar{}}{
+			\G\V x:\tau@A \text{ is the root of the type derivation tree. }
+		}
+		We can assume $A \neq \varepsilon$ because $x:\tau@\varepsilon \notin \G$.
+		Then, $x \in V^A$.
+	\end{rneqncase}
+
+	\begin{rneqncase}{\TTBL}{
+			\G \V \TBL_\alpha M :\tau @ A\alpha \text{ is derived from } \G \V M : \TW_\alpha \tau @ A.
+		}
+		From the induction hypothesis, one of the following holds.
+		\begin{enumerate}
+			\item $ M \in V^A$.
+			\item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
+		\end{enumerate}
+		\begin{itemize}
+			\item If $ M \in V^A$ is true
+			      \begin{itemize}
+				      \item and $A=\varepsilon$, then\\
+				            $ M = \TB_\alpha v^\alpha $ from Inversion Lemma and
+				            $\TBL_\alpha \TB_\alpha v^\alpha = E^\alpha_\alpha [R^\alpha]$.
+				      \item and $A\neq\varepsilon$, then\\
+				            $\TBL_\alpha v^A \in V^{A\alpha}$.
+			      \end{itemize}
+			\item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$
+			      \begin{itemize}
+				      \item and $ M = \TB_\alpha E^\alpha_B[R^B] $, then\\
+				            $ \TBL_\alpha \TB_\alpha E^\alpha_B[R^B] \longrightarrow_s E^\alpha_B[R^B]$ doesn't hold because $ E^\alpha_B[R^B] \notin v^\alpha$.
+				            So, given $B, E^A_B, R^B$ are the unique tuples satisfies the condition.
+				      \item Otherwise,\\
+				            It is obvious from the induction hypothesis and the definition of $E^A_B$.
+			      \end{itemize}
+		\end{itemize}
+
+	\end{rneqncase}
+
+	\begin{rneqncase}{\TIns}{
+			\G \V M\ C :\tau[\alpha \mapsto C] @ A\\
+			\text{ is derived from }  \G \V M : \forall\alpha.\tau @ A.
+		}
+
+		\begin{itemize}
+			\item If $ A = \varepsilon$,\\
+			      By the induction hypothesis, either
+			      \begin{enumerate}
+				      \item $ M \in V^\varepsilon$ or
+				      \item there is a unique triple of $(B, E^\varepsilon_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$.
+			      \end{enumerate}
+
+			      \begin{itemize}
+				      \item If $ M \in V^\varepsilon$,\\
+				            $ M = \Lambda\alpha.v^\varepsilon$ from Inversion Lemma.
+				            Thus, $ \Lambda\alpha.v^\varepsilon\ C = E^\varepsilon_\varepsilon [R^\varepsilon]$
+				      \item If there is an unique triple of $(B, E^\varepsilon_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$,
+				            we can decompose $E^\varepsilon_B[R^B]\ B$ uniquely
+				            because $ E^\varepsilon_B[R^B] \neq \Lambda\alpha.v^\varepsilon$,
+			      \end{itemize}
+
+			\item If $ A \neq \varepsilon $,\\
+			      By the induction hypothesis, either
+			      \begin{enumerate}
+				      \item $ M \in V^A$ or
+				      \item there is a unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
+			      \end{enumerate}
+			      \begin{itemize}
+				      \item If $ M \in V^A$,
+				            it is clear that $v^A\ C \in V^A$.
+				      \item If there are an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
+				            we can decompose $E^A_B[R^B]\ C$ uniquely because we cannot $\Lambda$ reduction at stage $A$.
+			      \end{itemize}
+		\end{itemize}
+	\end{rneqncase}
+	}
+	% \begin{itemize}
+		% \item
+		      % \item \textit{Case}  \TApp
+		      %       \begin{itemize}
+		      %       	\item $ A = \varepsilon$
+		      %       	      The derivation is $\MD{1}$.
+		      %       	      $\MD{1}$ = \infer[\TApp]
+		      %       	      {\G \V M\ N :\tau[\tau \mapsto N] @ \varepsilon}
+		      %       	      {\ID{\G \V M : \Pi x:\sigma.\tau @ \varepsilon} \andalso \ID{\G \V N : \sigma @ \varepsilon}}
+		      %       	      From the induction hypothesis, 1 or 2 is true.
+		      %       	      \begin{enumerate}
+		      %       	      	\item $ M \in V^\varepsilon$ and $ N \in V^\varepsilon$
+		      %       	      	\item $ M \in V^\varepsilon$ and $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $N = E^\varepsilon_B[R^B]$
+		      %       	      	\item $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$ and $ N \in V^\varepsilon$
+		      %       	      	\item $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$ and $\exists ! B', E^\varepsilon_{B'}, R^{B'}$ such that ($B' = \varepsilon$ or $B' = \beta$) and $N = E^\varepsilon_{B'}[R^{B'}]$
+		      %       	      \end{enumerate}
+		      %       	      \begin{itemize}
+		      %       	      	\item Case of 1
+		      %       	      	      Use Inversion Lemma for all shape in $v^\varepsilon$, the case of $ M = \lambda x:\sigma.v^\varepsilon$ is only reasonable.
+		      %       	      	      Then $M N = R^\varepsilon$.
+		      %       	      	\item Otherwise
+		      %       	      	      It is clear.
+		      %       	      \end{itemize}
+		      %       	\item $ A \neq \varepsilon $
+		      %       	      $M N \notin R^\varepsilon$ because $ A \neq \varepsilon$.
+		      %       	      So, we can decompose uniquely.
+		      %       \end{itemize}
+		      % \item \textit{Case}  \TConv
+		      %       We can use the induction hypothesis directly.
+	% \end{itemize}
+	
+\end{proof}
+
+\begin{corollary}[Progress]
+	If $x:\tau@\varepsilon \notin \G$ and $\G \V M : \tau @ A$ then $ M \in V^A $ or there is $M'$ such that $M \longrightarrow M'$.
+\end{corollary}
+
+\begin{proof}
+	Immediate from Unique Decomposition.
+	% \begin{enumerate}
+	% 	\item $ M \in V^A$.
+	% 	\item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
+	% \end{enumerate}
+	% \begin{itemize}
+	% 	\item If $ M \in V^A$,
+	% 		it is obvious.
+	% 	\item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
+	% 		we can redex $R^B$.
+	% \end{itemize}
+	\end{proof}
+
+\endinput
