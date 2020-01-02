@@ -33,90 +33,7 @@
 \newcommand{\red}[1]{\textcolor{red}{#1 }}
 \newcommand{\blue}[1]{\textcolor{blue}{#1 }}
 
-\newcommand{\LTP}{$\lambda^{\triangleright\%}$\xspace}
-\newcommand{\LMD}{$\lambda^{\textrm{MD}}$\xspace}
-\newcommand{\LLF}{$\lambda\textrm{LF}$\xspace}
-
-\newcommand{\G}{\Gamma}
-\newcommand{\D}{\Delta}
-\newcommand{\V}{\vdash_\Sigma}
-\newcommand{\VT}{\vdash\hspace{-.50em}\raisebox{0.28em}{\tiny{$\TB$}}}
-\newcommand{\iskind}{\text{\ kind}}
-\newcommand{\TW}{{\mathop{\triangleright}}}
-\newcommand{\TWL}{{\mathop{\triangleleft}}}
-\newcommand{\F}{\forall}
-\newcommand{\TB}{{\mathop{\blacktriangleright}}}
-\newcommand{\TBL}{{\mathop{\blacktriangleleft}}}
-\newcommand{\E}{\equiv}
-\newcommand{\FV}{\text{FV}}
-\newcommand{\FTV}{\text{FSV}}
-
-\newcommand{\WStar}{\textsc{W-Star}}
-\newcommand{\WAbs}{\textsc{W-Abs}}
-\newcommand{\WCsp}{\textsc{W-Csp}}
-\newcommand{\WApp}{\textsc{W-App}}
-\newcommand{\WTW}{\textsc{W-$\TW$}}
-
-\newcommand{\KVar}{\textsc{K-Var}}
-\newcommand{\KTConst}{\textsc{K-TConst}}
-\newcommand{\KAbs}{\textsc{K-Abs}}
-\newcommand{\KApp}{\textsc{K-App}}
-\newcommand{\KConv}{\textsc{K-Conv}}
-\newcommand{\KTW}{\textsc{K-$\TW$}}
-\newcommand{\KTWL}{\textsc{K-$\TWL$}}
-\newcommand{\KGen}{\textsc{K-Gen}}
-\newcommand{\KCsp}{\textsc{K-Csp}}
-
-\newcommand{\TConst}{\textsc{T-Const}}
-\newcommand{\TVar}{\textsc{T-Var}}
-\newcommand{\TAbs}{\textsc{T-Abs}}
-\newcommand{\TApp}{\textsc{T-App}}
-\newcommand{\TConv}{\textsc{T-Conv}}
-\newcommand{\TTB}{\textsc{T-$\TB$}}
-\newcommand{\TTBL}{\textsc{T-$\TBL$}}
-\newcommand{\TGen}{\textsc{T-Gen}}
-\newcommand{\TIns}{\textsc{T-Ins}}
-\newcommand{\TCsp}{\textsc{T-Csp}}
-
-\newcommand{\QKAbs}{\textsc{QK-Abs}}
-\newcommand{\QKCsp}{\textsc{QK-Csp}}
-\newcommand{\QKRefl}{\textsc{QK-Refl}}
-\newcommand{\QKSym}{\textsc{QK-Sym}}
-\newcommand{\QKTrans}{\textsc{QK-Trans}}
-
-\newcommand{\QTAbs}{\textsc{QT-Abs}}
-\newcommand{\QTApp}{\textsc{QT-App}}
-\newcommand{\QTTW}{\textsc{QT-$\TW$}}
-\newcommand{\QTGen}{\textsc{QT-Gen}}
-\newcommand{\QTCsp}{\textsc{QT-Csp}}
-\newcommand{\QTRefl}{\textsc{QT-Refl}}
-\newcommand{\QTSym}{\textsc{QT-Sym}}
-\newcommand{\QTTrans}{\textsc{QT-Trans}}
-
-\newcommand{\QAbs}{\textsc{Q-Abs}}
-\newcommand{\QApp}{\textsc{Q-App}}
-\newcommand{\QTB}{\textsc{Q-$\TB$}}
-\newcommand{\QTBL}{\textsc{Q-$\TBL$}}
-\newcommand{\QGen}{\textsc{Q-Gen}}
-\newcommand{\QIns}{\textsc{Q-Ins}}
-\newcommand{\QCsp}{\textsc{Q-Csp}}
-\newcommand{\QRefl}{\textsc{Q-Refl}}
-\newcommand{\QSym}{\textsc{Q-Sym}}
-\newcommand{\QTrans}{\textsc{Q-Trans}}
-\newcommand{\QBeta}{\textsc{Q-$\beta$}}
-\newcommand{\QEta}{\textsc{Q-$\eta$}}
-\newcommand{\QTBLTB}{\textsc{Q-$\TBL\TB$}}
-\newcommand{\QLambda}{\textsc{Q-$\Lambda$}}
-\newcommand{\QPercent}{\textsc{Q-\%}}
-
-\newcommand{\QAANF}{\textsc{QA-ANF}\xspace}
-
-\newcommand{\ID}[1]{\infer[]{#1}{\vdots}}
-\newcommand{\MD}[1]{\mathcal{D}_#1}
-
-\newcommand{\I}{\textrm{Int}}
-\newcommand{\B}{\textrm{Bool}}
-\newcommand{\M}{\textrm{Mat}}
+\input{fig-src/symbols.tex}
 
 \newcommand{\rulefbox}[1]{\fbox{\ensuremath{#1}} \hspace{1mm}}
 
@@ -155,19 +72,19 @@ To rigorously study properties of such an extension, we develop \LMD, which is a
 
 \tableofcontents				% Output table of contents
 
-\input{text/introduction.tex}
+\input{main-src/introduction.tex}
 
-\input{text/informal-overview.tex}
+\input{main-src/informal-overview.tex}
 
-\input{text/formal-definition.tex}
+\input{main-src/formal-definition.tex}
 
-\input{text/properties.tex}
+\input{main-src/properties.tex}
 
-\input{text/related-work.tex}
+\input{main-src/related-work.tex}
 
-\input{text/conclusion.tex}
+\input{main-src/conclusion.tex}
 
-\input{text/acknowledgments.tex}
+\input{main-src/acknowledgments.tex}
 
 \bibliographystyle{kuisunsrt}
 \bibliography{main}
@@ -186,10 +103,10 @@ To rigorously study properties of such an extension, we develop \LMD, which is a
 
 \newpage
 \section{Full Definition of \LMD}
-\input{text/fulldefinitions}
+\input{main-src/fulldefinitions}
 
 \section{Proofs}
-\input{text/proofs}
+\input{main-src/proofs}
 
 \fi
 
