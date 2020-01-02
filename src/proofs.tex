@@ -1753,37 +1753,25 @@ We generalize Inversion Lemma to use induction.
 	
 \end{proof}
 
-\begin{theorem}[Preservation on $\beta$-Reduction]
-    \label{theorem:PreservationOnBetaReduction}
+\begin{lemma}[Preservation on $\beta$-Reduction]
+    \label{lemma:PreservationOnBetaReduction}
 	If $\G\V M:\tau@A$ and $M \longrightarrow_{\beta} M'$, then $\G\V M':\tau@A$.
-\end{theorem}
+\end{lemma}
 
 \begin{proof}
-	{
-		We can prove using induction on the type derivation tree.
-		We show some cases as examples.
-		\newcommand{\LB}{\longrightarrow_{\beta}}
-		\begin{rneqncase}{\TApp{}}{}
-			The shape of the reduction is one of following three.
-			\begin{itemize}
-				\item $(\lambda x:\sigma.N)\ L \LB N[x\mapsto L]$.\\
-				      Because the last rule of the type derivation tree is \TApp,
-				      we have $\G \V (\lambda x:\sigma.N) : (\Pi x:\sigma'.\tau')@A$ and
-				      $\G \V L:\sigma' @A$.
-				      By using Inversion Lemma for $\Pi$ type to $\G \V (\lambda x:\sigma.N) : (\Pi x:\sigma'.\tau')@A$,
-				      we get $\G, x:\sigma \V N:\tau$ and $\G \V \sigma \E \sigma'$ and $\G ,x:\sigma \V \tau \E \tau'@A$.
-				      By \TConv , $\G \V L:\sigma @A$.
-				      By Term Substitution Lemma,
-				      we get $\G \V N[x\mapsto L]:\tau[x\mapsto L]$.
+    {
+        \newcommand{\LB}{\longrightarrow_{\beta}}
+        From the definition of \( \beta \)-reduction, the reduction should be
+        $(\lambda x:\sigma.N)\ L \LB N[x\mapsto L]$.  Because the last rule of
+        the type derivation tree is \TApp, we have $\G \V (\lambda x:\sigma.N)
+        : (\Pi x:\sigma'.\tau')@A$ and $\G \V L:\sigma' @A$.  By using
+        Inversion Lemma for $\Pi$ type to $\G \V (\lambda x:\sigma.N) : (\Pi
+        x:\sigma'.\tau')@A$, we get $\G, x:\sigma \V N:\tau$ and $\G \V \sigma
+        \E \sigma'$ and $\G ,x:\sigma \V \tau \E \tau'@A$.  By \TConv , $\G \V
+        L:\sigma @A$.  By Term Substitution Lemma, we get $\G \V N[x\mapsto
+        L]:\tau[x\mapsto L]$.
+        }
 
-				\item $M\ N \LB M'\ N$.\\
-				      From the induction hypothesis and \TApp, the type is preserved for the reduction.
-				\item $M\ N \LB M\ N'$.\\
-				      From the induction hypothesis and \TApp, the type is preserved for the reduction.
-			\end{itemize}
-		\end{rneqncase}
-	}
-	
 \end{proof}
 % \begin{itemize}
 % \newcommand{\LB}{\longrightarrow_{\beta}}
@@ -1840,198 +1828,203 @@ We generalize Inversion Lemma to use induction.
 %       \fi
 % \end{itemize}
 
-\begin{theorem}[Preservation on $\blacklozenge$-Reduction]
-    \label{theorem:PreservationOnBlackReduction}
-	If $\G\V M:\tau@A$ and $M\longrightarrow_\blacklozenge N$, then $\G\V N:\tau@A$\\
-\end{theorem}
+\begin{lemma}[Preservation on $\blacklozenge$-Reduction]
+    \label{lemma:PreservationOnBlackReduction}
+    If $\G\V M:\tau@A$ and $M\longrightarrow_\blacklozenge N$, then $\G\V N:\tau@A$\\
+\end{lemma}
 
 \begin{proof}
-	{
-		We can prove using induction on the type derivation tree.
-		We show the case of \TTBL{} as examples.
-		Other cases are easy.
-		\newcommand{\R}{\longrightarrow_{\blacklozenge}}
-		\begin{rneqncase}{\TTBL{}}{}
-			There are two cases for $\R$.
-			\begin{itemize}
-				\item $\TBL\TB M \R M$.\\
-				      Because the last rule is \TTBL, we have $\G \V \TB M : \TW_\alpha \tau @A$.
-				      By using Inversion Lemma for $\TW$ type to $\G \V \TB M : \TW_\alpha \tau @A$,
-				      we get $\G \V M : \tau @A$
-				\item $\TBL M \R \TBL M'$.\\
-				      We can use the induction hypothesis and \TTBL.
-			\end{itemize}
-		\end{rneqncase}
-		
-	}
+    {
+       \newcommand{\R}{\longrightarrow_{\blacklozenge}}
+       From the definition of \( \blacklozenge \)-reduction, the reduction should be
+       $\TBL\TB M \R M$ Because the last rule is \TTBL, we have $\G \V \TB M :
+       \TW_\alpha \tau @A$.  By using Inversion Lemma for $\TW$ type to $\G \V
+       \TB M : \TW_\alpha \tau @A$, we get $\G \V M : \tau @A$.
+        }
 \end{proof}
 
-\begin{theorem}[Preservation on $\Lambda$ Reduction]
-    \label{theorem:PreservationOnLambdaReduction}
-	If $\G\V M:\tau@A$ and $M \longrightarrow_{\Lambda} N$, then $\G\V N:\tau@A$.
-\end{theorem}
+\begin{lemma}[Preservation on $\Lambda$ Reduction]
+    \label{lemma:PreservationOnLambdaReduction}
+    If $\G\V M:\tau@A$ and $M \longrightarrow_{\Lambda} N$, then $\G\V N:\tau@A$.
+\end{lemma}
 
 \begin{proof}
-	{
-		\newcommand{\R}{\longrightarrow_{\Lambda}}
-		We can prove using induction on the type derivation tree.
-		We show the case of \TIns{}{} as examples.
-		Other cases are easy.
-		\begin{rneqncase}{\TIns{}}{}
-			There are two cases $\R$.
-			\begin{itemize}
-				\item $(\Lambda\alpha.M)\ B \R M[\alpha \mapsto B]$\\
-				      Because the last rule is \TIns{}, we have $\G \V \Lambda\alpha.M\ : \forall\alpha.\tau @ A$.
-				      By using Inversion Lemma for $\Lambda$ type to $\G \V \Lambda\alpha.M\ : \forall\alpha.\tau @ A$,
-				      we obtain $\G \V M : \tau @ A$.
-				      By using Stage Substitution Lemma to $\G \V M : \tau @ A$,
-				      we obtain $\G[\alpha \mapsto B] \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A[\alpha \mapsto B]$.
-				      $\alpha$ is a bound variable therefore we can assume $\alpha \notin \FTV(\G) \cup \FTV(A)$.
-				      So, we can rewrite $\G[\alpha \mapsto B] \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A[\alpha \mapsto B]$ to
-				      $\G \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A$.
-				\item $M\ B \R M'\ B$\\
-				      By the induction hypothesis and \TIns.
-			\end{itemize}
-		\end{rneqncase}
-		
-	}
+    {
+        \newcommand{\R}{\longrightarrow_{\Lambda}}
+        From the definition of \( \Lambda \)-reduction, the reduction should be
+        $(\Lambda\alpha.M)\ B \R M[\alpha \mapsto B]$.  Because the last rule
+        is \TIns{}, we have $\G \V \Lambda\alpha.M\ : \forall\alpha.\tau @ A$.
+        By using Inversion Lemma for $\Lambda$ type to $\G \V \Lambda\alpha.M\
+        : \forall\alpha.\tau @ A$, we obtain $\G \V M : \tau @ A$.  By using
+        Stage Substitution Lemma to $\G \V M : \tau @ A$, we obtain $\G[\alpha
+        \mapsto B] \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A[\alpha
+        \mapsto B]$.  $\alpha$ is a bound variable therefore we can assume
+        $\alpha \notin \FTV(\G) \cup \FTV(A)$.  So, we can rewrite $\G[\alpha
+        \mapsto B] \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @ A[\alpha
+        \mapsto B]$ to $\G \V M[\alpha \mapsto B] : \tau[\alpha \mapsto B] @
+        A$.
+    }
 \end{proof}
 
-\begin{corollary}[Preservation on level 0 reduction]
+\begin{lemma}[Preservation on Level 0 Reduction]
+    \label{lemma:PreservationonLevel0Reduction}
     If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
-\end{corollary}
+\end{lemma}
 
 \begin{proof}
-    We can get as a corollary of Theorem \ref{theorem:PreservationOnBetaReduction}, \ref{theorem:PreservationOnBlackReduction}, and \ref{theorem:PreservationOnLambdaReduction}.
+    Prove by induction on \( \G \V M : \tau @ A \) using Lemma
+    \ref{lemma:PreservationOnBetaReduction},
+    \ref{lemma:PreservationOnBlackReduction}, and
+    \ref{lemma:PreservationOnLambdaReduction}.
+\end{proof}
+
+\begin{lemma}[Preservation on level \( n \) reduction]
+    \label{lemma:PreservationonLevelnReduction}
+    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_n M' \), then \( \G \V M' : \tau @ A \).
+\end{lemma}
+
+\begin{proof}
+    By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
+    typed. Then, it is a corollary of
+    \ref{lemma:PreservationonLevel0Reduction}.
+\end{proof}
+
+\begin{theorem}[Preservation on level \( n \) reduction]
+    If \( \G \V M : \tau @ A \) and \( M \longrightarrow M' \), then \( \G \V M' : \tau @ A \).
+\end{theorem}
+
+\begin{proof}
+    It is from Lemma \ref{lemma:PreservationonLevel0Reduction} and
+    \ref{lemma:PreservationonLevelnReduction}.
 \end{proof}
 
 \begin{dfn}[$\natural$ translation]
-	The $\natural$ translation is a translation from $\lambda^\text{MD}$ to $\lambda^\to$.
-	\begin{itemize}
-		\item Term
-		      \begin{flalign*}
-			      \natural(x) &= x & \\
-			      \natural(\lambda x:\tau.M) &= \lambda x:\natural(\tau).\natural(M) & \\
-			      \natural(M\ N) &= \natural(M)\ \natural(N)& \\
-			      \natural(\TB_\alpha M) &= \natural(M) & \\
-			      \natural(\TBL_\alpha M) &= \natural(M)& \\
-			      \natural(\Lambda\alpha.M) &= \natural(M)& \\
-			      \natural(M\ B) &= \natural(M) &
-		      \end{flalign*}
-		\item Type
-		      \begin{flalign*}
-			      \natural(X) &= X & \\
-			      \natural(\Pi x:\tau.\sigma) &= \natural(\tau) \to \natural(\sigma) & \\
-			      \natural(\tau\ x) &= \natural(\tau) & \\
-			      \natural(\TW_\alpha \tau) &= \natural(\tau) & \\
-			      \natural(\forall \alpha.\tau) &= \natural(\tau) &
-		      \end{flalign*}
-		\item Kind
-		      \begin{flalign*}
-			      \natural(K) &= * &
-		      \end{flalign*}
-		\item Context
-		      \begin{flalign*}
-			      \natural(\phi) &= \phi & \\
-			      \natural(\G, x:T@A) &= \natural(\G), \natural(x):\natural(\tau) & \\
-			      \natural(\G, X:K@A) &= \natural(\G) &
-		      \end{flalign*}
-	\end{itemize}
+    The $\natural$ translation is a translation from $\lambda^\text{MD}$ to $\lambda^\to$.
+    \begin{itemize}
+        \item Term
+            \begin{flalign*}
+                \natural(x) &= x & \\
+                \natural(\lambda x:\tau.M) &= \lambda x:\natural(\tau).\natural(M) & \\
+                \natural(M\ N) &= \natural(M)\ \natural(N)& \\
+                \natural(\TB_\alpha M) &= \natural(M) & \\
+                \natural(\TBL_\alpha M) &= \natural(M)& \\
+                \natural(\Lambda\alpha.M) &= \natural(M)& \\
+                \natural(M\ B) &= \natural(M) &
+            \end{flalign*}
+        \item Type
+            \begin{flalign*}
+                \natural(X) &= X & \\
+                \natural(\Pi x:\tau.\sigma) &= \natural(\tau) \to \natural(\sigma) & \\
+                \natural(\tau\ x) &= \natural(\tau) & \\
+                \natural(\TW_\alpha \tau) &= \natural(\tau) & \\
+                \natural(\forall \alpha.\tau) &= \natural(\tau) &
+            \end{flalign*}
+        \item Kind
+            \begin{flalign*}
+                \natural(K) &= * &
+            \end{flalign*}
+        \item Context
+            \begin{flalign*}
+                \natural(\phi) &= \phi & \\
+                \natural(\G, x:T@A) &= \natural(\G), \natural(x):\natural(\tau) & \\
+                \natural(\G, X:K@A) &= \natural(\G) &
+            \end{flalign*}
+    \end{itemize}
 \end{dfn}
 
 \begin{lemma}[Preservation of Equality in $\natural$]
-	If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
+    If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
 \end{lemma}
 
 \begin{proof}
-	We can prove using induction on the type derivation tree.
-	\end{proof}
+    We can prove using induction on the type derivation tree.
+\end{proof}
 
 \begin{lemma}[Preservation of Typing in $\natural$]
-	If $\G \V M:\tau@A$ in $\lambda^{\text{MD}}$ then $\natural(\G) \V \natural(M): \natural(\tau)$ in $\lambda^\to$.
+    If $\G \V M:\tau@A$ in $\lambda^{\text{MD}}$ then $\natural(\G) \V \natural(M): \natural(\tau)$ in $\lambda^\to$.
 \end{lemma}
 
 \begin{proof}
-	We can prove using induction on the type derivation tree.
-	We show the case of \TApp{} and \TConv{} as examples.
-	Other cases are easy.
-	\begin{rneqncase}{\TApp{}}{
-			\G \V M : (\Pi(x:\sigma).\tau) @ A \text{ and } \G \V N :\sigma @A
-		}
-		From the induction hypothesis, we have $\natural(\G) \V \natural(M) : \natural(\sigma) \to \natural(\tau)$ and $\natural(\G) \V \natural(N) : \natural(\sigma)$.
-		Use the Application rule in $\lambda^\to$, we get $\natural(\G) \V \natural(M)\ \natural(N) : \natural(\tau)$.
-		Because $\natural(M)\ \natural(N) = \natural(M\ N)$ from the definition of $\natural$, $\natural(\G) \V \natural(M\ N) : \natural(\tau)$ in $\lambda^\to$.
-	\end{rneqncase}
-	\begin{rneqncase}{\TConv{}}{
-			\G\V M:\tau@A \text{ and } \G\V \tau\E\sigma@A
-		}
-		By using Preservation of typing in $\natural$ to $\G\V \tau\E\sigma@A$, we get $\natural(\tau) = \natural(\sigma)$.
-		$\natural(\G) \V \natural(M):\natural(\tau)$ from the induction hypothesis.
-		Then, $\natural(\G) \V \natural(M):\natural(\sigma)$.
-	\end{rneqncase}
-	
+    We can prove using induction on the type derivation tree.
+    We show the case of \TApp{} and \TConv{} as examples.
+    Other cases are easy.
+    \begin{rneqncase}{\TApp{}}{
+            \G \V M : (\Pi(x:\sigma).\tau) @ A \text{ and } \G \V N :\sigma @A
+        }
+        From the induction hypothesis, we have $\natural(\G) \V \natural(M) : \natural(\sigma) \to \natural(\tau)$ and $\natural(\G) \V \natural(N) : \natural(\sigma)$.
+        Use the Application rule in $\lambda^\to$, we get $\natural(\G) \V \natural(M)\ \natural(N) : \natural(\tau)$.
+        Because $\natural(M)\ \natural(N) = \natural(M\ N)$ from the definition of $\natural$, $\natural(\G) \V \natural(M\ N) : \natural(\tau)$ in $\lambda^\to$.
+    \end{rneqncase}
+    \begin{rneqncase}{\TConv{}}{
+            \G\V M:\tau@A \text{ and } \G\V \tau\E\sigma@A
+        }
+        By using Preservation of typing in $\natural$ to $\G\V \tau\E\sigma@A$, we get $\natural(\tau) = \natural(\sigma)$.
+        $\natural(\G) \V \natural(M):\natural(\tau)$ from the induction hypothesis.
+        Then, $\natural(\G) \V \natural(M):\natural(\sigma)$.
+    \end{rneqncase}
+
 \end{proof}
 
 \begin{lemma}[Preservation of Substitution in $\natural$]
-	If $\G, x:\sigma \V M:\tau@A$ and $\G \V N:\sigma@A$ in $\lambda^{\text{MD}}$
-	then $\natural(M[x \mapsto N])$ = $\natural(M)[x\mapsto\natural(N)]$
+    If $\G, x:\sigma \V M:\tau@A$ and $\G \V N:\sigma@A$ in $\lambda^{\text{MD}}$
+    then $\natural(M[x \mapsto N])$ = $\natural(M)[x\mapsto\natural(N)]$
 \end{lemma}
 
 \begin{proof}
-	We prove by induction on the type derivation tree of $\G, x:\sigma \V M:\tau@A$.
-	\end{proof}
+    We prove by induction on the type derivation tree of $\G, x:\sigma \V M:\tau@A$.
+\end{proof}
 
 \begin{lemma}[Preservation of $\beta$-Reduction in $\natural$]
-	If $\G \V M:\tau@A$ and $M \longrightarrow_\beta N$ in $\lambda^{\text{MD}}$
-	then $\natural(M) \longrightarrow_\beta^+ \natural(N)$.
+    If $\G \V M:\tau@A$ and $M \longrightarrow_\beta N$ in $\lambda^{\text{MD}}$
+    then $\natural(M) \longrightarrow_\beta^+ \natural(N)$.
 \end{lemma}
 
 \begin{proof}
-	{
-		We prove by induction on the derivation of $\beta$ reduction of \LMD.
-		We show only the main case.
-		\newcommand{\R}{\longrightarrow_{\beta}}
-		\begin{rneqncase}{$(\lambda x:\tau.M)\ N \R M[x \mapsto N]$}{}
-			From the definition of $\natural$,
-			$\natural((\lambda x:\tau.M)\ N)$ = $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$.
-			Because $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$ is a typed term in $\lambda^\to$,
-			we can do $\beta$ reduction from it.
-			As a result of the reduction, we get $\natural(M)[x\mapsto\natural(N)]$.
-			From Preservation of substitution in $\natural$, $\natural(M[x \mapsto N])$ = $\natural(M)[x\mapsto\natural(N)]$.
-		\end{rneqncase}
-		
-	}
+    {
+        We prove by induction on the derivation of $\beta$ reduction of \LMD.
+        We show only the main case.
+        \newcommand{\R}{\longrightarrow_{\beta}}
+        \begin{rneqncase}{$(\lambda x:\tau.M)\ N \R M[x \mapsto N]$}{}
+            From the definition of $\natural$,
+            $\natural((\lambda x:\tau.M)\ N)$ = $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$.
+            Because $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$ is a typed term in $\lambda^\to$,
+            we can do $\beta$ reduction from it.
+            As a result of the reduction, we get $\natural(M)[x\mapsto\natural(N)]$.
+            From Preservation of substitution in $\natural$, $\natural(M[x \mapsto N])$ = $\natural(M)[x\mapsto\natural(N)]$.
+        \end{rneqncase}
+
+    }
 \end{proof}
 
 \begin{lemma}[Preservation of $\Lambda$-Reduction in $\natural$]
-	If $\G \V M:\tau@A$ and $M \longrightarrow_\beta N$ in $\lambda^{\text{MD}}$
-	then $\natural(M)$ =  $\natural(N)$.
+    If $\G \V M:\tau@A$ and $M \longrightarrow_\beta N$ in $\lambda^{\text{MD}}$
+    then $\natural(M)$ =  $\natural(N)$.
 \end{lemma}
 
 \begin{proof}
-	We prove by induction on the derivation of $\Lambda$-reduction of \LMD.
-	We show only the main case.
-	\begin{itemize}
-		\item \textit{Case} \( (\Lambda\alpha.M)\ A \longrightarrow_\Lambda M[\alpha\mapsto A] \).\\
-		      By the definition of $\natural$, \(\natural((\Lambda\alpha.M)\ A) = \natural(M)\).
-		      Because \(\natural(M)\) does not contain \(\alpha\), \(\natural(M[\alpha\mapsto A]) = \natural(M)\).
-	\end{itemize}
-	
+    We prove by induction on the derivation of $\Lambda$-reduction of \LMD.
+    We show only the main case.
+    \begin{itemize}
+        \item \textit{Case} \( (\Lambda\alpha.M)\ A \longrightarrow_\Lambda M[\alpha\mapsto A] \).\\
+            By the definition of $\natural$, \(\natural((\Lambda\alpha.M)\ A) = \natural(M)\).
+            Because \(\natural(M)\) does not contain \(\alpha\), \(\natural(M[\alpha\mapsto A]) = \natural(M)\).
+    \end{itemize}
+
 \end{proof}
 
 \begin{lemma}[Preservation of $\blacklozenge$-Reduction in $\natural$]
-	If $\G \V M:\tau@A$ and $M \longrightarrow_\blacklozenge N$ in $\lambda^{\text{MD}}$
-	then $\natural(M)$ =  $\natural(N)$.
+    If $\G \V M:\tau@A$ and $M \longrightarrow_\blacklozenge N$ in $\lambda^{\text{MD}}$
+    then $\natural(M)$ =  $\natural(N)$.
 \end{lemma}
 
 \begin{proof}
-	We prove by induction on the derivation of $\blacklozenge$-reduction of \LMD.
-	We show only the main case.
-	\begin{itemize}
-		\item \textit{Case} \( \TBL_\alpha \TB_\alpha M \longrightarrow_\blacklozenge M \).\\
-		      By the definition of $\natural$, \(\natural(\TBL_\alpha \TB_\alpha M) = \natural(M)\).
-	\end{itemize}
-	
+    We prove by induction on the derivation of $\blacklozenge$-reduction of \LMD.
+    We show only the main case.
+    \begin{itemize}
+        \item \textit{Case} \( \TBL_\alpha \TB_\alpha M \longrightarrow_\blacklozenge M \).\\
+            By the definition of $\natural$, \(\natural(\TBL_\alpha \TB_\alpha M) = \natural(M)\).
+    \end{itemize}
+
 \end{proof}
 
 \begin{lemma}[Strong Normalization of Level 0 Reduction]
@@ -2040,15 +2033,15 @@ We generalize Inversion Lemma to use induction.
 \end{lemma}
 
 \begin{proof}
-	If there is an infinite reduction sequence in $\lambda^{\text{MD}}$
-	then there are infinite beta reductions in the sequence.
-	This is because reductions other than $\beta$-reduction reduce the size of a term.
+    If there is an infinite reduction sequence in $\lambda^{\text{MD}}$
+    then there are infinite beta reductions in the sequence.
+    This is because reductions other than $\beta$-reduction reduce the size of a term.
 
-	Then, we show Strong Normalization by proof by contradiction.
-	We assume that there is an infinite reduction in a typed \LMD from typed term $M$.
-	We can construct a typed term of simply typed lambda calculus $\natural(M)$ from Preservation of Typing in $\natural$ and
-	$\natural(M)$ has infinite reductions from Preservation of Reduction in $\natural$.
-	However, $\lambda^\to$ has a property of Strong Normalization, so there is no infinite reductions.
+    Then, we show Strong Normalization by proof by contradiction.
+    We assume that there is an infinite reduction in a typed \LMD from typed term $M$.
+    We can construct a typed term of simply typed lambda calculus $\natural(M)$ from Preservation of Typing in $\natural$ and
+    $\natural(M)$ has infinite reductions from Preservation of Reduction in $\natural$.
+    However, $\lambda^\to$ has a property of Strong Normalization, so there is no infinite reductions.
 \end{proof}
 
 \begin{lemma}[Strong Normalization of Level $n$ Reduction]
@@ -2076,8 +2069,8 @@ We generalize Inversion Lemma to use induction.
 
 \begin{lemma}[Confluence of Level 0 Reduction]
     \label{lemma:ConfluenceofLevel0Reduction}
-	For any term $M$, if $M \longrightarrow_0^* M'$ and $M \longrightarrow_0^* M''$,
-	there exists $M'''$ that satisfies $M' \longrightarrow_0^* M'''$ and $M'' \longrightarrow_0^* M'''$.
+    For any term $M$, if $M \longrightarrow_0^* M'$ and $M \longrightarrow_0^* M''$,
+    there exists $M'''$ that satisfies $M' \longrightarrow_0^* M'''$ and $M'' \longrightarrow_0^* M'''$.
 \end{lemma}
 
 \begin{proof}
@@ -2092,8 +2085,8 @@ We generalize Inversion Lemma to use induction.
 
 \begin{lemma}[Confluence of Level n Reduction]
     \label{lemma:ConfluenceofLevelnReduction}
-	For any term $M$, if $M \longrightarrow_n^* M'$ and $M \longrightarrow_n^* M''$,
-	there exists $M'''$ that satisfies $M' \longrightarrow_n^* M'''$ and $M'' \longrightarrow_n^* M'''$.
+    For any term $M$, if $M \longrightarrow_n^* M'$ and $M \longrightarrow_n^* M''$,
+    there exists $M'''$ that satisfies $M' \longrightarrow_n^* M'''$ and $M'' \longrightarrow_n^* M'''$.
 \end{lemma}
 
 \begin{proof}
@@ -2102,8 +2095,8 @@ We generalize Inversion Lemma to use induction.
 
 \begin{theorem}[Confluence]
     \label{theorem:Confluence}
-	For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$,
-	there exists $M'''$ that satisfies $M' \longrightarrow^* M'''$ and $M'' \longrightarrow^* M'''$.
+    For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$,
+    there exists $M'''$ that satisfies $M' \longrightarrow^* M'''$ and $M'' \longrightarrow^* M'''$.
 \end{theorem}
 
 \begin{proof}
@@ -2113,140 +2106,140 @@ We generalize Inversion Lemma to use induction.
 \end{proof}
 
 \begin{lemma}[Unique Decomposition]
-	If $\G$ does not have any variable declared at stage $\varepsilon$
-	and $\G \V M : \tau @ A$, then either
-	\begin{enumerate}
-		\item $ M \in V^A$, or
-		\item $M$ can be uniquely decomposed into an evaluation context and a redex, that is, there uniquely exist $B, E^A_B$, and $R^B$ such that $M = E^A_B[R^B]$.
-	\end{enumerate}
+    If $\G$ does not have any variable declared at stage $\varepsilon$
+    and $\G \V M : \tau @ A$, then either
+    \begin{enumerate}
+        \item $ M \in V^A$, or
+        \item $M$ can be uniquely decomposed into an evaluation context and a redex, that is, there uniquely exist $B, E^A_B$, and $R^B$ such that $M = E^A_B[R^B]$.
+    \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-	{
-	We prove by induction on the type derivation tree of $\G \V M:\tau@A$.
+    {
+        We prove by induction on the type derivation tree of $\G \V M:\tau@A$.
 
-	\begin{rneqncase}{\TVar{}}{
-			\G\V x:\tau@A \text{ is the root of the type derivation tree. }
-		}
-		We can assume $A \neq \varepsilon$ because $x:\tau@\varepsilon \notin \G$.
-		Then, $x \in V^A$.
-	\end{rneqncase}
+        \begin{rneqncase}{\TVar{}}{
+                \G\V x:\tau@A \text{ is the root of the type derivation tree. }
+            }
+            We can assume $A \neq \varepsilon$ because $x:\tau@\varepsilon \notin \G$.
+            Then, $x \in V^A$.
+        \end{rneqncase}
 
-	\begin{rneqncase}{\TTBL}{
-			\G \V \TBL_\alpha M :\tau @ A\alpha \text{ is derived from } \G \V M : \TW_\alpha \tau @ A.
-		}
-		From the induction hypothesis, one of the following holds.
-		\begin{enumerate}
-			\item $ M \in V^A$.
-			\item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
-		\end{enumerate}
-		\begin{itemize}
-			\item If $ M \in V^A$ is true
-			      \begin{itemize}
-				      \item and $A=\varepsilon$, then\\
-				            $ M = \TB_\alpha v^\alpha $ from Inversion Lemma and
-				            $\TBL_\alpha \TB_\alpha v^\alpha = E^\alpha_\alpha [R^\alpha]$.
-				      \item and $A\neq\varepsilon$, then\\
-				            $\TBL_\alpha v^A \in V^{A\alpha}$.
-			      \end{itemize}
-			\item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$
-			      \begin{itemize}
-				      \item and $ M = \TB_\alpha E^\alpha_B[R^B] $, then\\
-				            $ \TBL_\alpha \TB_\alpha E^\alpha_B[R^B] \longrightarrow_s E^\alpha_B[R^B]$ doesn't hold because $ E^\alpha_B[R^B] \notin v^\alpha$.
-				            So, given $B, E^A_B, R^B$ are the unique tuples satisfies the condition.
-				      \item Otherwise,\\
-				            It is obvious from the induction hypothesis and the definition of $E^A_B$.
-			      \end{itemize}
-		\end{itemize}
+        \begin{rneqncase}{\TTBL}{
+                \G \V \TBL_\alpha M :\tau @ A\alpha \text{ is derived from } \G \V M : \TW_\alpha \tau @ A.
+            }
+            From the induction hypothesis, one of the following holds.
+            \begin{enumerate}
+                \item $ M \in V^A$.
+                \item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
+            \end{enumerate}
+            \begin{itemize}
+                \item If $ M \in V^A$ is true
+                    \begin{itemize}
+                        \item and $A=\varepsilon$, then\\
+                            $ M = \TB_\alpha v^\alpha $ from Inversion Lemma and
+                            $\TBL_\alpha \TB_\alpha v^\alpha = E^\alpha_\alpha [R^\alpha]$.
+                        \item and $A\neq\varepsilon$, then\\
+                            $\TBL_\alpha v^A \in V^{A\alpha}$.
+                    \end{itemize}
+                \item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$
+                    \begin{itemize}
+                        \item and $ M = \TB_\alpha E^\alpha_B[R^B] $, then\\
+                            $ \TBL_\alpha \TB_\alpha E^\alpha_B[R^B] \longrightarrow_s E^\alpha_B[R^B]$ doesn't hold because $ E^\alpha_B[R^B] \notin v^\alpha$.
+                            So, given $B, E^A_B, R^B$ are the unique tuples satisfies the condition.
+                        \item Otherwise,\\
+                            It is obvious from the induction hypothesis and the definition of $E^A_B$.
+                    \end{itemize}
+            \end{itemize}
 
-	\end{rneqncase}
+        \end{rneqncase}
 
-	\begin{rneqncase}{\TIns}{
-			\G \V M\ C :\tau[\alpha \mapsto C] @ A\\
-			\text{ is derived from }  \G \V M : \forall\alpha.\tau @ A.
-		}
+        \begin{rneqncase}{\TIns}{
+                \G \V M\ C :\tau[\alpha \mapsto C] @ A\\
+                \text{ is derived from }  \G \V M : \forall\alpha.\tau @ A.
+            }
 
-		\begin{itemize}
-			\item If $ A = \varepsilon$,\\
-			      By the induction hypothesis, either
-			      \begin{enumerate}
-				      \item $ M \in V^\varepsilon$ or
-				      \item there is a unique triple of $(B, E^\varepsilon_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$.
-			      \end{enumerate}
+            \begin{itemize}
+                \item If $ A = \varepsilon$,\\
+                    By the induction hypothesis, either
+                    \begin{enumerate}
+                        \item $ M \in V^\varepsilon$ or
+                        \item there is a unique triple of $(B, E^\varepsilon_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$.
+                    \end{enumerate}
 
-			      \begin{itemize}
-				      \item If $ M \in V^\varepsilon$,\\
-				            $ M = \Lambda\alpha.v^\varepsilon$ from Inversion Lemma.
-				            Thus, $ \Lambda\alpha.v^\varepsilon\ C = E^\varepsilon_\varepsilon [R^\varepsilon]$
-				      \item If there is an unique triple of $(B, E^\varepsilon_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$,
-				            we can decompose $E^\varepsilon_B[R^B]\ B$ uniquely
-				            because $ E^\varepsilon_B[R^B] \neq \Lambda\alpha.v^\varepsilon$,
-			      \end{itemize}
+                    \begin{itemize}
+                        \item If $ M \in V^\varepsilon$,\\
+                            $ M = \Lambda\alpha.v^\varepsilon$ from Inversion Lemma.
+                            Thus, $ \Lambda\alpha.v^\varepsilon\ C = E^\varepsilon_\varepsilon [R^\varepsilon]$
+                        \item If there is an unique triple of $(B, E^\varepsilon_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$,
+                            we can decompose $E^\varepsilon_B[R^B]\ B$ uniquely
+                            because $ E^\varepsilon_B[R^B] \neq \Lambda\alpha.v^\varepsilon$,
+                    \end{itemize}
 
-			\item If $ A \neq \varepsilon $,\\
-			      By the induction hypothesis, either
-			      \begin{enumerate}
-				      \item $ M \in V^A$ or
-				      \item there is a unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
-			      \end{enumerate}
-			      \begin{itemize}
-				      \item If $ M \in V^A$,
-				            it is clear that $v^A\ C \in V^A$.
-				      \item If there are an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
-				            we can decompose $E^A_B[R^B]\ C$ uniquely because we cannot $\Lambda$ reduction at stage $A$.
-			      \end{itemize}
-		\end{itemize}
-	\end{rneqncase}
-	}
-	% \begin{itemize}
-		% \item
-		      % \item \textit{Case}  \TApp
-		      %       \begin{itemize}
-		      %       	\item $ A = \varepsilon$
-		      %       	      The derivation is $\MD{1}$.
-		      %       	      $\MD{1}$ = \infer[\TApp]
-		      %       	      {\G \V M\ N :\tau[\tau \mapsto N] @ \varepsilon}
-		      %       	      {\ID{\G \V M : \Pi x:\sigma.\tau @ \varepsilon} \andalso \ID{\G \V N : \sigma @ \varepsilon}}
-		      %       	      From the induction hypothesis, 1 or 2 is true.
-		      %       	      \begin{enumerate}
-		      %       	      	\item $ M \in V^\varepsilon$ and $ N \in V^\varepsilon$
-		      %       	      	\item $ M \in V^\varepsilon$ and $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $N = E^\varepsilon_B[R^B]$
-		      %       	      	\item $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$ and $ N \in V^\varepsilon$
-		      %       	      	\item $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$ and $\exists ! B', E^\varepsilon_{B'}, R^{B'}$ such that ($B' = \varepsilon$ or $B' = \beta$) and $N = E^\varepsilon_{B'}[R^{B'}]$
-		      %       	      \end{enumerate}
-		      %       	      \begin{itemize}
-		      %       	      	\item Case of 1
-		      %       	      	      Use Inversion Lemma for all shape in $v^\varepsilon$, the case of $ M = \lambda x:\sigma.v^\varepsilon$ is only reasonable.
-		      %       	      	      Then $M N = R^\varepsilon$.
-		      %       	      	\item Otherwise
-		      %       	      	      It is clear.
-		      %       	      \end{itemize}
-		      %       	\item $ A \neq \varepsilon $
-		      %       	      $M N \notin R^\varepsilon$ because $ A \neq \varepsilon$.
-		      %       	      So, we can decompose uniquely.
-		      %       \end{itemize}
-		      % \item \textit{Case}  \TConv
-		      %       We can use the induction hypothesis directly.
-	% \end{itemize}
-	
-\end{proof}
+                \item If $ A \neq \varepsilon $,\\
+                    By the induction hypothesis, either
+                    \begin{enumerate}
+                        \item $ M \in V^A$ or
+                        \item there is a unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
+                    \end{enumerate}
+                    \begin{itemize}
+                        \item If $ M \in V^A$,
+                            it is clear that $v^A\ C \in V^A$.
+                        \item If there are an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
+                            we can decompose $E^A_B[R^B]\ C$ uniquely because we cannot $\Lambda$ reduction at stage $A$.
+                    \end{itemize}
+            \end{itemize}
+        \end{rneqncase}
+        }
+        % \begin{itemize}
+        % \item
+        % \item \textit{Case}  \TApp
+        %       \begin{itemize}
+        %       	\item $ A = \varepsilon$
+        %       	      The derivation is $\MD{1}$.
+        %       	      $\MD{1}$ = \infer[\TApp]
+        %       	      {\G \V M\ N :\tau[\tau \mapsto N] @ \varepsilon}
+        %       	      {\ID{\G \V M : \Pi x:\sigma.\tau @ \varepsilon} \andalso \ID{\G \V N : \sigma @ \varepsilon}}
+        %       	      From the induction hypothesis, 1 or 2 is true.
+        %       	      \begin{enumerate}
+        %       	      	\item $ M \in V^\varepsilon$ and $ N \in V^\varepsilon$
+        %       	      	\item $ M \in V^\varepsilon$ and $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $N = E^\varepsilon_B[R^B]$
+        %       	      	\item $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$ and $ N \in V^\varepsilon$
+        %       	      	\item $\exists ! B, E^\varepsilon_B, R^B$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^\varepsilon_B[R^B]$ and $\exists ! B', E^\varepsilon_{B'}, R^{B'}$ such that ($B' = \varepsilon$ or $B' = \beta$) and $N = E^\varepsilon_{B'}[R^{B'}]$
+        %       	      \end{enumerate}
+        %       	      \begin{itemize}
+        %       	      	\item Case of 1
+        %       	      	      Use Inversion Lemma for all shape in $v^\varepsilon$, the case of $ M = \lambda x:\sigma.v^\varepsilon$ is only reasonable.
+        %       	      	      Then $M N = R^\varepsilon$.
+        %       	      	\item Otherwise
+        %       	      	      It is clear.
+        %       	      \end{itemize}
+        %       	\item $ A \neq \varepsilon $
+        %       	      $M N \notin R^\varepsilon$ because $ A \neq \varepsilon$.
+        %       	      So, we can decompose uniquely.
+        %       \end{itemize}
+        % \item \textit{Case}  \TConv
+        %       We can use the induction hypothesis directly.
+        % \end{itemize}
 
-\begin{corollary}[Progress]
-	If $x:\tau@\varepsilon \notin \G$ and $\G \V M : \tau @ A$ then $ M \in V^A $ or there is $M'$ such that $M \longrightarrow M'$.
-\end{corollary}
+    \end{proof}
 
-\begin{proof}
-	Immediate from Unique Decomposition.
-	% \begin{enumerate}
-	% 	\item $ M \in V^A$.
-	% 	\item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
-	% \end{enumerate}
-	% \begin{itemize}
-	% 	\item If $ M \in V^A$,
-	% 		it is obvious.
-	% 	\item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
-	% 		we can redex $R^B$.
-	% \end{itemize}
-	\end{proof}
+    \begin{corollary}[Progress]
+        If $x:\tau@\varepsilon \notin \G$ and $\G \V M : \tau @ A$ then $ M \in V^A $ or there is $M'$ such that $M \longrightarrow M'$.
+    \end{corollary}
 
-\endinput
+    \begin{proof}
+        Immediate from Unique Decomposition.
+        % \begin{enumerate}
+        % 	\item $ M \in V^A$.
+        % 	\item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
+        % \end{enumerate}
+        % \begin{itemize}
+        % 	\item If $ M \in V^A$,
+        % 		it is obvious.
+        % 	\item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
+        % 		we can redex $R^B$.
+        % \end{itemize}
+    \end{proof}
+
+    \endinput
