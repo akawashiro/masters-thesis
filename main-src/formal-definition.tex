@@ -465,6 +465,8 @@ and rows) would be such an example.
 
 \subsection{Algorithmic Typing}
 
+\AK{What should I call "normal typing" as?"}
+
 % What is algorithmic typing?
 
 Algorithmic typing rules are rules for implement type checker which takes an
@@ -482,31 +484,35 @@ original typing. We show the equivalence in Section \ref{sec:properties}.
 Algorithmic typing is almost the same with normal typing rules threfore there
 are 8 judegements as with normal typing in Figure \ref{fig:LMD-six-judgments}
 e.g. well-formed signature, well-formed environment, well-formed kinding,
-kinding, typing, kind equivalence, type equivalence, and term equivalence.
-However, we replace \( \V \) with \( \AV \) in judegements in order to
-distinguish them from judegements of the normal typing. The definitions of
-well-formed signature, well-formed environment, and well-formed kinding are the
-same with original typing so we don't explain them here.
+kinding, typing, kind equivalence, type equivalence, and term equivalence.  We
+replace \( \V \) with \( \AV \) in judegements in order to distinguish them
+from judegements of the normal typing and omit kinds and types from typing
+equivalence and term equivalence, respectively. The definitions of well-formed
+signature, well-formed environment, and well-formed kinding are the same with
+original typing so we don't explain them here.
 
-% Kinding rules
+% Kinding rules and typing rules
 
-which we
-introduced in Section \ref{sec:typing} so we will explain only some different
-points.
+Kinding rules and typing rules are the almost same as the normal typing but
+there are no conversion rules, such as \TConv and \KConv. Conversion rules are
+not syntax-directed because we can apply them any typing or kinding judgments.
+As you can see in \cite{attapl}, all use of conversion rules in dependent type
+system can be move to places of applications. This is because application rules
+check the type of the function argument and the type of the argument are equal
+but all other rules don't check the equality of types. So, the equivalence of
+types become problem only in application rules. Then, if we replace type
+equality check in application rules with conversion check, we can eliminate
+conversion rules from algorithmic typing.
 
-% Typing rules especially on conversion rules
+% Kind and type equivalence rules
 
-First, there are no conversion rules, such as \TConv and \KConv. Conversion
-rules are not syntax-directed because we can apply them any typing or kinding
-judgments. As you can see in \cite{attapl}, all use of conversion rules in
-dependent type system can be move to places of applications. This is because
-application rules check the type of the function argument and the type of the
-argument are equal but all other rules don't check the equality of types. So,
-the equivalence of types become problem only in application rules. Then, if we
-replace type equality check in application rules with conversion check, we can
-eliminate conversion rules from algorithmic typing.
+It is the difference between kind and type equivalence rules of the normal
+typing and the algorithmic typing is that there are no rules for transitivity,
+symmetry, and reflexivity in the algorithmic typing. Instead of including them
+in the rules, we prove transitivity, symmetry, and reflexivity as meta
+theorems.
 
-% ANF in conversion rules
+% Term equivalence rules -- especially on ANF
 
 Second, We replaced all rules of term equivalence with \QAANF.
 
