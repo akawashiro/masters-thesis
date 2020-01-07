@@ -477,18 +477,38 @@ up type derivation trees from bottom to up. So, we need to make all typing rules
 syntax-directed. And, of course, algorithmic typing is equivalent to the
 original typing. We show the equivalence in Section \ref{sec:properties}.
 
-Algorithmic typing is almost the same with normal typing rules which we
+% Judgements
+
+Algorithmic typing is almost the same with normal typing rules threfore there
+are 8 judegements as with normal typing in Figure \ref{fig:LMD-six-judgments}
+e.g. well-formed signature, well-formed environment, well-formed kinding,
+kinding, typing, kind equivalence, type equivalence, and term equivalence.
+However, we replace \( \V \) with \( \AV \) in judegements in order to
+distinguish them from judegements of the normal typing. The definitions of
+well-formed signature, well-formed environment, and well-formed kinding are the
+same with original typing so we don't explain them here.
+
+% Kinding rules
+
+which we
 introduced in Section \ref{sec:typing} so we will explain only some different
 points.
 
-% Conversion rules
+% Typing rules especially on conversion rules
 
 First, there are no conversion rules, such as \TConv and \KConv. Conversion
 rules are not syntax-directed because we can apply them any typing or kinding
-judgments. 
+judgments. As you can see in \cite{attapl}, all use of conversion rules in
+dependent type system can be move to places of applications. This is because
+application rules check the type of the function argument and the type of the
+argument are equal but all other rules don't check the equality of types. So,
+the equivalence of types become problem only in application rules. Then, if we
+replace type equality check in application rules with conversion check, we can
+eliminate conversion rules from algorithmic typing.
 
+% ANF in conversion rules
 
-We replaced all rules of term equivalence with \QAANF.
+Second, We replaced all rules of term equivalence with \QAANF.
 
 \subsection{Staged Semantics}
 
