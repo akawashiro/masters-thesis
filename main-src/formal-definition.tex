@@ -496,13 +496,35 @@ original typing so we don't explain them here.
 Kinding rules and typing rules are the almost same as the normal typing but
 there are no conversion rules, such as \TConv and \KConv. Conversion rules are
 not syntax-directed because we can apply them any typing or kinding judgments.
-As you can see in \cite{attapl}, all use of conversion rules in dependent type
-system can be move to places of applications. This is because application rules
-check the type of the function argument and the type of the argument are equal
-but all other rules don't check the equality of types. So, the equivalence of
-types become problem only in application rules. Then, if we replace type
-equality check in application rules with conversion check, we can eliminate
-conversion rules from algorithmic typing.
+So, we must remove them from the algorithmic typing.  As you can see in
+\cite{attapl}, all uses of conversion rules in dependent type system can be
+move into application rules. This is because application rules check the type
+of the function argument and the type of the argument are equal but all other
+rules don't check the equality of types. So, the equivalence of types become
+problem only in application rules. Then, if we replace type equality check in
+application rules with conversion check, we can eliminate conversion rules from
+algorithmic typing. The two application rules are following.
+
+\begin{center}
+    {\small
+    \infrule[{\KAApp}]{
+        \G\AVS \sigma:: (\Pi x:\tau.K)@A \andalso 
+        \G\AVS M:\tau'@A \\
+        \G\AVS \tau' :: * @ A \andalso 
+        \G\AVS \tau \E \tau' @ A
+    }{
+        \G\AVS \sigma\ M::K[x\mapsto M]@A
+    } \hfil
+    \infrule[\TAApp]{
+        \G\AVS M:(\Pi (x:\sigma).\tau) \andalso
+        \G\AVS N:\sigma'@A \\
+        \G\AVS \sigma' :: * @ A \andalso
+        \G\AVS \sigma\E\sigma' @A
+    }{
+        \G\AVS M\ N : \tau[x\mapsto N]@A
+    } 
+    }
+\end{center}
 
 % Kind and type equivalence rules
 
@@ -513,8 +535,38 @@ in the rules, we prove transitivity, symmetry, and reflexivity as meta
 theorems.
 
 % Term equivalence rules -- especially on ANF
+\AK{I simplified the definition of algorithmic reduction by removing the
+concept of level \( n \) subterms. Should I include it?}
 
-Second, We replaced all rules of term equivalence with \QAANF.
+Unlike all other rules of the algorithmic typing, term equivalence rules of the
+algorithmic typing is completely different from the original ones. We replaced
+all rules of term equivalence with \QAANF. Although the original equivalence
+rules check the equivalence of terms by constructing a derivation tree, the
+algorithmic equivalence rules calculate the normal form of two terms and
+compare them just with \( \alpha \) equivalence. \( \ANF(M) \) is the normal
+form of \( M \) under algorithmic reduction which is defined in Figure
+\ref{fig:algorithmic-reduction}. Algorithmic reduction is composed of normal
+reductions of \LMD, which are \textsc{(A-$\beta$)}, \textsc{(A-$\TBL\TB$)}, and
+\textsc{(A-$\Lambda$)}, and one special reduction \textsc{(A-$\%$)}, which
+corresponds to \QPercent in the normal term equivalence rules.
+
+\begin{center}
+    \infrule[\QAANF]{ \ANF(M) \E_\alpha \ANF(N) }{\G \AV M \E N@A}
+\end{center}
+
+\begin{figure}[tbp]
+    \begin{center}
+        \begin{align*}
+            & (\lambda x:\tau.M) N \RA M[x \mapsto N]       &  & \textsc{(A-$\beta$)}   \\
+            & \TBL_\alpha (\TB_\alpha M) \RA M              &  & \textsc{(A-$\TBL\TB$)} \\
+            & (\Lambda \alpha.M)\ A \RA M[\alpha \mapsto A] &  & \textsc{(A-$\Lambda$)} \\
+            & \%_\alpha M \RA M \qquad (\emptyset = \text{FV}(\%_\alpha M)) &  & \textsc{(A-$\%$)}
+        \end{align*}
+        And take the congruence on terms.
+    \end{center}
+    \caption{Algorithmic reduction}
+    \label{fig:algorithmic-reduction}
+\end{figure}
 
 \subsection{Staged Semantics}
 
