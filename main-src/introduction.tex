@@ -15,68 +15,25 @@ studied in the literature~\cite{8384206,mainland2012metahaskell,taha2007gentle}.
 % \AI{We should list applications of multi-stage programming, not necessarily of MetaOCaml.}
 
 MetaOCaml~\cite{calcagno2003implementing,oleg2014} is an extension of
-OCaml\footnote{\url{http://ocaml.org}} with special constructs for
-multi-stage programming, including brackets and escape, which are
-(hygienic) quasi-quotation, and \texttt{run}, which is similar to
-\texttt{eval} in Lisp, and cross-stage persistence
-(CSP)~\cite{MetaML}.  Programmers can easily write code generators by
-using these features.  Moreover, MetaOCaml is equipped with a powerful
-type system for safe code generation and execution.  The notion of
-code types is introduced to prevent code values that represent
-ill-typed expressions from being generated.  For example, a quotation
-of expression \texttt{1 + 1} is given type \texttt{int code}
-and a code-generating function, which takes a code value \(c\) as an
-argument and returns \(c \texttt{ + } c\), is given type \texttt{int
-  code -> int code} so that it cannot be applied to, say, a quotation
-of \texttt{"Hello"}, which is given type \texttt{string
-  code}.  Ensuring safety for \verb|run| is more challenging because
-code types by themselves do not guarantee that the execution of code values never
-results in unbound variable errors.  Taha and
-Nielsen~\cite{taha2003environment} introduced the notion of
-environment classifiers to address the problem, developed a type
-system to ensure not only type-safe composition but also type-safe
-execution of code values, and proved a type soundness theorem (for a formal calculus \(\lambda^\alpha\) modeling a pure subset of MetaOCaml).
-
-
-% rackets, written \verb|.< e >.| in
-% MetaOCaml, makes a value that represents the code (or abstract syntax
-% tree) of expression \verb|e|; and escape, written \verb|.~ e| and is
-% supposed to appear inside brackets, evaluates \verb|e| to a code value
-% and expands the code into the surrounding code.  For example,
-% \begin{verbatim}
-%    let plusone = .< fun x -> x + 1 >. in .< .~plusone 2 >.
-% \end{verbatim}
-% evaluates to \verb|.< (fun x -> x + 1) 2 >.|.  
-% Run, written \verb|run e|, evaluates \verb|e| to a code value
-% and executes it.  For example,
-% \begin{verbatim}
-%    run (let plusone = .< fun x -> x + 1 >. in .< .~plusone 2 >.)
-% \end{verbatim}
-% yields \verb|3| (here, escape connects tighter than application).
-% Finally, CSP is a primitive to embed values (not necessarily code
-% values) into a code value.  In MetaOCaml, CSP is implicitly applied to
-% occurrences of variables defined outside brackets.  For example,
-% \begin{verbatim}
-%    let plusone = fun x -> x + 1 in
-%    let y = plusone 2 in  .< y * 2 >.
-% \end{verbatim}
-% evaluates to \verb|.< 3 * 2 >.|, not \verb|.< plusone 2 * 2 >.|.
-% This is because the variable \verb|y| is bound to an integer \verb|3|
-% before \verb|.<y>.| is evaluated and the value of \verb|y| is embedded
-% into the code value.  In MetaOCaml, CSP can be applied to (variables of) any type.  CSP is practically important because it enables us to use library functions in brackets, e.g., \verb|.<List.combine [1;2] ['a';'b']>.|.
-
-% \subsubsection{多段階計算のメリットをべき乗の例を用いて説明する}
-
-% As we mentioned earlier, a main application of multi-stage
-% calculi is program optimization. 
-% A famous example is power functions.
-% Usual power functions take two arguments, which are the base and the exponent.
-% We can make a specialized power function for given exponents with multi-stage programming and 
-% optimize them by unrolling a loop in functions for given exponents.
-% The optimized power function for the exponent of \verb|3| looks like \verb|power3 = fun x -> x * x * x|.
-% \verb|power3| is faster than ordinary \verb|power| function because it contains no loop.
-% Multi-stage programming can optimize functions which take more than two arguments 
-% by generating a code fragment optimized to a given argument.
+OCaml\footnote{\url{http://ocaml.org}} with special constructs for multi-stage
+programming, including brackets and escape, which are (hygienic)
+quasi-quotation, and \texttt{run}, which is similar to \texttt{eval} in Lisp,
+and cross-stage persistence (CSP)~\cite{MetaML}.  Programmers can easily write
+code generators by using these features.  Moreover, MetaOCaml is equipped with
+a powerful type system for safe code generation and execution.  The notion of
+code types is introduced to prevent code values that represent ill-typed
+expressions from being generated.  For example, a quotation of expression
+\texttt{1 + 1} is given type \texttt{int code} and a code-generating function,
+which takes a code value \(c\) as an argument and returns \(c \texttt{ + } c\),
+is given type \texttt{int code -> int code} so that it cannot be applied to,
+say, a quotation of \texttt{"Hello"}, which is given type \texttt{string code}.
+Ensuring safety for \verb|run| is more challenging because code types by
+themselves do not guarantee that the execution of code values never results in
+unbound variable errors.  Taha and Nielsen~\cite{taha2003environment}
+introduced the notion of environment classifiers to address the problem,
+developed a type system to ensure not only type-safe composition but also
+type-safe execution of code values, and proved a type soundness theorem (for a
+formal calculus \(\lambda^\alpha\) modeling a pure subset of MetaOCaml).
 
 % 多段階計算の型理論の既存研究の紹介
 
@@ -87,19 +44,6 @@ demonstrates specialization of vector/matrix computation with respect
 to the sizes of vectors and matrices in MetaOCaml but the type system
 of MetaOCaml cannot prevent such specialized functions from being applied to
 vectors and matrices of different sizes.
-
-% Multi-stage programming can also optimize vector calculation.
-% For example, \verb|vadd| function, which takes two vectors and return the sum of them,
-% is implemented with a loop in many cases.
-% We can unroll \verb|vadd| function for a given vector length and optimize it with multi-stage programming.
-
-% % 多段階計算で生成したコードは特殊化されているが故に問題も多い
-
-% However, there is a sever problem in functions which are optimized by multi-stage programming.
-% Although unrolled \verb|vadd| function is optimized, we cannot use it for different vector length.
-% For example, when you optimize for the length of 5, you shouldn't use it for vectors of 3 lengths.
-% Otherwise, we will get a exception.
-% This problem is serious but existing type systems for multi-stage calculi cannot prevent it.
 
 \subsection{Multi-stage Programming with Dependent Types}
 
@@ -125,14 +69,6 @@ is, to implement a code generator that takes a (nonnegative) integer $n$ as an
 input and generates a piece of function code of type
 \verb|(Vector |$n$\verb| -> Vector |$n$\verb| -> Vector |$n$\verb|) code|.
 
-% As we pointed out in the above section,
-% functions optimized with multi-stage programming can take only restricted values as arguments.
-% When you optimize \verb|vadd| function for the length of 5, you should it only for 5 length vectors.
-% We introduce dependent types into a multi-stage calculus
-% so that the type system can guarantee optimized functions are used properly.
-% Although there is a trial to combine multi-stage programming and dependent type by Brady and Hammond~\cite{brady2006dependently},
-% they didn't give a formal definition and properties for the calculus.
-
 \subsection{Our Work}
 In this paper, we develop a new multi-stage calculus \LMD by extending
 the existing multi-stage calculus \LTP\cite{Hanada2014} with dependent
@@ -144,14 +80,17 @@ the design of MetaOCaml more faithfully.  Dependent types are based on
 \LLF~\cite{attapl}, which has one of the simplest forms of dependent
 types.  Our technical contributions are summarized as follows:
 \begin{itemize}
-\item We give a formal definition of \LMD with its syntax, type system and
-two kinds of reduction: full reduction, allowing reduction of any redex,
-including one under $\lambda$-abstraction and quotation, and staged reduction, a
-small-step call-by-value operational semantics that is closer to the intended
-multi-stage implementation.
-\item We show preservation, strong normalization, and confluence for
-  full reduction; and show unique decomposition (and progress as its
-  corollary) for staged reduction.
+    \item We give a formal definition of \LMD with its syntax, type system and
+        two kinds of reduction: full reduction, allowing reduction of any redex,
+        including one under $\lambda$-abstraction and quotation, and staged reduction, a
+        small-step call-by-value operational semantics that is closer to the intended
+        multi-stage implementation.
+    \item We show preservation, strong normalization, and confluence for
+        full reduction; and show unique decomposition (and progress as its
+        corollary) for staged reduction.
+    \item We give algorithmic typing for \LMD which is essencial to implement a
+        type checker and show the equivalence between algorithmic typing and
+        normal typing.
 \end{itemize}
 The combination of multi-stage programming and dependent types has
 been discussed by Pasalic, Taha, and Sheard~\cite{pasalic2002tagless}
