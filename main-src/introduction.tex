@@ -5,14 +5,17 @@
 
 \subsection{Multi-stage Programming and MetaOCaml}
 
+% What is multi-stage programming?
+
 Multi-stage programming makes it easier for programmers to implement
 generation and execution of code at run time by providing language
 constructs for composing and running pieces of code as first-class
-values.  A promising application of multi-stage programming is
+values. A promising application of multi-stage programming is
 (run-time) code specialization, which generates program code
 specialized to partial inputs to the program and such applications are
 studied in the literature~\cite{8384206,mainland2012metahaskell,taha2007gentle}.
-% \AI{We should list applications of multi-stage programming, not necessarily of MetaOCaml.}
+
+% MetaOCaml
 
 MetaOCaml~\cite{calcagno2003implementing,oleg2014} is an extension of
 OCaml\footnote{\url{http://ocaml.org}} with special constructs for multi-stage
@@ -35,7 +38,7 @@ developed a type system to ensure not only type-safe composition but also
 type-safe execution of code values, and proved a type soundness theorem (for a
 formal calculus \(\lambda^\alpha\) modeling a pure subset of MetaOCaml).
 
-% 多段階計算の型理論の既存研究の紹介
+% The problem of existing multi-stage programming type system
 
 However, the type system, which is based on the Hindley--Milner
 polymorphism~\cite{Milner78JCSS}, is not strong enough to guarantee
@@ -50,11 +53,9 @@ vectors and matrices of different sizes.
 % 依存型とは何か?
 
 One natural idea to address this problem is the introduction of dependent types
-to express the size of data structures in static types~\cite{Xi98}.
-% Dependent types are types which are dependent on values.
-% We can use dependent types for securer programming like Xi and Pfenning
-For example, we could declare vector types indexed by the size of
-vectors as follows.
+to express the size of data structures in static types~\cite{Xi98}.  For
+example, we could declare vector types indexed by the size of vectors as
+follows.
 \begin{verbatim}
     Vector :: Int -> *
 \end{verbatim}
@@ -92,21 +93,18 @@ types.  Our technical contributions are summarized as follows:
         type checker and show the equivalence between algorithmic typing and
         normal typing.
 \end{itemize}
-The combination of multi-stage programming and dependent types has
-been discussed by Pasalic, Taha, and Sheard~\cite{pasalic2002tagless}
-and Brady and Hammond~\cite{brady2006dependently} but, to our
-knowledge, our work is a first formal calculus of full-spectrum dependently typed
-multi-stage programming with all the key constructs mentioned above.
+The combination of multi-stage programming and dependent types has been
+discussed by Pasalic, Taha, and Sheard~\cite{pasalic2002tagless} and Brady and
+Hammond~\cite{brady2006dependently} but, to our knowledge, our work is a first
+formal calculus of full-spectrum dependently typed multi-stage programming with
+all the key constructs mentioned above.
 
 \subsubsection{Organization of the Thesis.}
 
 The organization of this paper is as follows.
 Section~\ref{sec:informal-overview} gives an informal overview of
-\LMD.  Section~\ref{sec:formal-definition} defines \LMD and
+\LMD. Section~\ref{sec:formal-definition} defines \LMD and
 Section~\ref{sec:properties} shows properties of \LMD.
 Section~\ref{sec:related-work} discusses related work and Section
 \ref{sec:conclusion} concludes the paper with discussion of future
-work.  We omit proofs and (details of) some definitions for brevity;
-interested readers are referred to a full version of the paper,
-which is available at \url{https://arxiv.org/abs/1908.02035}.
-
+work.
