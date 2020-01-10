@@ -72,6 +72,8 @@ declared stage. On the contrary, constants and type-level constants are
 \emph{not} associated with stages; so, they can appear at any stage. We
 define well-formed signatures and well-formed type environments later.
 
+% Free and bound variables
+
 The variable $x$ is bound in $M$ by $\lambda x:\tau.M$ and in $\sigma$ by $\Pi
 x:\tau.\sigma$, as usual; the stage variable $\alpha$ is bound in $M$ by
 $\Lambda \alpha.M$ and $\tau$ by $\F\alpha.\tau$.  The notion of free variables
@@ -82,6 +84,8 @@ sometimes abbreviate $\Pi x:\tau_1.\tau_2$ to $\tau_1 \rightarrow \tau_2$ if
 $x$ is not a free variable of $\tau_2$.  We identify $\alpha$-convertible terms
 and assume the names of bound variables are pairwise distinct.
 
+% Primitives of multi-stage programming
+
 The prefix operators $\TW_\alpha, \TB_\alpha, \TBL_\alpha$, and $\%_\alpha$ are
 given higher precedence over the three forms $\tau\ M$, $M\ N$, $M\ A$ of
 applications, which are left-associative. The binders $\Pi$, $\forall$, and
@@ -90,15 +94,16 @@ $\lambda$ extend as far to the right as possible.  Thus, $\F\alpha.\TW_{\alpha}
 x:\I.(\text{Vector}\ 5)))$; and $\Lambda\alpha.\lambda x:\I.\TB_\alpha x\ y$
 means $\Lambda\alpha.(\lambda x:\I.(\TB_\alpha x)\ y)$.
 
-\paragraph{Remark:} Basically, we define \LMD to be an extension of
-\LTP with dependent types.  One notable difference is that \LMD has
-only one kind of \(\alpha\)-closed types, whereas \LTP has two kinds
-of \(\alpha\)-closed types \(\forall\alpha.\tau\) and
-\(\forall^\varepsilon\alpha.\tau\).  We have omitted the first kind,
-for simplicity, and dropped the superscript $\varepsilon$ from the second. It
-would not be difficult to recover the distinction to show properties related
-to program residualization~\cite{Hanada2014}, although they are left as 
-conjectures.
+% Remark on restriction of \LMD
+
+\paragraph{Remark:} Basically, we define \LMD to be an extension of \LTP with
+dependent types. One notable difference is that \LMD has only one kind of
+\(\alpha\)-closed types, whereas \LTP has two kinds of \(\alpha\)-closed types
+\(\forall\alpha.\tau\) and \(\forall^\varepsilon\alpha.\tau\).  We have omitted
+the first kind, for simplicity, and dropped the superscript $\varepsilon$ from
+the second. It would not be difficult to recover the distinction to show
+properties related to program residualization~\cite{Hanada2014}, although they
+are left as conjectures.
 
 \subsection{Reduction}
 
