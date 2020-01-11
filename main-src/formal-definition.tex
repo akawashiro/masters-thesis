@@ -496,24 +496,25 @@ the rule \QPercent{} makes sense.
 
 % What is algorithmic typing?
 
-Algorithmic typing rules are rules for implement type checker which takes an
-environment \( \Gamma \), a signature \( \Sigma \), a term \( M \), a type \(
-\tau \) and a stage \( A \) and returns \( \G \V M : \tau @ A \) or not. We
-already defined typing rules for \LMD in Section \ref{sec:typing}, but they
-include some non-syntax directed rules which their premise cannot be decided
-from the goal. When we implement the type checker of \LMD, it is necessary to make
-up type derivation trees from bottom to up. So, we need to make all typing rules
-syntax-directed. And, of course, algorithmic typing is equivalent to the
-original typing. We show the equivalence in Section \ref{sec:properties}.
+Algorithmic typing rules are rules for implementation of type checker which
+takes an environment \( \Gamma \), a signature \( \Sigma \), a term \( M \), a
+type \( \tau \) and a stage \( A \) and returns \( \G \V M : \tau @ A \) or
+not. We already defined typing rules for \LMD in Section \ref{sec:typing}, but
+they include some non-syntax directed rules. Non-syntax directed rules means
+their premise cannot be decided from the goal. When we implement the type
+checker of \LMD, it is necessary to make up type derivation trees from bottom
+to up. So, we need to make all typing rules syntax-directed. And, of course,
+algorithmic typing is equivalent to the original typing. We show the
+equivalence in Section \ref{sec:properties}.
 
 % Judgements
 
-Algorithmic typing is almost the same with normal typing rules threfore there
+Algorithmic typing is almost the same with original typing rules threfore there
 are 8 judegements as with normal typing in Figure \ref{fig:LMD-six-judgments}
 e.g. well-formed signature, well-formed environment, well-formed kinding,
-kinding, typing, kind equivalence, type equivalence, and term equivalence.  We
+kinding, typing, kind equivalence, type equivalence, and term equivalence. We
 replace \( \V \) with \( \AV \) in judegements in order to distinguish them
-from judegements of the normal typing and omit kinds and types from typing
+from judegements of the original typing and omit kinds and types from typing
 equivalence and term equivalence, respectively. The definitions of well-formed
 signature, well-formed environment, and well-formed kinding are the same with
 original typing so we don't explain them here.
@@ -524,8 +525,8 @@ Kinding rules and typing rules are the almost same as the normal typing but
 there are no conversion rules, such as \TConv and \KConv. Conversion rules are
 not syntax-directed because we can apply them any typing or kinding judgments.
 So, we must remove them from the algorithmic typing.  As you can see in
-\cite{attapl}, all uses of conversion rules in dependent type system can be
-move into application rules. This is because application rules check the type
+\cite{attapl}, all uses of conversion rules in dependent type system can be put
+into application rules. This is because only application rules check the type
 of the function argument and the type of the argument are equal but all other
 rules don't check the equality of types. So, the equivalence of types become
 problem only in application rules. Then, if we replace type equality check in
@@ -555,15 +556,13 @@ algorithmic typing. The two application rules are following.
 
 % Kind and type equivalence rules
 
-It is the difference between kind and type equivalence rules of the normal
-typing and the algorithmic typing is that there are no rules for transitivity,
-symmetry, and reflexivity in the algorithmic typing. Instead of including them
-in the rules, we prove transitivity, symmetry, and reflexivity as meta
-theorems.
+The difference between kind and type equivalence rules of the normal typing and
+the algorithmic typing is that there are no rules for transitivity, symmetry,
+and reflexivity in the algorithmic typing. Because they are non-syntax
+directed, we must remove them. Instead of including them in the rules, we prove
+transitivity, symmetry, and reflexivity as meta theorems.
 
 % Term equivalence rules -- especially on ANF
-\AK{I simplified the definition of algorithmic reduction by removing the
-concept of level \( n \) subterms. Should I include it?}
 
 Unlike all other rules of the algorithmic typing, term equivalence rules of the
 algorithmic typing is completely different from the original ones. We replaced
@@ -589,7 +588,7 @@ corresponds to \QPercent in the normal term equivalence rules.
             & (\Lambda \alpha.M)\ A \RA M[\alpha \mapsto A] &  & \textsc{(A-$\Lambda$)} \\
             & \%_\alpha M \RA M \qquad (\emptyset = \text{FV}(\%_\alpha M)) &  & \textsc{(A-$\%$)}
         \end{align*}
-        And take the congruence on terms.
+        And take the congruence on terms including level \( n \) subterms for all \( n \).
     \end{center}
     \caption{Algorithmic reduction}
     \label{fig:algorithmic-reduction}
@@ -597,12 +596,13 @@ corresponds to \QPercent in the normal term equivalence rules.
 
 \subsection{Staged Semantics}
 
-The reduction given above is full reduction and any redexes---even
-under $\TB_\alpha$---can be reduced in an arbitrary order.
-Following previous work~\cite{Hanada2014},
-we introduce (small-step, call-by-value) staged semantics,
-where only $\beta$-reduction or $\Lambda$-reduction at stage $\varepsilon$ or the outer-most $\blacklozenge$-reduction are allowed,
-modeling an implementation.
+The reduction given above is full reduction and any redexes---even under
+$\TB_\alpha$---can be reduced in an arbitrary order.  Following previous
+work~\cite{Hanada2014}, we introduce (small-step, call-by-value) staged
+semantics, where only $\beta$-reduction or $\Lambda$-reduction at stage
+$\varepsilon$ or the outer-most $\blacklozenge$-reduction are allowed, modeling
+an implementation. Please note that we deal only with reductions on level 0
+subterms.
 
 We start with the definition of values. Since terms under quotations are
 not executed, the grammar is indexed by stages.
@@ -618,14 +618,14 @@ not executed, the grammar is indexed by stages.
   \end{align*}
 \end{definition}
 
-Values at stage $\varepsilon$ are $\lambda$-abstractions, quoted pieces of code,
-or $\Lambda$-abstractions.  The body of a $\lambda$-abstraction can
-be any term but the body of $\Lambda$-abstraction has to be a value.  It
-means that the body of $\Lambda$-abstraction must be evaluated.  The
-side condition for $\TBL_\alpha v^{A'}$ means that escapes in a value
-can appear only under nested quotations because an escape under a
-single quotation will splice the code value into the surrounding
-code.  See Hanada and Igarashi~\cite{Hanada2014} for details.
+Values at stage $\varepsilon$ are $\lambda$-abstractions, quoted pieces of
+code, or $\Lambda$-abstractions. The body of a $\lambda$-abstraction can be any
+term but the body of $\Lambda$-abstraction has to be a value.  It means that
+the body of $\Lambda$-abstraction must be evaluated.  The side condition for
+$\TBL_\alpha v^{A'}$ means that escapes in a value can appear only under nested
+quotations because an escape under a single quotation will splice the code
+value into the surrounding code. See Hanada and Igarashi~\cite{Hanada2014} for
+details.
 
 In order to define staged reduction, we define redex and evaluation contexts.
 
@@ -654,16 +654,14 @@ In order to define staged reduction, we define redex and evaluation contexts.
 The subscripts $A$ and $B$ in $E^A_B$ stand for the stage of the evaluation
 context and of the hole, respectively. The grammar represents that staged
 reduction is left-to-right and call-by-value and terms under \(\Lambda\) are
-reduced. Terms at non-$\varepsilon$ stages are not reduced, except
-redexes of the form \(\TBL_\alpha \TB_\alpha v^\alpha\) at stage \(\alpha\).
-A few examples of
-evaluation contexts are shown below:
+reduced. Terms at non-$\varepsilon$ stages are not reduced, except redexes of
+the form \(\TBL_\alpha \TB_\alpha v^\alpha\) at stage \(\alpha\).  A few
+examples of evaluation contexts are shown below:
 \begin{align*}
   \square\ (\lambda x:\I.x)                  & \in  ECtx^\varepsilon_\varepsilon \\
   \Lambda\alpha.\square\ \varepsilon            & \in ECtx^\varepsilon_\varepsilon  \\
   \TBL_\alpha \TB_\alpha \TBL_\alpha \square & \in ECtx^\alpha_\varepsilon
 \end{align*}
-%
 We write $E^A_B[M]$ for the term obtained by filling the hole $\square$ in $E^A_B$ by $M$.
 
 Now we define staged reduction using the redex and evaluation contexts.
@@ -678,16 +676,14 @@ Now we define staged reduction using the redex and evaluation contexts.
   \end{align*}
 \end{definition}
 
-This reduction relation reduces a term in a deterministic,
-left-to-right, call-by-value manner.  An application of an abstraction
-is executed only at stage \(\varepsilon\) and only a quotation at
-stage \(\varepsilon\) is spliced into the surrounding code---notice
-that, if \(\TB_\alpha v^\alpha\) is at stage \(\varepsilon\), then the
-redex \(\TBL_\alpha \TB_\alpha v^\alpha\) is at stage \(\alpha\).
-In other words, terms in brackets are not evaluated until the terms are run
-and arguments of a function are evaluated before the application.
-We show an example of staged reduction.
-Underlines show the redexes.
+This reduction relation reduces a term in a deterministic, left-to-right,
+call-by-value manner. An application of an abstraction is executed only at
+stage \(\varepsilon\) and only a quotation at stage \(\varepsilon\) is spliced
+into the surrounding code---notice that, if \(\TB_\alpha v^\alpha\) is at stage
+\(\varepsilon\), then the redex \(\TBL_\alpha \TB_\alpha v^\alpha\) is at stage
+\(\alpha\). In other words, terms in brackets are not evaluated until the terms
+are run and arguments of a function are evaluated before the application.  We
+show an example of staged reduction. Underlines show the redexes.
 \begin{align*}
                     & (\Lambda\alpha.(\TB_\alpha \underline{\TBL_\alpha \TB_\alpha ((\lambda x:\I.x)\ 10))})\ \varepsilon \\
   \longrightarrow_s & \underline{(\Lambda\alpha.(\TB_\alpha ((\lambda x:\I.x)\ 10)))\ \varepsilon}                        \\
