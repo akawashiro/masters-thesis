@@ -242,7 +242,6 @@ manner.  We will discuss each judgment below.
   \end{center}
 \end{figure}
 
-
 \subsubsection{Signature and Type Environment Well-formedness.}
 The rules for Well-formed signatures and type environments are
 shown below:
@@ -293,17 +292,8 @@ well-formed.
 
 \subsubsection{Kind Well-formedness and Kinding.}
 
-The rules for kind well-formedness and kinding are a straightforward
-adaptation from \LLF and \LTP, except for the following rule for type-level CSP.
-\begin{center}
-  \infrule[K-Csp]{
-    \G \V \tau :: * @ A
-  }{
-    \G \V \tau :: * @ A\alpha
-  }
-\end{center}
-Unlike the term level, type-level CSP is implicit because there is no staged
-semantics for types.
+The rules for kind well-formedness and kinding are a straightforward adaptation
+from \LLF and \LTP. So, we omit the definitions.
 
 \subsubsection{Typing.}
 \label{sec:typing}
@@ -319,7 +309,11 @@ semantics for types.
     \infrule[\TTBL]{\G\V M:\TW_{\alpha}\tau @A}{\G\V\TBL_{\alpha}M:\tau @{A\alpha}} \\[2mm]
     \infrule[\TGen]{\G\V M:\tau @A \andalso \alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A)}{\G\V\Lambda\alpha.M:\forall\alpha.\tau @A} \\[2mm]
     \infrule[\TIns]{\G\V M:\forall\alpha.\tau @A}{\G\V M\ B:\tau[\alpha \mapsto B]@A} \andalso
-    \infrule[\TCsp]{\G\V M:\tau @A}{\G\V \%_\alpha M:\tau @{A\alpha}}
+    \infrule[\TCsp]{
+        \G\V M:\tau@A \andalso \G\V \tau::*@{A\alpha}
+    }{
+      \G\V \%_\alpha M:\tau@{A\alpha}
+    }
     \caption{Typing Rules.}
     \label{fig:typing-rules}
   \end{center}
@@ -334,56 +328,54 @@ annotation/declaration on a variable has to be a proper type of kind
 $*$ (\TAbs) at the stage where it is declared (\TVar{} and \TAbs).
 
 % \TConv
+
 As in standard dependent type systems, \TConv{} allows us to replace the type
 of a term with an equivalent one. For example, assuming integers and
 arithmetic, a value of type $\textrm{Vector}\ (4+1)$ can also have type
 $\textrm{Vector}\ 5$ because of \TConv{}.
 
 % Typing rules for a multi-stage calculus
-The rules \TTB, \TTBL, \TGen, \TIns, and \TCsp{} are constructs for
-multi-stage programming. \TTB{} and \TTBL{} are the same as in \LTP, as we
-explained in Section \ref{sec:informal-overview}. The rule \TGen{} for stage
-abstraction is straightforward. The condition
-$\alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A)$ ensures that the scope of $\alpha$
-is in $M$, and avoids capturing variables elsewhere. The
-rule \TIns{} is for applications of stages to stage abstractions. The rule
-\TCsp{} is for CSP, which means that, if term $M$ is of type $\tau$ at stage
-$A$, then $\%_\alpha M$ is of type $\tau$ at stage $A\alpha$. Note that CSP
-is also applied to the type \(\tau\) (although it is implicit) in the
-conclusion. Thanks to implicit CSP, the typing rule is the same as in \LTP.
 
+The rules \TTB, \TTBL, \TGen, \TIns, and \TCsp{} are constructs for multi-stage
+programming. \TTB{} and \TTBL{} are the same as in \LTP, as we explained in
+Section \ref{sec:informal-overview}. The rule \TGen{} for stage abstraction is
+straightforward. The condition $\alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A)$
+ensures that the scope of $\alpha$ is in $M$, and avoids capturing variables
+elsewhere. The rule \TIns{} is for applications of stages to stage
+abstractions. The rule \TCsp{} is for CSP, which means that, if term $M$ is of
+type $\tau$ at stage $A$ and type \( \tau \) is also legitimate at stage \(
+A\alpha \), then $\%_\alpha M$ is of type $\tau$ at stage $A\alpha$. Note that
+CSP is also applied to the type \(\tau\) (although it is implicit) in the
+conclusion. Thanks to implicit CSP, the typing rule is the same as in \LTP.
 
 \subsubsection{Kind, Type and Term Equivalence.}
 
-Since the syntax of kinds, types, and terms is mutually recursive,
-the corresponding notions of equivalence are also mutually recursive.
-They are congruences closed under a few axioms for term equivalence.
-Thus, the rules for kind and type equivalences are not very interesting, 
-except that implicit CSP is allowed.
-We show a few representative rules below.
+Since the syntax of kinds, types, and terms is mutually recursive, the
+corresponding notions of equivalence are also mutually recursive.  They are
+congruences closed under a few axioms for term equivalence.  Thus, the rules
+for kind and type equivalences are not very interesting, except that implicit
+CSP is allowed.  We show a few representative rules below.
 
-  {\small
-    \begin{center}
-      \infrule[\textsc{QK-Csp}]{%
+\begin{center}
+    \infrule[\textsc{QK-Csp}]{%
         \G\V K \E J @ A
-      }{
-        \G\V K \E J @ A\alpha
-      }
-      \hfil
-      \infrule[\QTCsp]{
-        \G\V \tau \E \sigma :: *@A
-      }{
-        \G\V \tau \E \sigma :: *@{A\alpha}
-      }
-      \\[2mm]
-      \infrule[\QTApp]{%
-        \G\V \tau \E \sigma :: (\Pi x:\rho.K)@A \andalso
-        \G\V M \E N : \rho @A
-      }{
-        \G\V \tau\ M \E \sigma\ N :: K[x \mapsto M]@A
-      }
-    \end{center}
-  }
+        }{
+            \G\V K \E J @ A\alpha
+        }
+        \hfil
+        \infrule[\QTCsp]{
+            \G\V \tau \E \sigma :: *@A
+        }{
+            \G\V \tau \E \sigma :: *@{A\alpha}
+        }
+        \\[2mm]
+        \infrule[\QTApp]{%
+            \G\V \tau \E \sigma :: (\Pi x:\rho.K)@A \andalso
+            \G\V M \E N : \rho @A
+            }{
+                \G\V \tau\ M \E \sigma\ N :: K[x \mapsto M]@A
+            }
+\end{center}
 
 We show the rules for term equivalence  in
 Figure~\ref{fig:term-equivalence-rules}, omitting straightforward rules for
@@ -392,7 +384,7 @@ reflexivity, symmetry, transitivity, and compatibility.  The rules \QBeta,
 $\blacklozenge$-reduction, and $\Lambda$-reduction, respectively.
 
 \begin{figure}[tbp]
-  \begin{center}
+    \begin{center}
    \infrule[\QBeta]{\G,x:\sigma@A\V M:\tau @A \andalso \G\V N:\sigma@A}{\G\V(\lambda x:\sigma.M)\ N\E M[x\mapsto N] : \tau[x \mapsto N]@A} \\[2mm]
     \infrule[\QLambda]{\G\V (\Lambda\alpha.M) : \forall\alpha.\tau @A}{\G\V (\Lambda\alpha.M)\ \varepsilon \E M[\alpha \mapsto \varepsilon] : \tau[\alpha \mapsto \varepsilon]@A} \\[2mm]
     \infrule[\QTBLTB]{\G\V M \E N : \tau @A}{\G\V \TBL_\alpha(\TB_\alpha M) \E N : \tau @A} \hfil
@@ -486,9 +478,8 @@ using tuples.  Second, $\text{vadd}_1$ has an advantage in speed over
 the one using dynamic checking because it can generate an optimized
 function for a given length.
 
-We make two technical remarks before proceeding:
-\begin{enumerate}
-\item If the generated function code is composed with another piece of code of type, say,
+\paragraph{Remark:}
+If the generated function code is composed with another piece of code of type, say,
 \(\TW_\gamma \text{Vector }5\), \QPercent{} plays an essential role; that is,
 \(\text{Vector }5\) and \(\text{Vector }(\%_\gamma 5)\), which would occur
 by applying the generated code to \(\gamma\) (instead of \(\varepsilon\)), are syntactically
@@ -498,20 +489,10 @@ reduction that removes $\%_\alpha$ when they developed \LTP{}, as such
 reduction does not match the operational behavior of the CSP operator in
 implementations. However, as an equational system for multi-stage programs,
 the rule \QPercent{} makes sense.
-\item \renewcommand{\Vpn}{\text{Vector}\ n}
-By using implicit type-level CSP, the type of vadd
-could have been written
-\(\Pi n:\I.\F\beta.\TW_\beta(\Vpn\to\Vpn\to\Vpn)\).  In this type,
-Vector\ $n$ is given kind at stage \(\varepsilon\) and type-level CSP
-implicitly lifts it to stage \(\beta\).  However, if a type-level
-constant takes two or more arguments from different stages, term-level
-CSP is necessary.  A matrix type (indexed by the numbers of columns
-and rows) would be such an example.
-\end{enumerate}
 
 \subsection{Algorithmic Typing}
 
-\AK{What should I call "normal typing" as?"}
+\AK{What should I call "normal typing" as? → Use original typing in this thesis.}
 
 % What is algorithmic typing?
 
