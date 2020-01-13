@@ -64,41 +64,80 @@ As usual~\cite{TAPL}, the Inversion Lemma enables us to infer the types of subte
 
 % Preservation
 
-Thanks to Term/Stage Substitution and Inversion, we can prove Preservation easily.
+Thanks to Term/Stage Substitution and Inversion, we can prove Preservation.
+First, we prove Preservation on Level 0 Reduction then prove general
+Preservation using it.
+
+\begin{lemma}[Preservation on Level 0 Reduction]
+    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
+\end{lemma}
+
+\begin{proof}
+    First, there are three cases for $M \longrightarrow_0 M'$.  They are $M
+    \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M
+    \longrightarrow_\blacklozenge M'$.  For each case, we can use
+    straightforward induction on typing derivations.
+\end{proof}
 
 \begin{theorem}[Preservation]
-	If $\G\V M:\tau @A$ and $M \longrightarrow M'$, then $\G\V M':\tau @A$.
+    If \( \G \V M : \tau @ A \) and \( M \longrightarrow M' \), then \( \G \V M' : \tau @ A \).
 \end{theorem}
 
 \begin{proof}
-	First, there are three cases for $M \longrightarrow M'$.
-	They are $M \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M \longrightarrow_\blacklozenge M'$.
-	For each case, we can use straightforward induction on typing derivations.
-        \qed
-	% Difficult cases are \TApp, \TTBL, and \TIns.
-	% We need Inversion Lemmas for them.
+    By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
+    typed. Then, it is a corollary of Preservation on Level 0 Reduction.
 \end{proof}
 
 % Strong Normalization
 
-Strong Normalization is also an important property, which guarantees that
-no typed term has an infinite reduction sequence.
-Following standard proofs (see, e.g., \cite{harper1993framework}), we prove this theorem by translating \LMD to the simply typed lambda calculus.
+Strong Normalization is also an important property, which guarantees that no
+typed term has an infinite reduction sequence.  Following standard proofs (see,
+e.g., \cite{harper1993framework}), we prove this theorem by translating \LMD to
+the simply typed lambda calculus. As with Preservation, we prove Strong
+Normalization on Level 0 Reduction first.
+
+\begin{lemma}[Strong Normalization of Level 0 Reduction]
+    \label{lemma:StrongNormalizationofLevel0Reduction}
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_{0} M_{i+1}$ for $i\ge 1$
+\end{lemma}
+
+\begin{proof}
+    If there is an infinite reduction sequence in $\lambda^{\text{MD}}$
+    then there are infinite beta reductions in the sequence.
+    This is because reductions other than $\beta$-reduction reduce the size of a term.
+
+    Then, we show Strong Normalization by proof by contradiction.
+    We assume that there is an infinite reduction in a typed \LMD from typed term $M$.
+    We can construct a typed term of simply typed lambda calculus $\natural(M)$ from Preservation of Typing in $\natural$ and
+    $\natural(M)$ has infinite reductions from Preservation of Reduction in $\natural$.
+    However, $\lambda^\to$ has a property of Strong Normalization, so there is no infinite reductions.
+\end{proof}
+
+\begin{lemma}[Strong Normalization of Level $n$ Reduction]
+    \label{lemma:StrongNormalizationofLevelnReduction}
+    \( n \) is a arbitary integer which is greater than 0.
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_n M_{i+1}$ for $i\ge 1$.
+\end{lemma}
+
+\begin{proof}
+    If \( \G\V M:\tau@A \) then there are \( \G', \sigma \) and \( B \) such that \( \G' \V N : \sigma @ B \) for any level \( n \) subterm \( N \). This is because \( N \) is embedded into \( M \) using \KApp or \TApp. Then, \( N \) is strong nomalizing because of Lemma \ref{lemma:StrongNormalizationofLevel0Reduction}.
+\end{proof}
 
 \begin{theorem}[Strong Normalization]
-	If $\G\V M_1:\tau@A$ then there is no infinite sequence $(M_i)_{i\ge1}$ of terms such that
-	$M_i \longrightarrow M_{i+1}$ for $i\ge 1$.
+    \label{theorem:StrongNormalization}
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow M_{i+1}$ for $i\ge 1$
 \end{theorem}
 
 \begin{proof}
-	In order to prove this theorem, we define a translation $(\cdot)^\natural$ from \LMD\ to the simply typed lambda calculus.
-	Second, we prove the $\natural$-translation preserves typing and reduction.
-	Then, we can prove Strong Normalization of \LMD from Strong Normalization of the simply typed lambda calculus.
- \qed
+    Maximum value of levels of subterms of \( M \) is finite because the size
+    of \( M \) is finite. So the maximum length of \( \{ M_i \} \) is finite
+    from Lemma \ref{lemma:StrongNormalizationofLevel0Reduction} and
+    \ref{lemma:StrongNormalizationofLevelnReduction}.
 \end{proof}
 
-Confluence is a property that any reduction sequences from one typed term converge.
-Since we have proved Strong Normalization, we can use Newman's Lemma~\cite{DBLP:books/daglib/0092409} to prove Confluence.
+Confluence is a property that any reduction sequences from one typed term
+converge.  Since we have proved Strong Normalization, we can use Newman's
+Lemma~\cite{DBLP:books/daglib/0092409} to prove Confluence.
 
 \begin{theorem}[Confluence]
 	For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$ then
@@ -106,14 +145,13 @@ Since we have proved Strong Normalization, we can use Newman's Lemma~\cite{DBLP:
 \end{theorem}
 
 \begin{proof}
-  We can easily show Weak Church-Rosser.  Use Newman's Lemma.
+  We can easily show Weak Church-Rosser. Use Newman's Lemma.
 	% Because we proved Strong Normalization of \LMD, 
 	% we can use Newman's lemma to prove Confluence of \LMD.
 	% Then, what we must show is Weak Church-Rosser Property now.
 	% When we consider two different redexes in a \LMD term, they can only be disjoint, or one is a part of the other.
 	% In short, they are never overlapped each other.
 	% So, we can reduce one of them after we reduce another.
- \qed
 \end{proof}
 
 Now, we turn our attention to staged semantics.  First, the staged
@@ -125,7 +163,6 @@ Reduction holds also for the staged reduction.
 \end{theorem}
 \begin{proof}
   Easy.
- \qed
 \end{proof}
 
 The following theorem Unique Decomposition ensures that every typed
@@ -144,8 +181,6 @@ immediately stuck and the staged semantics is deterministic.
 
 \begin{proof}
   We can prove by straightforward induction on typing derivations.
-%  Main cases are \TApp, \TTBL, and \TIns, where we use Inversion.
-  \qed
 \end{proof}
 
 The type environment $\G$ in the statement usually has to be empty;
