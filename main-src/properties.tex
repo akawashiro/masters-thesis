@@ -25,12 +25,14 @@ manner.  Using these notations, the two substitution lemmas are stated as follow
 We proved the next two leammas by simultaneous induction on derivations.
 
 \begin{lemma}[Term Substitution]
-  If $\G, z:\xi@B, \D \V \mathcal{J}$ and $\G\V N:\xi @B$, then $\G, (\D[z \mapsto N]) \V \mathcal{J}[z \mapsto N]$.  Similarly, if $\V \G, z:\xi@B, \D$ and
-  $\G\V N:\xi @B$, then $\V \G, (\D[z \mapsto N])$.
+    \label{lemma:TermSubstitution}
+    If $\G, z:\xi@B, \D \V \mathcal{J}$ and $\G\V N:\xi @B$, then $\G, (\D[z \mapsto N]) \V \mathcal{J}[z \mapsto N]$.  Similarly, if $\V \G, z:\xi@B, \D$ and
+    $\G\V N:\xi @B$, then $\V \G, (\D[z \mapsto N])$.
 \end{lemma}
 
 \begin{lemma}[Stage Substitution]
-	If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
+    \label{lemma:StageSubstitution}
+    If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
 \end{lemma}
 
 % Inversion Lemma
@@ -416,10 +418,10 @@ can prove them just same as the normal reduction.
     It is obvious from Lemma \ref{lemma:StrongNormalizationofAlgorithmicReduction} and \ref{lemma:ConfluenceofAlgorithmicReduction}.
 \end{proof}
 
-Then, we prove the relationship between one step algorithmic reduction and substitution.
+Then, we prove the relationship between one step algorithmic reduction and substitutions.
 
-\begin{lemma}[Algorithmic Reduction and Substitution]
-    \label{lemma:AlgorithmicReductionAndSubstitution}
+\begin{lemma}[Algorithmic Reduction and Term Substitution]
+    \label{lemma:AlgorithmicReductionAndTermSubstitution}
     If \( \G, z:\xi@B, \D \AVS M : \tau @ A \) and \( M \RA M' \) then
     \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(M'[z\mapsto P]) \).
 \end{lemma}
@@ -442,17 +444,28 @@ Then, we prove the relationship between one step algorithmic reduction and subst
     \end{rneqncase}
 \end{proof}
 
+\begin{lemma}[Algorithmic Reduction and Stage Substitution]
+    \label{lemma:AlgorithmicReductionAndStageSubstitution}
+    If \( \G \AVS M : \tau @ A \) and \( M \RA M' \) then
+    \( \ANF(M[\alpha \mapsto B]) \E_\alpha \ANF(M'[\alpha \mapsto B]) \).
+\end{lemma}
+
+\begin{proof}
+    Prove by induction on the derivation of \( M \RA M' \).
+\end{proof}
+
 Next, we prove that we can get the same term in two different ways. On the one
 hand, we calculate the algorithmic normal form after the substitution. On the
 other hand, we calculate the algorithmic normal form after the substitution for
 the algorithmic normal form. This lemma is crucial for Term Substitution Lemma
-of Algorithmic Judgement (Lemma
-\ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}). In \cite{attapl},
-they use weak head normal form but we changed it to normal form. This is
-because we couldn't prove this lemma for weak head normal form.
+of Algorithmic Judgement and Stage Substitution Lemma of Algorithmic
+Judgement (Lemma \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} and
+Lemma \ref{lemma:StageSubstitutionLemmaofAlgorithmicJudgement}). In
+\cite{attapl}, they use weak head normal form but we changed it to normal form.
+This is because we couldn't prove this lemma for weak head normal form.
 
-\begin{lemma}[Algorithmic Normal Form and Substitution]
-    \label{lemma:AlgorithmicNomalFormAndSubstitution}
+\begin{lemma}[Algorithmic Normal Form and Term Substitution]
+    \label{lemma:AlgorithmicNomalFormAndTermSubstitution}
     If \\ \( \G, z:\xi@B, \D \AVS M : \tau @ A \) then
     \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) \)
 \end{lemma}
@@ -463,19 +476,33 @@ because we couldn't prove this lemma for weak head normal form.
         It is obvious.
     \end{rneqncase}
     \begin{rneqncase}{$n$ = 1}{M \RA M' \text{ and } \ANF(M) = M' }
-        From Lemma \ref{lemma:AlgorithmicReductionAndSubstitution}.
+        From Lemma \ref{lemma:AlgorithmicReductionAndTermSubstitution}.
     \end{rneqncase}
     \begin{rneqncase}{$n$ > 1}{M \RA^* M' \text{ and } M' \RA^* M'' \text{ and } \ANF(M) = M'' }
         From the induction hypothesis, \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(M'[z\mapsto P]) \).
-        From Lemma \ref{lemma:AlgorithmicReductionAndSubstitution}, \( \ANF(M'[z\mapsto P]) \E_\alpha \ANF(M''[z\mapsto P]) \).
+        From Lemma \ref{lemma:AlgorithmicReductionAndTermSubstitution}, \( \ANF(M'[z\mapsto P]) \E_\alpha \ANF(M''[z\mapsto P]) \).
         Then from the transitivity of \( \E_\alpha \), \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) \).
     \end{rneqncase}
 \end{proof}
 
-\AK{================================HERE===================================}
+\begin{lemma}[Algorithmic Normal Form and Stage Substitution]
+    \label{lemma:AlgorithmicNomalFormAndStageSubstitution}
+    If \\ \( \G \AVS M : \tau @ A \) then
+    \( \ANF(M[\alpha \mapsto B]) \E_\alpha \ANF(\ANF(M)[\alpha \mapsto A]) \)
+\end{lemma}
+
+\begin{proof}
+    Same as Lemma \ref{lemma:AlgorithmicNomalFormAndTermSubstitution} using
+    Lemma \ref{lemma:AlgorithmicReductionAndStageSubstitution} instead of Lemma
+    \ref{lemma:AlgorithmicReductionAndTermSubstitution}.
+\end{proof}
+
+Thanks to Lemma \ref{lemma:AlgorithmicNomalFormAndTermSubstitution} and Lemma
+\ref{lemma:AlgorithmicNomalFormAndStageSubstitution}, we can prove two
+substitution lemmas.
 
 \begin{lemma}[Term Substitution Lemma of Algorithmic Judgement]
-    \label{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}
+    \label{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement}
     If $\G, z:\xi@B, \D \AVS \mathcal{J}$ and $\G\AVS P:\xi @B$ then $\G, \D[z \mapsto P] \AVS \mathcal{J}[z \mapsto P]$.
 \end{lemma}
 
@@ -485,15 +512,28 @@ because we couldn't prove this lemma for weak head normal form.
     only different cases.
 
     \begin{rneqncase}{\textsc{QA-ANF}}{
-            \G, z:\xi @ B, \D \AVS M \E N @ A
+            \G, z:\xi @ B, \D \AVS M \E N @ A \\
             \text{ is derived from }
             \ANF(M) \E_\alpha \ANF(N)
         }
     \end{rneqncase}
     \( \ANF(\ANF(M)[z \mapsto P]) \E_\alpha \ANF(\ANF(N)[z \mapsto P]) \) is obvious from \( \ANF(M) \E_\alpha \ANF(N) \).
-    From Lemma \ref{lemma:AlgorithmicNomalFormAndSubstitution}, \( \ANF(M[z \mapsto P]) \E_\alpha \ANF(N[z \mapsto P]) \).
+    From Lemma \ref{lemma:AlgorithmicNomalFormAndTermSubstitution}, \( \ANF(M[z \mapsto P]) \E_\alpha \ANF(N[z \mapsto P]) \).
     Then \( \G, \D[z \mapsto P] \AVS M[z \mapsto P] \E N[z \mapsto P] @ A \).
 \end{proof}
+
+\begin{lemma}[Stage Substitution Lemma of Algorithmic Judgement]
+    \label{lemma:StageSubstitutionLemmaofAlgorithmicJudgement}
+    If $\G \AVS \mathcal{J}$ then $\G[\alpha \mapsto B] \AVS \mathcal{J}[\alpha \mapsto B]$.
+\end{lemma}
+
+\begin{proof}
+    Same as Lemma \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} using
+    Lemma \ref{lemma:AlgorithmicNomalFormAndStageSubstitution} instead of Lemma
+    \ref{lemma:AlgorithmicNomalFormAndTermSubstitution}.
+\end{proof}
+
+\AK{============== HERE =============}
 
 \begin{lemma}[Type Preservation of Algorithmic Reduction]
     \label{lemma:TypePreservationofAlgorithmicReduction}
@@ -514,7 +554,7 @@ because we couldn't prove this lemma for weak head normal form.
 \end{lemma}
 
 \begin{proof}
-    All cases other than \textsc{A-$\beta$} can be proved easily from the derivation of \( \G \AVS M:\tau @A \). In the case of \textsc{A-$\beta$}, we can prove it by Lemma \ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}.
+    All cases other than \textsc{A-$\beta$} can be proved easily from the derivation of \( \G \AVS M:\tau @A \). In the case of \textsc{A-$\beta$}, we can prove it by Lemma \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement}.
 \end{proof}
 
 \begin{lemma}[Algorithmic Reduction and Term Equivalence]
@@ -686,7 +726,7 @@ because we couldn't prove this lemma for weak head normal form.
         Now, we can apply \KAApp to \( \G \AVS \sigma :: \Pi x:\tau'.K' @ A \),
         \( \G \AVS M: \tau @ A \) and \( \G \AVS \tau \E \tau' @ A\) and get \(
         \G \AVS \sigma\ M :: K'[x \mapsto M] @ A \).  From Lemma
-        \ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}, \( \G \AVS K[x
+        \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement}, \( \G \AVS K[x
         \mapsto M] \E K'[x \mapsto M] @ A \).
     \end{rneqncase}
     \begin{rneqncase}{\KConv}{
