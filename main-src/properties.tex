@@ -102,51 +102,54 @@ Preservation using it.
     typed. Then, it is a corollary of Preservation on Level 0 Reduction.
 \end{proof}
 
-% Strong Normalization
+% Strong Normalization and how to prove it
 
 Strong Normalization is also an important property, which guarantees that no
 typed term has an infinite reduction sequence.  Following standard proofs (see,
 e.g., \cite{harper1993framework}), we prove this theorem by translating \LMD to
 the simply typed lambda calculus. As with Preservation, we prove Strong
-Normalization on Level 0 Reduction first.
-
-First, we define translation function \( \natural \) from \LMD to the simply
-typed lambda calculus and prove it preserve reductions of \LMD especially \(
-\beta \) reduction.
+Normalization on Level 0 Reduction first. In order to prove it, we define
+translation function \( \natural \) from \LMD to the simply typed lambda
+calculus and prove it preserve reductions of \LMD especially \( \beta \)
+reduction.
 
 \begin{definition}[$\natural$ translation]
     The $\natural$ translation is a translation from $\lambda^\text{MD}$ to the simply typed lambda calculus.
-    \begin{itemize}
-        \item Term
-            \begin{flalign*}
-                \natural(x) &= x & \\
-                \natural(\lambda x:\tau.M) &= \lambda x:\natural(\tau).\natural(M) & \\
-                \natural(M\ N) &= \natural(M)\ \natural(N)& \\
-                \natural(\TB_\alpha M) &= \natural(M) & \\
-                \natural(\TBL_\alpha M) &= \natural(M)& \\
-                \natural(\Lambda\alpha.M) &= \natural(M)& \\
-                \natural(M\ B) &= \natural(M) &
-            \end{flalign*}
-        \item Type
-            \begin{flalign*}
+    \begin{multicols}{2}
+        \begin{itemize}
+            \item Kind
+                \begin{align*}
+                    \natural(K) &= * &
+                \end{align*}
+            \item Term
+                \begin{align*}
+                    \natural(x) &= x & \\
+                    \natural(\lambda x:\tau.M) &= \lambda x:\natural(\tau).\natural(M) & \\
+                    \natural(M\ N) &= \natural(M)\ \natural(N)& \\
+                    \natural(\TB_\alpha M) &= \natural(M) & \\
+                    \natural(\TBL_\alpha M) &= \natural(M)& \\
+                    \natural(\Lambda\alpha.M) &= \natural(M)& \\
+                    \natural(M\ B) &= \natural(M) &
+                \end{align*}
+            \item Type
+            \begin{align*}
                 \natural(X) &= X & \\
                 \natural(\Pi x:\tau.\sigma) &= \natural(\tau) \to \natural(\sigma) & \\
                 \natural(\tau\ x) &= \natural(\tau) & \\
                 \natural(\TW_\alpha \tau) &= \natural(\tau) & \\
                 \natural(\forall \alpha.\tau) &= \natural(\tau) &
-            \end{flalign*}
-        \item Kind
-            \begin{flalign*}
-                \natural(K) &= * &
-            \end{flalign*}
+            \end{align*}
         \item Context
-            \begin{flalign*}
+            \begin{align*}
                 \natural(\phi) &= \phi & \\
                 \natural(\G, x:T@A) &= \natural(\G), \natural(x):\natural(\tau) & \\
                 \natural(\G, X:K@A) &= \natural(\G) &
-            \end{flalign*}
+            \end{align*}
     \end{itemize}
+    \end{multicols}
 \end{definition}
+
+We show \( \natural \) translation prserves typing and reduction of \LMD.
 
 \begin{lemma}[Preservation of Equality in $\natural$]
     If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
@@ -256,6 +259,8 @@ typed lambda calculus and prove it preserve reductions of \LMD especially \(
     \ref{lemma:PreservationOfBlacklozengeReductionInNatural}.
 \end{proof}
 
+Finally, we can prove Strong Normalization on level 0 subterms.
+
 \begin{lemma}[Strong Normalization of Level 0 Reduction]
     \label{lemma:StrongNormalizationofLevel0Reduction}
     If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_{0} M_{i+1}$ for $i\ge 1$
@@ -273,6 +278,9 @@ typed lambda calculus and prove it preserve reductions of \LMD especially \(
     and \ref{lemma:PreservationOfLevel0Reduction}. However, $\lambda^\to$ has a
     property of Strong Normalization, so there is no infinite reductions.
 \end{proof}
+
+General Strong Normalization can be proved easily using Lemma
+\ref{lemma:StrongNormalizationofLevel0Reduction}.
 
 \begin{lemma}[Strong Normalization of Level $n$ Reduction]
     \label{lemma:StrongNormalizationofLevelnReduction}
@@ -327,7 +335,7 @@ Reduction holds also for the staged reduction.
   If $M \longrightarrow_s M'$, then $M \longrightarrow M'$.
 \end{theorem}
 \begin{proof}
-  Easy.
+    Easy from the definition of \( M \longrightarrow_s M' \).
 \end{proof}
 
 The following theorem Unique Decomposition ensures that every typed
@@ -348,24 +356,19 @@ immediately stuck and the staged semantics is deterministic.
   We can prove by straightforward induction on typing derivations.
 \end{proof}
 
-The type environment $\G$ in the statement usually has to be empty;
-in other words, the term has to be closed.  The condition is relaxed here
-because variables at stages higher than \(\varepsilon\) are considered
-symbols.  In fact, this relaxation is required for proof by induction
-to work.
+The type environment $\G$ in the statement usually has to be empty; in other
+words, the term has to be closed. The condition is relaxed here because
+variables at stages higher than \(\varepsilon\) are considered symbols. In
+fact, this relaxation is required for proof by induction to work.
 
-% This theorem is important because it guarantees
-% that the evaluation context decides a redex to reduce deterministically.
-% Specifically speaking, this theorem guarantee that 
-% when you write a interpreter using the evaluation context of \LMD,
-% your interpreter works just as intended.
-      
 Progress is a corollary of Unique Decomposition.
 
-\begin{corollary}[Progress]
+\begin{theorem}[Progress]
 	If $\G$ does not have any variable declared at stage $\varepsilon$ and $\G \V M : \tau  @ A$, then
 	$ M \in V^A $ or there exists $M'$ such that $M \longrightarrow_s M'$.
-\end{corollary}
+\end{theorem}
+
+%%%%%%%%%%%%%%%%%%%%%%%% RESUME HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{lemma}[Strong Normalization of Algorithmic Reduction]
     \label{lemma:StrongNormalizationofAlgorithmicReduction}
