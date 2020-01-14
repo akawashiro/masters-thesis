@@ -2,7 +2,9 @@
 
 \section{Properties of \LMD \label{sec:properties}}
 
-In this section, we show the basic properties of \LMD: preservation, strong
+\subsection{Properties of typing}
+
+In this subsection, we show the basic properties of \LMD: preservation, strong
 normalization, confluence for full reduction, and progress for staged
 reduction.
 
@@ -368,7 +370,23 @@ Progress is a corollary of Unique Decomposition.
 	$ M \in V^A $ or there exists $M'$ such that $M \longrightarrow_s M'$.
 \end{theorem}
 
-%%%%%%%%%%%%%%%%%%%%%%%% RESUME HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Properties of Algorithmic Typing}
+
+In this subsection, we prove properties of algorithmic typing of \LMD. Main
+purpose of this subsection is prove the completeness and soundness of
+algorithmic typing which means the equivalence with the original typing. We
+start from proving properties of algorithmic reduction because it is used to
+define term equivalence in \QAANF. \ANF is a function which returns normal form
+of a term in algorithmic reduction and \( \E_\alpha \) means \( \alpha \)
+equivalence.
+
+\begin{center}
+    \infrule[\QAANF]{ \ANF(M) \E_\alpha \ANF(N) }{\G \AV M \E N@A}
+\end{center}
+
+First, we prove the uniqueness of \( \ANF(M) \) for all typed term \( M \)
+using Strong Normalization and Confluence of algorithmic reduction. Luckly, we
+can prove them just same as the normal reduction.
 
 \begin{lemma}[Strong Normalization of Algorithmic Reduction]
     \label{lemma:StrongNormalizationofAlgorithmicReduction}
@@ -389,14 +407,16 @@ Progress is a corollary of Unique Decomposition.
     It can be proved just same as the normal reduction.
 \end{proof}
 
-\begin{lemma}[Uniqueness of Algorithmic Reduction]
-    \label{lemma:UniquenessofAlgorithmicReduction}
+\begin{lemma}[Uniqueness of Algorithmic Reduction Normal Form]
+    \label{lemma:UniquenessOfANF}
     If \( \G \AVS M : \tau @ A \) then there is the unique normal form of \( M \), \( \ANF(M) \).
 \end{lemma}
 
 \begin{proof}
     It is obvious from Lemma \ref{lemma:StrongNormalizationofAlgorithmicReduction} and \ref{lemma:ConfluenceofAlgorithmicReduction}.
 \end{proof}
+
+Then, we prove the relationship between one step algorithmic reduction and substitution.
 
 \begin{lemma}[Algorithmic Reduction and Substitution]
     \label{lemma:AlgorithmicReductionAndSubstitution}
@@ -413,17 +433,27 @@ Progress is a corollary of Unique Decomposition.
 
     \begin{rneqncase}{\textsc{A-$\beta$}}{(\lambda x:\tau.M)\ N \RA M[x\mapsto N]}
         \begin{align*}
-            \ANF(((\lambda x:\tau.M)\ N)[z \mapsto P]) & = \ANF((\lambda x:\tau.M[z \mapsto P])\ N[z \mapsto P]) \\
-            & = \ANF(M[z \mapsto P][x \mapsto N[z \mapsto P]]) & (\text{From Lemma } \ref{lemma:UniquenessofAlgorithmicReduction}) \\
+            & \ANF(((\lambda x:\tau.M)\ N)[z \mapsto P]) \\
+            & = \ANF((\lambda x:\tau.M[z \mapsto P])\ N[z \mapsto P]) \\
+            & = \ANF(M[z \mapsto P][x \mapsto N[z \mapsto P]]) & (\text{From Lemma } \ref{lemma:UniquenessOfANF}) \\
             & = \ANF(M[x \mapsto N][z \mapsto P]) \\
             & = \ANF(M'[z \mapsto P])
         \end{align*}
     \end{rneqncase}
 \end{proof}
 
+Next, we prove that we can get the same term in two different ways. On the one
+hand, we calculate the algorithmic normal form after the substitution. On the
+other hand, we calculate the algorithmic normal form after the substitution for
+the algorithmic normal form. This lemma is crucial for Term Substitution Lemma
+of Algorithmic Judgement (Lemma
+\ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}). In \cite{attapl},
+they use weak head normal form but we changed it to normal form. This is
+because we couldn't prove this lemma for weak head normal form.
+
 \begin{lemma}[Algorithmic Normal Form and Substitution]
     \label{lemma:AlgorithmicNomalFormAndSubstitution}
-    \( \G, z:\xi@B, \D \AVS M : \tau @ A \) and
+    If \\ \( \G, z:\xi@B, \D \AVS M : \tau @ A \) then
     \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) \)
 \end{lemma}
 
@@ -441,6 +471,8 @@ Progress is a corollary of Unique Decomposition.
         Then from the transitivity of \( \E_\alpha \), \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) \).
     \end{rneqncase}
 \end{proof}
+
+\AK{================================HERE===================================}
 
 \begin{lemma}[Term Substitution Lemma of Algorithmic Judgement]
     \label{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}
@@ -469,8 +501,11 @@ Progress is a corollary of Unique Decomposition.
 \end{lemma}
 
 \begin{proof}
-    In cases of \textsc{A-$\beta$}, \textsc{A-$\TBL\TB$}, and \textsc{A-$\Lambda$} the same with the normal reduction. So, I discuss only the case of \textsc{A-\%}.
-    If \( \G \V \%_\alpha M : \tau @ A \), \( \%_\alpha M \RA M \) and \( \text{FV}(\%_\alpha M) = \emptyset \), \( M \) is a closed term. So \( \G \V M : \tau @ A \).
+    In cases of \textsc{A-$\beta$}, \textsc{A-$\TBL\TB$}, and
+    \textsc{A-$\Lambda$} the same with the normal reduction. So, I discuss only
+    the case of \textsc{A-\%}.  If \( \G \V \%_\alpha M : \tau @ A \), \(
+    \%_\alpha M \RA M \) and \( \text{FV}(\%_\alpha M) = \emptyset \), \( M \)
+    is a closed term. So \( \G \V M : \tau @ A \).
 \end{proof}
 
 \begin{lemma}[Algorithmic Type Preservation of Algorithmic Reduction]
@@ -481,33 +516,6 @@ Progress is a corollary of Unique Decomposition.
 \begin{proof}
     All cases other than \textsc{A-$\beta$} can be proved easily from the derivation of \( \G \AVS M:\tau @A \). In the case of \textsc{A-$\beta$}, we can prove it by Lemma \ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}.
 \end{proof}
-
-% \begin{lemma}[No Stage Variable Repetition]
-% \end{lemma}
-
-I hope this lemma true. I didn't prove this because it is not needed from anywhere in proofs of soundness and completeness.
-\begin{lemma}[Agreement of Algorithmic Typing]
-    Following statements are valid simultaneously.
-    \label{lemma:AgreementofAlgorithmicTyping}
-    \begin{itemize}
-        \item If \( \G \AVS \tau :: K @ A \) then \( \G \AVS K \iskind@ A \).
-        \item If \( \G \AVS M : \tau @ A \) then \( \G \AVS \tau :: * @ A \).
-    \end{itemize}
-\end{lemma}
-
-% \begin{proof}
-%     \begin{rneqncase}{\KAApp}{
-%             \G \AVS \sigma\ M :: K [x \mapsto M] @ A
-%             \text{ is derived from } \\
-%         \G\AVS \sigma:: (\Pi x:\tau.K)@A \text{ and } 
-%         \G\AVS M:\tau'@A \text{ and } 
-%         \G\AVS \tau \E \tau' @ A
-%         }
-%         \( \G, x:\tau@A \AVS \sigma :: K @ A\) because \( \G\AVS \sigma:: (\Pi x:\tau.K)@A \) is derived by \KAAbs.
-%         Use the induction hypothesis to \( \G, x:\tau@A \AVS \sigma :: K @ A\), \( \G, x:\tau@A \AVS K \iskind @ A\).
-%         Use Lemma \ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}, we get \( \G \AVS K [x \mapsto M] \iskind @ A \).
-%     \end{rneqncase}
-% \end{proof}
 
 \begin{lemma}[Algorithmic Reduction and Term Equivalence]
     \label{lemma:AlgorithmicReductionandTermEquivalence}
@@ -541,7 +549,6 @@ I hope this lemma true. I didn't prove this because it is not needed from anywhe
         \item If \(\G\AVS K,K' @ A\) and \(\G\AVS K\E K' @ A \) then \(\G\V K\E K' @ A \).
         \item If \(\G\AVS \tau,\tau' :: K @ A \) and \(\G\AVS \tau \E \tau' @ A \) then \(\G\V \tau \E \tau' :: K @ A \).
         \item If \(\G\AVS M,M' :: \tau @ A \) and \(\G\AVS M\E M' @ A \) then \(\G\V M\E M' :: \tau @ A \).
-        \item If \(\G\AVS M,M' :: \tau @ A \) and \(\G\AVS M\EWH M' @ A \) then \(\G\V M\E M' :: \tau @ A \).
     \end{itemize}
 \end{theorem}
 
@@ -598,7 +605,6 @@ I hope this lemma true. I didn't prove this because it is not needed from anywhe
         \item If \( \G \AVS K \E K' @ A \) then \( \G \AVS K' \E K @ A \).
         \item If \( \G \AVS \tau \E \tau' @ A \) then \( \G \AVS \tau' \E \tau @ A \).
         \item If \( \G \AVS M \E M' @ A \) then \( \G \AVS M' \E M @ A \).
-        \item If \( \G \AVS M \EWH M' @ A \) then \( \G \AVS M' \EWH M @ A \).
     \end{itemize}
 \end{lemma}
 
@@ -613,7 +619,6 @@ I hope this lemma true. I didn't prove this because it is not needed from anywhe
         \item If \( \G \AVS K \E K @ A \) then \( \G \AVS K \E K @ A \).
         \item If \( \G \AVS \tau \E \tau @ A \) then \( \G \AVS \tau \E \tau @ A \).
         \item If \( \G \AVS M \E M @ A \) then \( \G \AVS M \E M @ A \).
-        \item If \( \G \AVS M \EWH M @ A \) then \( \G \AVS M \EWH M @ A \).
     \end{itemize}
 \end{lemma}
 
@@ -628,7 +633,6 @@ I hope this lemma true. I didn't prove this because it is not needed from anywhe
         \item If \( \G \AVS K \E K' @ A \) and \( \G \AVS K' \E K'' @ A \) then \( \G \AVS K \E K'' @ A \).
         \item If \( \G \AVS \tau \E \tau' @ A \) and \( \G \AVS \tau' \E \tau'' @ A \) then \( \G \AVS \tau \E \tau'' @ A \).
         \item If \( \G \AVS M \E M' @ A \) and \( \G \AVS M' \E M'' @ A \) then \( \G \AVS M \E M'' @ A \).
-        \item If \( \G \AVS M \EWH M' @ A \) and \( \G \AVS M' \EWH M'' @ A \) then \( \G \AVS M \EWH M'' @ A \).
     \end{itemize}
 \end{lemma}
 
