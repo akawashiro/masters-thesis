@@ -574,7 +574,9 @@ form of \( M \) under algorithmic reduction which is defined in Figure
 \ref{fig:algorithmic-reduction}. Algorithmic reduction is composed of normal
 reductions of \LMD, which are \textsc{(A-$\beta$)}, \textsc{(A-$\TBL\TB$)}, and
 \textsc{(A-$\Lambda$)}, and one special reduction \textsc{(A-$\%$)}, which
-corresponds to \QPercent in the normal term equivalence rules.
+corresponds to \QPercent in the normal term equivalence rules. Just same as the
+normal reduction \( M \longrightarrow M' \), we define level 0 algorithmic reduction and
+level \( n \) algorithmic reduction.
 
 \begin{center}
     \infrule[\QAANF]{ \ANF(M) \E_\alpha \ANF(N) }{\G \AV M \E N@A}
@@ -588,9 +590,8 @@ corresponds to \QPercent in the normal term equivalence rules.
             & (\Lambda \alpha.M)\ A \RA M[\alpha \mapsto A] &  & \textsc{(A-$\Lambda$)} \\
             & \%_\alpha M \RA M \qquad (\emptyset = \text{FV}(\%_\alpha M)) &  & \textsc{(A-$\%$)}
         \end{align*}
-        And take the congruence on terms including level \( n \) subterms for all \( n \).
     \end{center}
-    \caption{Algorithmic reduction}
+    \caption{Algorithmic Basic Reduction}
     \label{fig:algorithmic-reduction}
 \end{figure}
 
