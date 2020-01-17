@@ -82,28 +82,41 @@ We prove agreement to use later in the completeness of the algorithmic typing.
 
 % Preservation
 
-Thanks to Term/Stage Substitution and Inversion, we can prove Preservation.
-First, we prove Preservation on Level 0 Reduction then prove general
-Preservation using it.
+Thanks to Term/Stage Substitution and Inversion, we can prove Type
+Preservation.  First, we prove Type and Equivalence Preservation on Level 0
+Reduction then prove general Type Preservation using it.
 
-\begin{lemma}[Preservation on Level 0 Reduction]
+\begin{lemma}[Type Preservation on Level 0 Reduction]
+    \label{lemma:TypePreservationonLevel0Reduction}
     If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
 \end{lemma}
 
 \begin{proof}
-    First, there are three cases for $M \longrightarrow_0 M'$.  They are $M
+    First, there are three base cases for $M \longrightarrow_0 M'$.  They are $M
     \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M
     \longrightarrow_\blacklozenge M'$.  For each case, we can use
     straightforward induction on typing derivations.
 \end{proof}
 
-\begin{theorem}[Preservation]
+\begin{lemma}[Equivalence Preservation on Level 0 Reduction]
+    \label{lemma:EquivalencePreservationonLevel0Reduction}
+    If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_0 M'' \), then \( \G \V M'' \E M' : \tau @ A \).
+\end{lemma}
+
+\begin{proof}
+    By case analysis on \( M \longrightarrow_0 M'' \) using \QTrans.
+\end{proof}
+
+\begin{theorem}[Type Preservation]
+    \label{theorem:TypePreservation}
     If \( \G \V M : \tau @ A \) and \( M \longrightarrow M' \), then \( \G \V M' : \tau @ A \).
 \end{theorem}
 
-\begin{proof}
+\begin{proof} 
     By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
-    typed. Then, it is a corollary of Preservation on Level 0 Reduction.
+    typed. So, all type and equivalence is preserved by Lemma
+    \ref{lemma:TypePreservationonLevel0Reduction} and
+    \ref{lemma:EquivalencePreservationonLevel0Reduction}.
 \end{proof}
 
 % Strong Normalization and how to prove it
@@ -533,7 +546,9 @@ substitution lemmas.
     \ref{lemma:AlgorithmicNomalFormAndTermSubstitution}.
 \end{proof}
 
-\AK{========== RESUME HERE ==========}
+Lemma \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} and
+\ref{lemma:StageSubstitutionLemmaofAlgorithmicJudgement} enable to prove type
+presevation of algorithmic reduction.
 
 \begin{lemma}[Type Preservation of Algorithmic Reduction]
     \label{lemma:TypePreservationofAlgorithmicReduction}
@@ -541,11 +556,11 @@ substitution lemmas.
 \end{lemma}
 
 \begin{proof}
-    In cases of \textsc{A-$\beta$}, \textsc{A-$\TBL\TB$}, and
-    \textsc{A-$\Lambda$} the same with the normal reduction. So, I discuss only
-    the case of \textsc{A-\%}.  If \( \G \V \%_\alpha M : \tau @ A \), \(
-    \%_\alpha M \RA M \) and \( \text{FV}(\%_\alpha M) = \emptyset \), \( M \)
-    is a closed term. So \( \G \V M : \tau @ A \).
+    Similar to Theorem \ref{theorem:TypePreservation}, we prove type and
+    equivalence presevation lemma and use them. The diffirent case is
+    \textsc{A-\%}.  If \( \G \V \%_\alpha M : \tau @ A \), \( \%_\alpha M \RA M
+    \) and \( \text{FV}(\%_\alpha M) = \emptyset \), \( M \) is a closed term.
+    So \( \G \V M : \tau @ A \).
 \end{proof}
 
 \begin{lemma}[Algorithmic Type Preservation of Algorithmic Reduction]
@@ -554,18 +569,19 @@ substitution lemmas.
 \end{lemma}
 
 \begin{proof}
-    All cases other than \textsc{A-$\beta$} can be proved easily from the
-    derivation of \( \G \AVS M:\tau @A \). In the case of \textsc{A-$\beta$},
-    we can prove it by Lemma
-    \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement}.
+    Similar to Theorem \ref{theorem:TypePreservation}. In the case of
+    \textsc{A-$\beta$} and \textsc{A-$\Lambda$} we can prove it by Lemma
+    \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} and
+    \ref{lemma:StageSubstitutionLemmaofAlgorithmicJudgement}.
 \end{proof}
 
 \begin{lemma}[Algorithmic Reduction and Term Equivalence]
     \label{lemma:AlgorithmicReductionandTermEquivalence}
     If \( \G \V M : \tau @ A \) and \( M \RA M' \) then \( \G \V M \E M' : \tau @ A \).
 \end{lemma}
+
 \begin{proof}
-    By induction on \( M \RA M' \).
+    By case analysis on \( M \RA M' \).
     \begin{rneqncase}{\textsc{A-\%}}{\%_\alpha M \RA M \text{ and } \emptyset = \text{FV}(\%_\alpha M)}
         Now, we can assume \( \G \V \%_\alpha M : \tau @ A\alpha \) and \( \G
         \V M : \tau @ A \).  We prove \( \G \V M : \tau @ A\alpha \) by
@@ -574,14 +590,18 @@ substitution lemmas.
     \end{rneqncase}
 \end{proof}
 
-\begin{corollary}[ANF and Term Equivalence]
-    \label{corollary:ANFandTermEquivalence}
+Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
+
+\begin{lemma}[ANF and Term Equivalence]
+    \label{lemma:ANFandTermEquivalence}
     If \( \G \V M : \tau @ A \) then \( \G \V M \E \ANF(M) : \tau @ A\).
-\end{corollary}
+\end{lemma}
 \begin{proof}
     Corollary of Lemma \ref{lemma:TypePreservationofAlgorithmicReduction} and
     \ref{lemma:AlgorithmicReductionandTermEquivalence}.
 \end{proof}
+
+\AK{========== RESUME HERE ==========}
 
 \begin{theorem}[Soundness of Algorithmic Typing]
     If a term is typed in algorithmic rules then the term is typed in normal rules, too.
@@ -632,7 +652,7 @@ substitution lemmas.
         }
         Apply the induction hypothesis on \( \G \AVS M, N : \tau @ A \), we get \( \G \V M, N : \tau @ A \).
         Apply Lemma \ref{lemma:TypePreservationofAlgorithmicReduction} to \( \G \V M, N : \tau @ A \), \( \G \V \ANF(M), \ANF(N) : \tau @ A \).
-        Apply Corollary \ref{corollary:ANFandTermEquivalence} to \( \G \V \ANF(M), \ANF(N) : \tau @ A \), \( \G \V M \E \ANF(M) : \tau @ A \) and \( \G \V N \E \ANF(N) : \tau @ A \).
+        Apply Corollary \ref{lemma:ANFandTermEquivalence} to \( \G \V \ANF(M), \ANF(N) : \tau @ A \), \( \G \V M \E \ANF(M) : \tau @ A \) and \( \G \V N \E \ANF(N) : \tau @ A \).
 
         Apply Lemma \ref{lemma:AlgorithmicTypePreservationofAlgorithmicReduction} to \( \G \V M, N : \tau @ A \), \( \G \AVS \ANF(M), \ANF(N) : \tau @ A \).
         \( \G \V \ANF(M) \E \ANF(N) : \tau @ A \) from using the induction hypothesis on \( \G \AVS \ANF(M), \ANF(N) : \tau @ A \) and \( \G \AV \ANF(M) \E_\alpha \ANF(N) @A \).
