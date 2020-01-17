@@ -601,9 +601,13 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
     \ref{lemma:AlgorithmicReductionandTermEquivalence}.
 \end{proof}
 
-\AK{========== RESUME HERE ==========}
+Finally, we prove the soundness of algorithmic typing. It means that if a term is
+typed in algorithmic typing then the term is also typed in the original typing.
+Because algorithmic typing is defined mutally involving other algorithmic
+judgements, we use simultaneous induction for proof.
 
 \begin{theorem}[Soundness of Algorithmic Typing]
+    \label{theorem:SoundnessOfAlgorithmicTyping}
     If a term is typed in algorithmic rules then the term is typed in normal rules, too.
     \begin{itemize}
         \item If \(\G\AVS K \iskind @ A \) then \(\G\V K \iskind @A \).
@@ -621,7 +625,7 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
             \G\AVS \sigma\ M::K[x\mapsto M]@A \\
             \text{ is derived from } 
             \G\AVS \sigma:: (\Pi x:\tau.K)@A \text{ , }
-            \G\AVS M:\tau'@A \text{ , } 
+            \G\AVS M:\tau'@A \text{ , } \\
             \G\AVS\tau'::*@A \text{ and } 
             \G\AVS \tau \E \tau' @ A.
         }
@@ -637,7 +641,7 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
             \G\AVS M\ N : \tau[x\mapsto N]@A \\
             \text{ is derived from } 
             \G\AVS M:(\Pi (x:\sigma).\tau) \text{ , }
-            \G\AVS N:\sigma'@A \text{ , }
+            \G\AVS N:\sigma'@A \text{ , } \\
             \G\AVS \sigma'::*@A \text{ and }
             \G\AVS \sigma\E\sigma' @A
         }
@@ -646,7 +650,7 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
         Then, \( \G\V M\ N : \tau[x\mapsto N]@A \) from \TConv and \TApp.
     \end{rneqncase}
     \begin{rneqncase}{\textsc{QA-ANF}}{
-            \G \AV M \E N@A
+            \G \AV M \E N@A \\
             \text{ is derived from } 
             \G \AV \ANF(M) \E_\alpha \ANF(N) @A.
         }
@@ -660,6 +664,10 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
         Apply \QTrans to \( \G \V \ANF(M) \E \ANF(N) : \tau @ A \) and \( \G \V M \E \ANF(M) : \tau @ A \) and \( \G \V N \E \ANF(N) : \tau @ A \), \( \G \V M \E N : \tau @ A \)
     \end{rneqncase}
 \end{proof}
+
+Next theorem is the completeness of algorithmic typing. First, we prove
+symmetricity, reflexivity and transitiviy of algorithmic typing which are
+indispensable for the proof.
 
 \begin{lemma}[Symmetricity in Algorithmic Equivalence]
     The algorithmic equivalence relationship is symmetrical.
@@ -708,6 +716,8 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
     from the induction hypothesis and the last rule.
 \end{proof}
 
+This lemma is used in \QPercent case in the proof of the completeness.
+
 \begin{lemma}[Free Variable and Stage]
     \label{lemma:FreeVariableandStage}
     If \( \G\V M:\tau@{A\alpha} \) and \( \G\V M:\tau @A \) then \( \FV(M) = \emptyset \).
@@ -719,6 +729,9 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
     \tau @ B\alpha \in \G \). However, from well-formedness of \( \G \), there
     is no such \( x \).
 \end{proof}
+
+This is the last theorem -- Completeness. It means that when a term is typed in
+the original typing, it is also typed in the algorithmic typing.
 
 \begin{theorem}[Completeness of Algorithmic Typing]
     \label{theorem:CompletenessofAlgorithmicTyping}
@@ -805,3 +818,7 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
         It is obvious from Lemma \ref{lemma:TransitioninAlgorithmicEquivalence}.
     \end{rneqncase}
 \end{proof}
+
+From Theorem \ref{theorem:SoundnessOfAlgorithmicTyping} and
+\ref{theorem:CompletenessofAlgorithmicTyping}, we can say the original typing
+and the algorithmic typing are equivalent.
