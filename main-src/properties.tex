@@ -35,10 +35,30 @@ We proved the next two lemmas by simultaneous induction on derivations.
     If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
 \end{lemma}
 
+% Agreement
+
+We prove agreement to use later in the completeness of the algorithmic typing.
+
+\begin{lemma}[Agreement]
+    \label{lemma:Agreement}
+	\begin{enumerate}
+		\item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
+		\item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
+		\item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
+		\item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
+		\item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
+	\end{enumerate}
+\end{lemma}
+\begin{proof}
+	We can prove using induction on the derivation tree.
+\end{proof}
+
+
 % Inversion Lemma
 
-The following Inversion Lemma is needed to prove the main theorems.
-As usual~\cite{TAPL}, the Inversion Lemma enables us to infer the types of subterms of a term from the shape of the term.
+The following Inversion Lemma is needed to prove the main theorems.  As
+usual~\cite{TAPL}, the Inversion Lemma enables us to infer the types of
+subterms of a term from the shape of the term.
 
 \begin{lemma}[Inversion]\ 
 	\begin{enumerate}
@@ -62,22 +82,6 @@ As usual~\cite{TAPL}, the Inversion Lemma enables us to infer the types of subte
   \end{quotation}
   and its symmetric version.  Then, they are proved simultaneously by induction on derivations.
   Similarly for the others.
-\end{proof}
-
-We prove agreement to use later in the completeness of the algorithmic typing.
-
-\begin{lemma}[Agreement]
-    \label{lemma:Agreement}
-	\begin{enumerate}
-		\item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
-		\item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
-		\item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
-		\item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
-		\item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
-	\end{enumerate}
-\end{lemma}
-\begin{proof}
-	We can prove using induction on the derivation tree.
 \end{proof}
 
 % Preservation
@@ -328,6 +332,32 @@ General Strong Normalization can be proved easily using Lemma
 Confluence is a property that any reduction sequences from one typed term
 converge.  Since we have proved Strong Normalization, we can use Newman's
 Lemma~\cite{DBLP:books/daglib/0092409} to prove Confluence.
+
+\begin{lemma}[Confluence of Level 0 Reduction]
+    \label{lemma:ConfluenceofLevel0Reduction}
+    For any term $M$, if $M \longrightarrow_0^* M'$ and $M \longrightarrow_0^* M''$,
+    there exists $M'''$ that satisfies $M' \longrightarrow_0^* M'''$ and $M'' \longrightarrow_0^* M'''$.
+\end{lemma}
+
+\begin{proof}
+    Because we show the Strong Normalization of $\lambda^{\text{MD}}$, we can
+    use Newman's lemma to prove Church-Rosser Property of
+    $\lambda^{\text{MD}}$.  Then, what we must show is Weak Church-Rosser
+    Property.  When we consider two different redexes in a
+    $\lambda^{\text{MD}}$ term, they can only be disjoint, or one is a part of
+    the other.  In short, they never overlap each other.  So, we can reduce one
+    of them after we reduce another.
+\end{proof}
+
+\begin{lemma}[Confluence of Level n Reduction]
+    \label{lemma:ConfluenceofLevelnReduction}
+    For any term $M$, if $M \longrightarrow_n^* M'$ and $M \longrightarrow_n^* M''$,
+    there exists $M'''$ that satisfies $M' \longrightarrow_n^* M'''$ and $M'' \longrightarrow_n^* M'''$.
+\end{lemma}
+
+\begin{proof}
+    Same as Lemma \ref{lemma:StrongNormalizationofLevelnReduction}.
+\end{proof}
 
 \begin{theorem}[Confluence]
 	For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$ then
