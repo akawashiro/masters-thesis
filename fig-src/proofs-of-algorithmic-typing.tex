@@ -19,8 +19,8 @@
     It can be proved just same as the normal reduction.
 \end{proof}
 
-\begin{lemma}[Uniqueness of Algorithmic Reduction]
-    \label{lemma:UniquenessofAlgorithmicReduction}
+\begin{lemma}[Uniqueness of Algorithmic Reduction Normal Form]
+    \label{lemma:UniquenessOfANF}
     If \( \G \AVS M : \tau @ A \) then there is the unique normal form of \( M \), \( \ANF(M) \).
 \end{lemma}
 
@@ -44,10 +44,10 @@
     \begin{rneqncase}{\textsc{A-$\beta$}}{(\lambda x:\tau.M)\ N \RA M[x\mapsto N]}
         \begin{align*}
             & \ANF(((\lambda x:\tau.M)\ N)[z \mapsto P]) \\
-            & = \ANF((\lambda x:\tau.M[z \mapsto P])\ N[z \mapsto P]) \\
-            & = \ANF(M[z \mapsto P][x \mapsto N[z \mapsto P]]) & (\text{From Lemma } \ref{lemma:UniquenessOfANF}) \\
-            & = \ANF(M[x \mapsto N][z \mapsto P]) \\
-            & = \ANF(M'[z \mapsto P])
+            & \E_\alpha \ANF((\lambda x:\tau.M[z \mapsto P])\ N[z \mapsto P]) \\
+            & \E_\alpha \ANF(M[z \mapsto P][x \mapsto N[z \mapsto P]]) & (\text{From Lemma } \ref{lemma:UniquenessOfANF}) \\
+            & \E_\alpha \ANF(M[x \mapsto N][z \mapsto P]) \\
+            & \E_\alpha \ANF(M'[z \mapsto P])
         \end{align*}
     \end{rneqncase}
 \end{proof}
@@ -60,55 +60,16 @@
 
 \begin{proof}
     Prove by induction on the derivation of \( M \RA M' \).
+    \begin{rneqncase}{\textsc{A-$\Lambda$}}{(\Lambda \beta.M)\ C \RA M[\beta \mapsto C]}
+        \begin{align*}
+            & \ANF(((\Lambda \beta.M)\ C)[\alpha \mapsto B]) \\
+            & \E_\alpha \ANF((\Lambda \beta.M[\alpha \mapsto B])\ C[\alpha \mapsto B]) \\
+            & \E_\alpha \ANF((M[\alpha \mapsto B])[\beta \mapsto C[\alpha \mapsto B]]) \\
+            & \E_\alpha \ANF((M[\beta \mapsto C])[\alpha \mapsto B])
+        \end{align*}
+    \end{rneqncase}
 \end{proof}
 
-
-% \begin{lemma}[Algorithmic Reduction and Substitution]
-%     \label{lemma:AlgorithmicReductionAndTermSubstitution}
-%     If \( \G, z:\xi@B, \D \AVS M : \tau @ A \) and \( M \RA M' \) then
-%     \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(M'[z\mapsto P]) \).
-% \end{lemma}
-%
-% \begin{proof}
-%     Prove by induction on the derivation of \( M \RA M' \).
-%     \begin{rneqncase}{\textsc{A-\%}}{\%M \RA M \text{ and } \text{FV}(M)=\emptyset}
-%         From \( \text{FV}(M)=\emptyset \), \( z \notin \text{FV}(M) \) and \( z \notin \text{FV}(M') \).
-%         Then \( \ANF(M) \E_\alpha \ANF(M') \) is obvious.
-%     \end{rneqncase}
-%
-%     \begin{rneqncase}{\textsc{A-$\beta$}}{(\lambda x:\tau.M)\ N \RA M[x\mapsto N]}
-%         \begin{align*}
-%             \ANF(((\lambda x:\tau.M)\ N)[z \mapsto P]) & = \ANF((\lambda x:\tau.M[z \mapsto P])\ N[z \mapsto P]) \\
-%             & = \ANF(M[z \mapsto P][x \mapsto N[z \mapsto P]]) & (\text{From Lemma } \ref{lemma:UniquenessofAlgorithmicReduction}) \\
-%             & = \ANF(M[x \mapsto N][z \mapsto P]) \\
-%             & = \ANF(M'[z \mapsto P])
-%         \end{align*}
-%     \end{rneqncase}
-% \end{proof}
-
-% \begin{lemma}[Algorithmic Normal Form and Substitution]
-%     \label{lemma:AlgorithmicNomalFormAndSubstitution}
-%     \( \G, z:\xi@B, \D \AVS M : \tau @ A \) and
-%     \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) \)
-% \end{lemma}
-%
-% \begin{proof}
-%     Prove by induction on the length \( n \) of reduction from \( M \) to \( \ANF(M) \).
-%     \begin{rneqncase}{$n$ = 0}{M = \ANF(M) }
-%         It is obvious.
-%     \end{rneqncase}
-%     \begin{rneqncase}{$n$ = 1}{M \RA M' \text{ and } \ANF(M) = M' }
-%         From Lemma \ref{lemma:AlgorithmicReductionAndTermSubstitution}.
-%     \end{rneqncase}
-%     \begin{rneqncase}{$n$ > 1}{M \RA^* M' \text{ and } M' \RA^* M'' \text{ and } \ANF(M) = M'' }
-%         From the induction hypothesis, \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(M'[z\mapsto P]) \).
-%         From Lemma \ref{lemma:AlgorithmicReductionAndTermSubstitution}, \( \ANF(M'[z\mapsto P]) \E_\alpha \ANF(M''[z\mapsto P]) \).
-%         Then from the transitivity of \( \E_\alpha \), \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) \).
-%     \end{rneqncase}
-% \end{proof}
-%
-%
-%
 \begin{lemma}[Algorithmic Normal Form and Term Substitution]
     \label{lemma:AlgorithmicNomalFormAndTermSubstitution}
     If \\ \( \G, z:\xi@B, \D \AVS M : \tau @ A \) then
@@ -143,7 +104,7 @@
 \end{proof}
 
 \begin{lemma}[Term Substitution Lemma of Algorithmic Judgement]
-    \label{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}
+    \label{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement}
     If $\G, z:\xi@B, \D \AVS \mathcal{J}$ and $\G\AVS P:\xi @B$ then $\G, \D[z \mapsto P] \AVS \mathcal{J}[z \mapsto P]$.
 \end{lemma}
 
@@ -179,9 +140,13 @@
     If \( \G \V M:\tau @A \) and \( M \RA M' \) then \( \G \V M' : \tau @ A \).
 \end{lemma}
 
+
 \begin{proof}
-    In cases of \textsc{A-$\beta$}, \textsc{A-$\TBL\TB$}, and \textsc{A-$\Lambda$} the same with the normal reduction. So, I discuss only the case of \textsc{A-\%}.
-    If \( \G \V \%_\alpha M : \tau @ A \), \( \%_\alpha M \RA M \) and \( \text{FV}(\%_\alpha M) = \emptyset \), \( M \) is a closed term. So \( \G \V M : \tau @ A \).
+    Similar to Theorem \ref{theorem:TypePreservation}, we prove type and
+    equivalence preservation lemma and use them. The different case is
+    \textsc{A-\%}.  If \( \G \V \%_\alpha M : \tau @ A \), \( \%_\alpha M \RA M
+    \) and \( \text{FV}(\%_\alpha M) = \emptyset \), \( M \) is a closed term.
+    So \( \G \V M : \tau @ A \).
 \end{proof}
 
 \begin{lemma}[Algorithmic Type Preservation of Algorithmic Reduction]
@@ -190,13 +155,15 @@
 \end{lemma}
 
 \begin{proof}
-    All cases other than \textsc{A-$\beta$} can be proved easily from the derivation of \( \G \AVS M:\tau @A \). In the case of \textsc{A-$\beta$}, we can prove it by Lemma \ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}.
+    Similar to Theorem \ref{theorem:TypePreservation}. In the case of
+    \textsc{A-$\beta$} and \textsc{A-$\Lambda$} we can prove it by Lemma
+    \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} and
+    \ref{lemma:StageSubstitutionLemmaofAlgorithmicJudgement}.
 \end{proof}
 
-% \begin{lemma}[No Stage Variable Repetition]
-% \end{lemma}
+I hope this lemma true. I didn't prove this because it is not needed from
+anywhere in proofs of soundness and completeness.
 
-I hope this lemma true. I didn't prove this because it is not needed from anywhere in proofs of soundness and completeness.
 \begin{lemma}[Agreement of Algorithmic Typing]
     Following statements are valid simultaneously.
     \label{lemma:AgreementofAlgorithmicTyping}
@@ -206,26 +173,12 @@ I hope this lemma true. I didn't prove this because it is not needed from anywhe
     \end{itemize}
 \end{lemma}
 
-% \begin{proof}
-%     \begin{rneqncase}{\KAApp}{
-%             \G \AVS \sigma\ M :: K [x \mapsto M] @ A
-%             \text{ is derived from } \\
-%         \G\AVS \sigma:: (\Pi x:\tau.K)@A \text{ and } 
-%         \G\AVS M:\tau'@A \text{ and } 
-%         \G\AVS \tau \E \tau' @ A
-%         }
-%         \( \G, x:\tau@A \AVS \sigma :: K @ A\) because \( \G\AVS \sigma:: (\Pi x:\tau.K)@A \) is derived by \KAAbs.
-%         Use the induction hypothesis to \( \G, x:\tau@A \AVS \sigma :: K @ A\), \( \G, x:\tau@A \AVS K \iskind @ A\).
-%         Use Lemma \ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}, we get \( \G \AVS K [x \mapsto M] \iskind @ A \).
-%     \end{rneqncase}
-% \end{proof}
-
 \begin{lemma}[Algorithmic Reduction and Term Equivalence]
     \label{lemma:AlgorithmicReductionandTermEquivalence}
     If \( \G \V M : \tau @ A \) and \( M \RA M' \) then \( \G \V M \E M' : \tau @ A \).
 \end{lemma}
 \begin{proof}
-    By induction on \( M \RA M' \).
+    By case analysis on \( M \RA M' \).
     \begin{rneqncase}{\textsc{A-\%}}{\%_\alpha M \RA M \text{ and } \emptyset = \text{FV}(\%_\alpha M)}
         Now, we can assume \( \G \V \%_\alpha M : \tau @ A\alpha \) and \( \G
         \V M : \tau @ A \).  We prove \( \G \V M : \tau @ A\alpha \) by
@@ -389,7 +342,7 @@ I hope this lemma true. I didn't prove this because it is not needed from anywhe
         Now, we can apply \KAApp to \( \G \AVS \sigma :: \Pi x:\tau'.K' @ A \),
         \( \G \AVS M: \tau @ A \) and \( \G \AVS \tau \E \tau' @ A\) and get \(
         \G \AVS \sigma\ M :: K'[x \mapsto M] @ A \).  From Lemma
-        \ref{lemma:TermSubstitutionLemmaofAlgorithmicJudgement}, \( \G \AVS K[x
+        \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement}, \( \G \AVS K[x
         \mapsto M] \E K'[x \mapsto M] @ A \).
     \end{rneqncase}
     \begin{rneqncase}{\KConv}{
