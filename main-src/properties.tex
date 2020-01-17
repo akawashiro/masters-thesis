@@ -22,7 +22,7 @@ $M \E N : \tau @ A$.  Substitutions $\mathcal{J}[z \mapsto M]$ and
 $\mathcal{J}[\alpha \mapsto A]$ are defined in a straightforward
 manner.  Using these notations, the two substitution lemmas are stated as follows:
 
-We proved the next two leammas by simultaneous induction on derivations.
+We proved the next two lemmas by simultaneous induction on derivations.
 
 \begin{lemma}[Term Substitution]
     \label{lemma:TermSubstitution}
@@ -166,7 +166,7 @@ reduction.
     \end{multicols}
 \end{definition}
 
-We show \( \natural \) translation prserves typing and reduction of \LMD.
+We show \( \natural \) translation preserves typing and reduction of \LMD.
 
 \begin{lemma}[Preservation of Equality in $\natural$]
     If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
@@ -301,7 +301,7 @@ General Strong Normalization can be proved easily using Lemma
 
 \begin{lemma}[Strong Normalization of Level $n$ Reduction]
     \label{lemma:StrongNormalizationofLevelnReduction}
-    \( n \) is a arbitary integer which is greater than 0.
+    \( n \) is a arbitrary integer which is greater than 0.
     If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_n M_{i+1}$ for $i\ge 1$.
 \end{lemma}
 
@@ -309,7 +309,7 @@ General Strong Normalization can be proved easily using Lemma
     If \( \G\V M:\tau@A \) then there are \( \G', \sigma \) and \( B \) such
     that \( \G' \V N : \sigma @ B \) for any level \( n \) subterm \( N \).
     This is because \( N \) is embedded into \( M \) using \KApp or \TApp.
-    Then, \( N \) is strong nomalizing because of Lemma
+    Then, \( N \) is strong normalizing because of Lemma
     \ref{lemma:StrongNormalizationofLevel0Reduction}.
 \end{proof}
 
@@ -400,7 +400,7 @@ equivalence.
 \end{center}
 
 First, we prove the uniqueness of \( \ANF(M) \) for all typed term \( M \)
-using Strong Normalization and Confluence of algorithmic reduction. Luckly, we
+using Strong Normalization and Confluence of algorithmic reduction. Luckily, we
 can prove them just same as the normal reduction.
 
 \begin{lemma}[Strong Normalization of Algorithmic Reduction]
@@ -548,7 +548,7 @@ substitution lemmas.
 
 Lemma \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} and
 \ref{lemma:StageSubstitutionLemmaofAlgorithmicJudgement} enable to prove type
-presevation of algorithmic reduction.
+preservation of algorithmic reduction.
 
 \begin{lemma}[Type Preservation of Algorithmic Reduction]
     \label{lemma:TypePreservationofAlgorithmicReduction}
@@ -557,7 +557,7 @@ presevation of algorithmic reduction.
 
 \begin{proof}
     Similar to Theorem \ref{theorem:TypePreservation}, we prove type and
-    equivalence presevation lemma and use them. The diffirent case is
+    equivalence preservation lemma and use them. The different case is
     \textsc{A-\%}.  If \( \G \V \%_\alpha M : \tau @ A \), \( \%_\alpha M \RA M
     \) and \( \text{FV}(\%_\alpha M) = \emptyset \), \( M \) is a closed term.
     So \( \G \V M : \tau @ A \).
@@ -603,7 +603,7 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
 
 Finally, we prove the soundness of algorithmic typing. It means that if a term is
 typed in algorithmic typing then the term is also typed in the original typing.
-Because algorithmic typing is defined mutally involving other algorithmic
+Because algorithmic typing is defined mutually involving other algorithmic
 judgements, we use simultaneous induction for proof.
 
 \begin{theorem}[Soundness of Algorithmic Typing]
@@ -666,7 +666,7 @@ judgements, we use simultaneous induction for proof.
 \end{proof}
 
 Next theorem is the completeness of algorithmic typing. First, we prove
-symmetricity, reflexivity and transitiviy of algorithmic typing which are
+symmetricity, reflexivity and transitivity of algorithmic typing which are
 indispensable for the proof.
 
 \begin{lemma}[Symmetricity in Algorithmic Equivalence]
