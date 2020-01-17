@@ -1,117 +1,118 @@
+% !TEX root = ../fig.tex
+
 % \AI{Put a comma before ``then''.}
 % \AI{A period is needed for each statement (because it's a sentence).}
 % \AI{TAPL gives plenty of examples of how to write proofs.}
+
 $\mathcal{J}$ is a meta-variable for judgments.
 We say type environment \(\G\) is a sub-sequence of type environment \(\D\)
 if and only if we can get \(\G\) from \(\D\) by deleting some or no variables without changing the order of the remaining elements.
 \begin{lemma}[Weakening]
-	If \(\G \V \mathcal{J}@A\) and \(\G\) is a sub-sequence of \(\D\), then \(\D \V J@A\).
-	% \AI{Apply similar changes and remove \%.}
-	% \red{このコメントはどういう意味ですか?}
+    If \(\G \V \mathcal{J}@A\) and \(\G\) is a sub-sequence of \(\D\), then \(\D \V J@A\).
 \end{lemma}
 
 \begin{proof}
-	By straightforward induction on the derivation of typing, kinding, well-formed kinding,
-	term equivalence, type equivalence or kind equivalence.
-	We show only representative cases.
+    By straightforward induction on the derivation of typing, kinding, well-formed kinding,
+    term equivalence, type equivalence or kind equivalence.
+    We show only representative cases.
 
-	\begin{rneqncase}{\WAbs{}}{
-			\mathcal{J} = (\Pi x:\tau.K)\iskind @A \\
-			\G \V \tau :: * @ A & \G,x:\tau@A \V K \iskind @A
-		}
-		By the induction hypothesis, we have
-		\begin{align*}
-			 & \D \V \tau::*@A &  & \D, x:\tau@A \V K \iskind @ A
-		\end{align*}
-		from which $\D\V (\Pi x:\tau.K) \iskind @ A$ follows by $\WAbs$.
-	\end{rneqncase}
+    \begin{rneqncase}{\WAbs{}}{
+            \mathcal{J} = (\Pi x:\tau.K)\iskind @A \\
+            \G \V \tau :: * @ A & \G,x:\tau@A \V K \iskind @A
+            }
+            By the induction hypothesis, we have
+            \begin{align*}
+                & \D \V \tau::*@A &  & \D, x:\tau@A \V K \iskind @ A
+            \end{align*}
+            from which $\D\V (\Pi x:\tau.K) \iskind @ A$ follows by $\WAbs$.
+    \end{rneqncase}
 
-	\begin{rneqncase}{\KAbs{}}{
-			\mathcal{J} = (\Pi x:\tau.) :: (\Pi x:\tau.J)@A \\
-			\G \V \tau::*@A &  & \G,x:\tau@A\V \sigma :: J @ A.
-		}
-		By the induction hypothesis, we have
-		\begin{align*}
-			 & \D \V \tau::*@A &  & \D,x:\tau@A\V \sigma :: J @ A
-		\end{align*}
-		from which $\D \V (\Pi x:\tau.) :: (\Pi x:\tau.J)@A$ follows.
-	\end{rneqncase}
+    \begin{rneqncase}{\KAbs{}}{
+            \mathcal{J} = (\Pi x:\tau.) :: (\Pi x:\tau.J)@A \\
+            \G \V \tau::*@A &  & \G,x:\tau@A\V \sigma :: J @ A.
+            }
+            By the induction hypothesis, we have
+            \begin{align*}
+                & \D \V \tau::*@A &  & \D,x:\tau@A\V \sigma :: J @ A
+            \end{align*}
+            from which $\D \V (\Pi x:\tau.) :: (\Pi x:\tau.J)@A$ follows.
+    \end{rneqncase}
 
-	\begin{rneqncase}{
-			\QTAbs{}}{
-			\mathcal{J} = \rho \E \pi :: * @ A \\
-			\G\V \tau \E \sigma :: *@A  & \G,x:\tau@A \V \rho \E \pi :: *@A.
-		}
-		By the induction hypothesis, we have
-		\begin{align*}
-			 & \D\V \tau \E \sigma :: *@A &  & \D,x:\tau@A \V \rho \E \pi :: *@A
-		\end{align*}
-		from which \( \D\V \rho \E \pi :: * @ A \) follows.
-	\end{rneqncase}
-	\end{proof}
+    \begin{rneqncase}{
+            \QTAbs{}}{
+            \mathcal{J} = \rho \E \pi :: * @ A \\
+            \G\V \tau \E \sigma :: *@A  & \G,x:\tau@A \V \rho \E \pi :: *@A.
+            }
+            By the induction hypothesis, we have
+            \begin{align*}
+                & \D\V \tau \E \sigma :: *@A &  & \D,x:\tau@A \V \rho \E \pi :: *@A
+            \end{align*}
+            from which \( \D\V \rho \E \pi :: * @ A \) follows.
+    \end{rneqncase}
+\end{proof}
 
 \begin{lemma}[Term Substitution]
     \label{lemma:TermSubstitution}
-	If $\G, z:\xi@B, \D \V \mathcal{J}$ and $\G\V P:\xi @B$, then $\G, \D[z \mapsto P] \V \mathcal{J}[z \mapsto P]$.  Similarly, if $\V \G, z:\xi@B, \D$ and
-	$\G\V P:\xi @B$, then $\V \G, \D[z \mapsto P]$.
+    If $\G, z:\xi@B, \D \V \mathcal{J}$ and $\G\V P:\xi @B$, then $\G, \D[z \mapsto P] \V \mathcal{J}[z \mapsto P]$.  Similarly, if $\V \G, z:\xi@B, \D$ and
+    $\G\V P:\xi @B$, then $\V \G, \D[z \mapsto P]$.
 \end{lemma}
 
 \begin{proof}
-	Proved simultaneously by induction on derivations with case analysis on the last rule used.
-	We show only representative cases.
-		{
-			\newcommand{\SB}{[z \mapsto P]}
-			\newcommand{\GG}{\G}
-			\newcommand{\GGV}{\G \V}
+    Proved simultaneously by induction on derivations with case analysis on the last rule used.
+    We show only representative cases.
+    {
+        \newcommand{\SB}{[z \mapsto P]}
+        \newcommand{\GG}{\G}
+        \newcommand{\GGV}{\G \V}
 
-			\begin{rneqncase}{\TVar{}}{
-					\mathcal{J} = y:\tau@A\\
-					y:\tau@A \in (\G, z:\xi@B, \D).
-				}
-				\begin{itemize}
-					\item If $y:\tau@A \in \G$ or $y:\tau@A \in \D$, then it is obvious that $y:\tau\SB@A \in \GG$.
-					      \(\G,\D\SB \V y\SB:\tau\SB@A\) from \TVar.
+        \begin{rneqncase}{\TVar{}}{
+                \mathcal{J} = y:\tau@A\\
+                y:\tau@A \in (\G, z:\xi@B, \D).
+                }
+                \begin{itemize}
+                    \item If $y:\tau@A \in \G$ or $y:\tau@A \in \D$, then it is obvious that $y:\tau\SB@A \in \GG$.
+                        \(\G,\D\SB \V y\SB:\tau\SB@A\) from \TVar.
 
-					\item If $y:\tau@A = z:\xi@B$, then
-					      $y = z$, $\tau = \xi$, and $A = B$.
-					      From the well-formedness of \( \G, z:\xi@B,\D \), there is no $z$ in $\xi$.
-					      Therefore, $\tau\SB = \xi\SB = \xi$.
-					      It is obvious that $y\SB = z\SB = P$.
-					      Thus, $\G \V y\SB : \tau\SB@A$.
-					      By Weakening, $\G,\D\SB \V y\SB : \tau\SB@A$
+                    \item If $y:\tau@A = z:\xi@B$, then
+                        $y = z$, $\tau = \xi$, and $A = B$.
+                        From the well-formedness of \( \G, z:\xi@B,\D \), there is no $z$ in $\xi$.
+                        Therefore, $\tau\SB = \xi\SB = \xi$.
+                        It is obvious that $y\SB = z\SB = P$.
+                        Thus, $\G \V y\SB : \tau\SB@A$.
+                        By Weakening, $\G,\D\SB \V y\SB : \tau\SB@A$
 
-				\end{itemize}
-			\end{rneqncase}
+                \end{itemize}
+        \end{rneqncase}
 
-			\begin{rneqncase}{\WAbs{}}{
-					\mathcal{J} =  (\Pi x:\tau.K) \iskind @A\\
-					\G, z:\xi@B, \D \V \tau::*@A & \G, z:\xi@B, \D, x:\tau \V K \iskind@A.
-				}
-				We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
-				By the induction hypothesis,
-				\begin{align*}
-					 & \G,\D\SB \V \tau\SB::*@A &  & \G,\D\SB, x:\tau\SB \V K\SB \iskind@.
-				\end{align*}
-				$\G,\D\SB \V (\Pi x:\tau\SB.K\SB) \iskind @A$ from \WAbs{} and
-				it is equivalent to $\G,\D\SB \V (\Pi x:\tau.K)\SB \iskind @A$.
-			\end{rneqncase}
+        \begin{rneqncase}{\WAbs{}}{
+                \mathcal{J} =  (\Pi x:\tau.K) \iskind @A\\
+                \G, z:\xi@B, \D \V \tau::*@A & \G, z:\xi@B, \D, x:\tau \V K \iskind@A.
+                }
+                We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
+                By the induction hypothesis,
+                \begin{align*}
+                    & \G,\D\SB \V \tau\SB::*@A &  & \G,\D\SB, x:\tau\SB \V K\SB \iskind@.
+                \end{align*}
+                $\G,\D\SB \V (\Pi x:\tau\SB.K\SB) \iskind @A$ from \WAbs{} and
+                it is equivalent to $\G,\D\SB \V (\Pi x:\tau.K)\SB \iskind @A$.
+        \end{rneqncase}
 
-			\begin{rneqncase}{\TApp{}}{
-					\mathcal{J} = M\ N:\tau[x\mapsto N]@A\\
-					\G, z:\xi@B, \D \V M:\Pi(x:\sigma).\tau@A & \G, z:\xi@B, \D \V N:\sigma@A
-				}
-				We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
-				By the induction hypothesis,
-				\begin{align*}
-					 & \G, \D\SB \V M\SB: (\Pi(x:\sigma).\tau)\SB@A \\
-					 & \G,\D\SB\V N\SB: \sigma\SB@A.
-				\end{align*}
-				and \(\G, \D\SB \V M\SB: (\Pi(x:\sigma).\tau)\SB@A\) is equivalent to \( \G, \D\SB \V M\SB: (\Pi(x:\sigma\SB).\tau\SB)@A \).
-				From \TApp, \(\G,\D\SB (M\SB\ N\SB): \tau\SB[x \mapsto N\SB]@A\) and this is equivalent to
-				\(\G,\D\SB \V (M\ N)\SB: \tau[x \mapsto N]\SB@A\).
-			\end{rneqncase}
-		}
-	
+        \begin{rneqncase}{\TApp{}}{
+                \mathcal{J} = M\ N:\tau[x\mapsto N]@A\\
+                \G, z:\xi@B, \D \V M:\Pi(x:\sigma).\tau@A & \G, z:\xi@B, \D \V N:\sigma@A
+                }
+                We can assume $x \neq z$ because we can select fresh $x$ when we construct $\Pi$ type.
+                By the induction hypothesis,
+                \begin{align*}
+                    & \G, \D\SB \V M\SB: (\Pi(x:\sigma).\tau)\SB@A \\
+                    & \G,\D\SB\V N\SB: \sigma\SB@A.
+                \end{align*}
+                and \(\G, \D\SB \V M\SB: (\Pi(x:\sigma).\tau)\SB@A\) is equivalent to \( \G, \D\SB \V M\SB: (\Pi(x:\sigma\SB).\tau\SB)@A \).
+                From \TApp, \(\G,\D\SB (M\SB\ N\SB): \tau\SB[x \mapsto N\SB]@A\) and this is equivalent to
+                \(\G,\D\SB \V (M\ N)\SB: \tau[x \mapsto N]\SB@A\).
+        \end{rneqncase}
+        }
+
 \end{proof}
 
 % \iffullversion
@@ -835,56 +836,56 @@ if and only if we can get \(\G\) from \(\D\) by deleting some or no variables wi
 % \fi
 
 \begin{lemma}[Stage Substitution]
-	If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
+    If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
 \end{lemma}
 
 \begin{proof}
-	Proved simultaneously by induction on derivations with case analysis on the last rule used.
-	We show only representative cases.
-		{
-			\newcommand{\SB}{[\beta \mapsto B]}
-			\newcommand{\GG}{\G\SB}
-			\newcommand{\GGV}{\G\SB \V}
+    Proved simultaneously by induction on derivations with case analysis on the last rule used.
+    We show only representative cases.
+    {
+        \newcommand{\SB}{[\beta \mapsto B]}
+        \newcommand{\GG}{\G\SB}
+        \newcommand{\GGV}{\G\SB \V}
 
-			\begin{rneqncase}{\TGen{}}{
-					\mathcal{J} = \Lambda\alpha.M:\forall\alpha.\tau@A\\
-					\G\V M:\tau@A & \alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A).
-				}
-				We can assume $\alpha \notin B$ because $\alpha$ is a bound variable.
-				By the induction hypothesis, we have \(\G\SB\V M\SB:\tau\SB@A\).
-				We can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
-				Then, \(\GGV (\Lambda\alpha.M)\SB:(\forall\alpha.\tau)\SB@A\SB\) by \TGen.
-			\end{rneqncase}
+        \begin{rneqncase}{\TGen{}}{
+                \mathcal{J} = \Lambda\alpha.M:\forall\alpha.\tau@A\\
+                \G\V M:\tau@A & \alpha\notin\rm{FTV}(\G)\cup\rm{FTV}(A).
+                }
+                We can assume $\alpha \notin B$ because $\alpha$ is a bound variable.
+                By the induction hypothesis, we have \(\G\SB\V M\SB:\tau\SB@A\).
+                We can prove easily $\alpha \notin \FTV(\GG) \cup \FTV(A)$.
+                Then, \(\GGV (\Lambda\alpha.M)\SB:(\forall\alpha.\tau)\SB@A\SB\) by \TGen.
+        \end{rneqncase}
 
-			\begin{rneqncase}{\KTW{}}{
-					\mathcal{J} = \G\V \TW_\alpha \tau :: * @ A\\
-					\G\V \tau :: * @ A\alpha.
-				}
-				\begin{itemize}
-					\item If $\alpha \neq \beta$,\\
-					      \( \GGV \tau\SB :: *\SB @ A\alpha\SB \) from the induction hypothesis.
-					      \( \GGV \TW_\alpha \tau\SB :: *\SB @ A\SB \) from \KTW.
+        \begin{rneqncase}{\KTW{}}{
+                \mathcal{J} = \G\V \TW_\alpha \tau :: * @ A\\
+                \G\V \tau :: * @ A\alpha.
+                }
+                \begin{itemize}
+                    \item If $\alpha \neq \beta$,\\
+                        \( \GGV \tau\SB :: *\SB @ A\alpha\SB \) from the induction hypothesis.
+                        \( \GGV \TW_\alpha \tau\SB :: *\SB @ A\SB \) from \KTW.
 
-					\item If $\alpha = \beta$, \\
-					      \( \GGV \tau\SB :: *\SB @ A\alpha\SB \) from the induction hypothesis and
-					      it is identical to \( \GGV \tau\SB :: * @ AB \).
-					      We can get \( \GGV \TW_B \tau\SB :: * @ A \) after repeatedly using \KTW{}.
+                    \item If $\alpha = \beta$, \\
+                        \( \GGV \tau\SB :: *\SB @ A\alpha\SB \) from the induction hypothesis and
+                        it is identical to \( \GGV \tau\SB :: * @ AB \).
+                        We can get \( \GGV \TW_B \tau\SB :: * @ A \) after repeatedly using \KTW{}.
 
-				\end{itemize}
-			\end{rneqncase}
+                \end{itemize}
+        \end{rneqncase}
 
-			\begin{rneqncase}{\QGen{}}{
-					\mathcal{J} = \Lambda\alpha.M \E \Lambda\alpha.N : \forall\alpha.\tau@A\\
-					\G\V M\E N : \tau@A &  \alpha \notin \FTV(\G)\cup\FTV(A).
-				}
-				From the induction hypothesis, \( \GGV M\SB \E N\SB : \tau\SB@A\SB \).
-				We can assume \(\alpha \notin B \) because \(\alpha\) is a bound variable.
-				Thus, \( \alpha \notin \FTV(\G\SB)\cup\FTV(A\SB) \).
-				\( \GGV \Lambda\alpha.M\SB \E \Lambda\alpha.N\SB : \tau\SB@A\SB \) from \QGen{} and
-				it is identical to \( \GGV (\Lambda\alpha.M)\SB \E (\Lambda\alpha.N)\SB : \tau\SB@A\SB \).
-			\end{rneqncase}
-		}
-	
+        \begin{rneqncase}{\QGen{}}{
+                \mathcal{J} = \Lambda\alpha.M \E \Lambda\alpha.N : \forall\alpha.\tau@A\\
+                \G\V M\E N : \tau@A &  \alpha \notin \FTV(\G)\cup\FTV(A).
+                }
+                From the induction hypothesis, \( \GGV M\SB \E N\SB : \tau\SB@A\SB \).
+                We can assume \(\alpha \notin B \) because \(\alpha\) is a bound variable.
+                Thus, \( \alpha \notin \FTV(\G\SB)\cup\FTV(A\SB) \).
+                \( \GGV \Lambda\alpha.M\SB \E \Lambda\alpha.N\SB : \tau\SB@A\SB \) from \QGen{} and
+                it is identical to \( \GGV (\Lambda\alpha.M)\SB \E (\Lambda\alpha.N)\SB : \tau\SB@A\SB \).
+        \end{rneqncase}
+        }
+
 \end{proof}
 
 % \iffullversion
@@ -1611,151 +1612,151 @@ if and only if we can get \(\G\) from \(\D\) by deleting some or no variables wi
 
 \begin{lemma}[Agreement]
     \label{lemma:Agreement}
-	\begin{enumerate}
-		\item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
-		\item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
-		\item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
-		\item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
-		\item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
-	\end{enumerate}
+    \begin{enumerate}
+        \item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
+        \item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
+        \item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
+        \item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
+        \item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
+    \end{enumerate}
 \end{lemma}
 \begin{proof}
 
-	We can prove using induction on the derivation tree.
-	We show some cases as examples.
+    We can prove using induction on the derivation tree.
+    We show some cases as examples.
 
-	\begin{rneqncase}{\TCsp{}}{
+    \begin{rneqncase}{\TCsp{}}{
             \G\V \%_\alpha M :: \tau @A\alpha \text{ is derived from } \G\V M :: \tau @A \text{ and } \G \V \tau :: * @ A\alpha
-		}
-		\( \G \V \tau :: * @ A\alpha \) is obvious.
-	\end{rneqncase}
-	\begin{rneqncase}{\QBeta{}}{
-			\G\V(\lambda x:\sigma.M)\ N\E M[x\mapsto N] : \tau[x \mapsto N]@A \text{ is derived from }\\
-			\G,x:\sigma@A\V M:\tau@A \text{ and } \G\V N:\sigma@A.
-		}
-		From \TAbs{} and \TApp, \( \G\V(\lambda x:\sigma.M)\ N : \tau[x \mapsto N]@A \).
-		From Term Substitution, \( \G\V M[x\mapsto N] : \tau[x \mapsto N]@A \).
-	\end{rneqncase}
-	
+            }
+            \( \G \V \tau :: * @ A\alpha \) is obvious.
+    \end{rneqncase}
+    \begin{rneqncase}{\QBeta{}}{
+            \G\V(\lambda x:\sigma.M)\ N\E M[x\mapsto N] : \tau[x \mapsto N]@A \text{ is derived from }\\
+            \G,x:\sigma@A\V M:\tau@A \text{ and } \G\V N:\sigma@A.
+            }
+            From \TAbs{} and \TApp, \( \G\V(\lambda x:\sigma.M)\ N : \tau[x \mapsto N]@A \).
+            From Term Substitution, \( \G\V M[x\mapsto N] : \tau[x \mapsto N]@A \).
+    \end{rneqncase}
+
 \end{proof}
 
 We generalize Inversion Lemma to use induction.
 \begin{lemma}[Inversion Lemma for $\Pi$ Type]
-	\begin{enumerate}
-		\item If $\G \V (\lambda x:\sigma.M) : \rho$, then there are $\sigma'$ and $\tau'$ such that
-		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$.
-		\item If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$, then there are $\sigma', \tau', K$, and $J$ such that
-		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma' : K @A$, and $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
-		\item If $\G \V (\Pi x:\sigma.\tau) \E \rho : K @A$, then there are $\sigma', \tau', K$, and $J$ such that
-		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma' : K @A$, and $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
-	\end{enumerate}
+    \begin{enumerate}
+        \item If $\G \V (\lambda x:\sigma.M) : \rho$, then there are $\sigma'$ and $\tau'$ such that
+            $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$.
+        \item If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$, then there are $\sigma', \tau', K$, and $J$ such that
+            $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma' : K @A$, and $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
+        \item If $\G \V (\Pi x:\sigma.\tau) \E \rho : K @A$, then there are $\sigma', \tau', K$, and $J$ such that
+            $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma' : K @A$, and $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
+    \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-	We can prove using induction on the derivation tree.
-	We show a few main cases.
+    We can prove using induction on the derivation tree.
+    We show a few main cases.
 
-	\begin{rneqncase}{\TAbs{}}{
-			\G\V \sigma::*@A \text{ and } \G,x:\sigma@A\V M:\tau@A.
-		}
-		We can take $\sigma$ and $\tau$ as $\sigma'$ and $\tau'$ in the statement.
-	\end{rneqncase}
+    \begin{rneqncase}{\TAbs{}}{
+            \G\V \sigma::*@A \text{ and } \G,x:\sigma@A\V M:\tau@A.
+            }
+            We can take $\sigma$ and $\tau$ as $\sigma'$ and $\tau'$ in the statement.
+    \end{rneqncase}
 
-	\begin{rneqncase}{\TConv{}}{
-			\G \V (\lambda x:\sigma.M) : \rho@A \text{ and } \G \V \rho \E (\Pi x:\sigma'.\tau)@A.
-		}
-		There are $\sigma'$ and $\tau'$ such that
-		$\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$
-		by the induction hypothesis.
-	\end{rneqncase}
+    \begin{rneqncase}{\TConv{}}{
+            \G \V (\lambda x:\sigma.M) : \rho@A \text{ and } \G \V \rho \E (\Pi x:\sigma'.\tau)@A.
+            }
+            There are $\sigma'$ and $\tau'$ such that
+            $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$
+            by the induction hypothesis.
+    \end{rneqncase}
 
-	\begin{rneqncase}{\QTRefl{}}{}
-		There two cases for the conclusion.
-		\begin{itemize}
-			\item If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$,
-			      we can use the third statement of the lemma as the induction hypothesis.
-			\item If $\G \V (\Pi x:\sigma.\tau) \E \rho : K @A$,
-			      we can use the second statement of the lemma as the induction hypothesis.
-		\end{itemize}
-	\end{rneqncase}
-	
+    \begin{rneqncase}{\QTRefl{}}{}
+        There two cases for the conclusion.
+        \begin{itemize}
+            \item If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$,
+                we can use the third statement of the lemma as the induction hypothesis.
+            \item If $\G \V (\Pi x:\sigma.\tau) \E \rho : K @A$,
+                we can use the second statement of the lemma as the induction hypothesis.
+        \end{itemize}
+    \end{rneqncase}
+
 \end{proof}
 
 \begin{lemma}[Inversion Lemma for $\TW$ type]
-	\begin{item}
-	      \item If $\G \V \TB_\alpha M : \tau@A$, then
-	      there is $\sigma$ such that $\tau = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$.
-	      \item If $\G \V \rho \E \TW_\alpha \tau : K @A$, then there are $\tau', K$, and $J$ such that
-	      $\rho = \TW_\alpha \tau'$ and $\G \V \tau \E \tau' : K @A$.
-	      \item If $\G \V \TW_\alpha \tau \E \rho : K @A$, then there are $\tau', K$, and $J$ such that
-	      $\rho = \TW_\alpha \tau'$ and $\G \V \tau \E \tau' : K @A$.
-	\end{item}
+    \begin{item}
+    \item If $\G \V \TB_\alpha M : \tau@A$, then
+        there is $\sigma$ such that $\tau = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$.
+    \item If $\G \V \rho \E \TW_\alpha \tau : K @A$, then there are $\tau', K$, and $J$ such that
+        $\rho = \TW_\alpha \tau'$ and $\G \V \tau \E \tau' : K @A$.
+    \item If $\G \V \TW_\alpha \tau \E \rho : K @A$, then there are $\tau', K$, and $J$ such that
+        $\rho = \TW_\alpha \tau'$ and $\G \V \tau \E \tau' : K @A$.
+    \end{item}
 \end{lemma}
 
 \begin{proof}
-	We can prove using induction on the derivation tree.
-	We show some cases as examples.
+    We can prove using induction on the derivation tree.
+    We show some cases as examples.
 
-	\begin{rneqncase}{\TTB{}}{\G \V M : \sigma'@A\alpha.}
-		We can take $\sigma'$ as $\sigma$.
-	\end{rneqncase}
-	\begin{rneqncase}{\TConv{}}{
-			\G \V \TB_\alpha M : \tau'@A \text{ and } \G\V\tau' \E \tau :: K@A.
-		}
-		There is $\sigma$ such that $\tau' = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$
-		by using the induction hypothesis to \( \G \V \TB_\alpha M : \tau' @A\).
-		There are $\sigma'$ and $K'$ such that $\tau = \TW_\alpha \sigma'$ and $\G \V \sigma \E \sigma' : K @ A$
-		by using the induction hypothesis to \( \G \V \TW_\alpha \sigma : \tau :: K' @A\).
-		Finally, $\G \V M : \sigma' @ A $ by \TConv.
-	\end{rneqncase}
-	
+    \begin{rneqncase}{\TTB{}}{\G \V M : \sigma'@A\alpha.}
+        We can take $\sigma'$ as $\sigma$.
+    \end{rneqncase}
+    \begin{rneqncase}{\TConv{}}{
+            \G \V \TB_\alpha M : \tau'@A \text{ and } \G\V\tau' \E \tau :: K@A.
+            }
+            There is $\sigma$ such that $\tau' = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$
+            by using the induction hypothesis to \( \G \V \TB_\alpha M : \tau' @A\).
+            There are $\sigma'$ and $K'$ such that $\tau = \TW_\alpha \sigma'$ and $\G \V \sigma \E \sigma' : K @ A$
+            by using the induction hypothesis to \( \G \V \TW_\alpha \sigma : \tau :: K' @A\).
+            Finally, $\G \V M : \sigma' @ A $ by \TConv.
+    \end{rneqncase}
+
 \end{proof}
 
 \begin{lemma}[Inversion for $\Lambda$ Type]
-	\begin{item}
-	      \item If $\G \V \Lambda\alpha.M : \tau$, then
-	      there is $\sigma$ such that $\sigma = \forall\alpha.\sigma$ and $\G \V M : \sigma@A$.% and $\alpha \notin \FTV(\G) \cup \FV(A)$.
-	      \item If $\G \V \rho \E \forall\alpha.\tau : K @A$, then there are $\tau', K$ such that
-	      $\rho = \forall\alpha.\tau'$ and $\G \V \tau \E \tau' : K @A$.
-	      \item If $\G \V \forall\alpha.\tau \E \rho : K @A$, then there are $\tau', K$ such that
-	      $\rho = \forall\alpha.\tau'$ and $\G \V \tau \E \tau' : K @A$.
-	\end{item}
+    \begin{item}
+    \item If $\G \V \Lambda\alpha.M : \tau$, then
+        there is $\sigma$ such that $\sigma = \forall\alpha.\sigma$ and $\G \V M : \sigma@A$.% and $\alpha \notin \FTV(\G) \cup \FV(A)$.
+    \item If $\G \V \rho \E \forall\alpha.\tau : K @A$, then there are $\tau', K$ such that
+        $\rho = \forall\alpha.\tau'$ and $\G \V \tau \E \tau' : K @A$.
+    \item If $\G \V \forall\alpha.\tau \E \rho : K @A$, then there are $\tau', K$ such that
+        $\rho = \forall\alpha.\tau'$ and $\G \V \tau \E \tau' : K @A$.
+    \end{item}
 \end{lemma}
 
 \begin{proof}
-	We can prove using induction on the derivation tree.
-	% We show some cases as examples.
+    We can prove using induction on the derivation tree.
+    % We show some cases as examples.
 
-	% \begin{itemize}
-	% 	\newcommand{\MC}[1]{\mathcal{#1}}
-	% 	\item \textit{Case} \TGen\ where $\G\V M:\sigma'@A$.\\
-	% 	      We can take $\sigma'$ as $\sigma$.	      	      		      	      	      	      
-	% \end{itemize}
-	
+    % \begin{itemize}
+    % 	\newcommand{\MC}[1]{\mathcal{#1}}
+    % 	\item \textit{Case} \TGen\ where $\G\V M:\sigma'@A$.\\
+    % 	      We can take $\sigma'$ as $\sigma$.	      	      		      	      	      	      
+    % \end{itemize}
+
 \end{proof}
 
 \begin{lemma}[Inversion Lemma for Application]
-	\begin{item}
-	      \item If $\G \V (\lambda x:\sigma.M)\ N: \tau@A$ then there are $x$ and $\rho$ such that
-	      $\G, x:\sigma \V M : \rho @A$ and $\G \V N:\sigma @ A$.
-	\end{item}
+    \begin{item}
+    \item If $\G \V (\lambda x:\sigma.M)\ N: \tau@A$ then there are $x$ and $\rho$ such that
+        $\G, x:\sigma \V M : \rho @A$ and $\G \V N:\sigma @ A$.
+    \end{item}
 \end{lemma}
 
 \begin{proof}
-	We can prove using induction on the derivation tree.
-	% We show some cases as examples.
-	% \begin{itemize}
-	% 	\item \textit{Case} \TConv{} where $\G \V (\lambda x:\sigma.M)\ N: \rho@A$ and $\G \V \rho \E \tau : K @A$.
-	% 		  By using the induction hypothesis to $\G \V (\lambda x:\sigma.M)\ N: \rho@A$, 
-	% 		  we get $\G, x:\sigma \V M : \pi @A$ and $\G \V N:\sigma @ A$.
-	% 	      Then, we can fix $x, \pi$ as $x, \rho$ in the statement correspondingly.
-	% \end{itemize}
-	
+    We can prove using induction on the derivation tree.
+    % We show some cases as examples.
+    % \begin{itemize}
+    % 	\item \textit{Case} \TConv{} where $\G \V (\lambda x:\sigma.M)\ N: \rho@A$ and $\G \V \rho \E \tau : K @A$.
+    % 		  By using the induction hypothesis to $\G \V (\lambda x:\sigma.M)\ N: \rho@A$, 
+    % 		  we get $\G, x:\sigma \V M : \pi @A$ and $\G \V N:\sigma @ A$.
+    % 	      Then, we can fix $x, \pi$ as $x, \rho$ in the statement correspondingly.
+    % \end{itemize}
+
 \end{proof}
 
 \begin{lemma}[Preservation on $\beta$-Reduction]
     \label{lemma:PreservationOnBetaReduction}
-	If $\G\V M:\tau@A$ and $M \longrightarrow_{\beta} M'$, then $\G\V M':\tau@A$.
+    If $\G\V M:\tau@A$ and $M \longrightarrow_{\beta} M'$, then $\G\V M':\tau@A$.
 \end{lemma}
 
 \begin{proof}
@@ -1770,7 +1771,7 @@ We generalize Inversion Lemma to use induction.
         \E \sigma'$ and $\G ,x:\sigma \V \tau \E \tau'@A$.  By \TConv , $\G \V
         L:\sigma @A$.  By Term Substitution Lemma, we get $\G \V N[x\mapsto
         L]:\tau[x\mapsto L]$.
-        }
+    }
 
 \end{proof}
 % \begin{itemize}
@@ -1835,12 +1836,12 @@ We generalize Inversion Lemma to use induction.
 
 \begin{proof}
     {
-       \newcommand{\R}{\longrightarrow_{\blacklozenge}}
-       From the definition of \( \blacklozenge \)-reduction, the reduction should be
-       $\TBL\TB M \R M$ Because the last rule is \TTBL, we have $\G \V \TB M :
-       \TW_\alpha \tau @A$.  By using Inversion Lemma for $\TW$ type to $\G \V
-       \TB M : \TW_\alpha \tau @A$, we get $\G \V M : \tau @A$.
-        }
+        \newcommand{\R}{\longrightarrow_{\blacklozenge}}
+        From the definition of \( \blacklozenge \)-reduction, the reduction should be
+        $\TBL\TB M \R M$ Because the last rule is \TTBL, we have $\G \V \TB M :
+        \TW_\alpha \tau @A$.  By using Inversion Lemma for $\TW$ type to $\G \V
+        \TB M : \TW_\alpha \tau @A$, we get $\G \V M : \tau @A$.
+    }
 \end{proof}
 
 \begin{lemma}[Preservation on $\Lambda$ Reduction]
@@ -1866,36 +1867,60 @@ We generalize Inversion Lemma to use induction.
     }
 \end{proof}
 
-\begin{lemma}[Preservation on Level 0 Reduction]
-    \label{lemma:PreservationonLevel0Reduction}
+\begin{lemma}[Type Preservation on Level 0 Reduction]
+    \label{lemma:TypePreservationonLevel0Reduction}
     If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
 \end{lemma}
 
 \begin{proof}
-    Prove by induction on \( \G \V M : \tau @ A \) using Lemma
-    \ref{lemma:PreservationOnBetaReduction},
-    \ref{lemma:PreservationOnBlackReduction}, and
-    \ref{lemma:PreservationOnLambdaReduction}.
+    First, there are three base cases for $M \longrightarrow_0 M'$.  They are $M
+    \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M
+    \longrightarrow_\blacklozenge M'$.  For each case, we can use
+    straightforward induction on typing derivations.
 \end{proof}
 
-\begin{lemma}[Preservation on level \( n \) reduction]
-    \label{lemma:PreservationonLevelnReduction}
-    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_n M' \), then \( \G \V M' : \tau @ A \).
+\begin{lemma}[Equivalence Preservation on Level 0 Reduction]
+    \label{lemma:EquivalencePreservationonLevel0Reduction}
+    If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_0 M'' \), then \( \G \V M'' \E M' : \tau @ A \).
 \end{lemma}
 
 \begin{proof}
-    By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
-    typed. Then, it is a corollary of
-    \ref{lemma:PreservationonLevel0Reduction}.
+    By case analysis on \( M \longrightarrow_0 M'' \) using \QTrans.
 \end{proof}
 
-\begin{theorem}[Preservation on level \( n \) reduction]
+% \begin{lemma}[Preservation on Level 0 Reduction]
+%     \label{lemma:PreservationonLevel0Reduction}
+%     If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
+% \end{lemma}
+%
+% \begin{proof}
+%     Prove by induction on \( \G \V M : \tau @ A \) using Lemma
+%     \ref{lemma:PreservationOnBetaReduction},
+%     \ref{lemma:PreservationOnBlackReduction}, and
+%     \ref{lemma:PreservationOnLambdaReduction}.
+% \end{proof}
+
+% \begin{lemma}[Preservation on level \( n \) reduction]
+%     \label{lemma:PreservationonLevelnReduction}
+%     If \( \G \V M : \tau @ A \) and \( M \longrightarrow_n M' \), then \( \G \V M' : \tau @ A \).
+% \end{lemma}
+%
+% \begin{proof}
+%     By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
+%     typed. Then, it is a corollary of
+%     \ref{lemma:PreservationonLevel0Reduction}.
+% \end{proof}
+
+\begin{theorem}[Type Preservation]
+    \label{theorem:TypePreservation}
     If \( \G \V M : \tau @ A \) and \( M \longrightarrow M' \), then \( \G \V M' : \tau @ A \).
 \end{theorem}
 
-\begin{proof}
-    It is from Lemma \ref{lemma:PreservationonLevel0Reduction} and
-    \ref{lemma:PreservationonLevelnReduction}.
+\begin{proof} 
+    By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
+    typed. So, all type and equivalence is preserved by Lemma
+    \ref{lemma:TypePreservationonLevel0Reduction} and
+    \ref{lemma:EquivalencePreservationonLevel0Reduction}.
 \end{proof}
 
 \begin{dfn}[$\natural$ translation]
@@ -2105,6 +2130,13 @@ We generalize Inversion Lemma to use induction.
     \ref{lemma:ConfluenceofLevelnReduction}.
 \end{proof}
 
+\begin{theorem}[Staged Semantics is Subrelation of Normal Semantics]
+    If $M \longrightarrow_s M'$, then $M \longrightarrow M'$.
+\end{theorem}
+\begin{proof}
+    Easy from the definition of \( M \longrightarrow_s M' \).
+\end{proof}
+
 \begin{lemma}[Unique Decomposition]
     If $\G$ does not have any variable declared at stage $\varepsilon$
     and $\G \V M : \tau @ A$, then either
@@ -2224,22 +2256,20 @@ We generalize Inversion Lemma to use induction.
 
     \end{proof}
 
-    \begin{corollary}[Progress]
-        If $x:\tau@\varepsilon \notin \G$ and $\G \V M : \tau @ A$ then $ M \in V^A $ or there is $M'$ such that $M \longrightarrow M'$.
-    \end{corollary}
+\begin{corollary}[Progress]
+    If $x:\tau@\varepsilon \notin \G$ and $\G \V M : \tau @ A$ then $ M \in V^A $ or there is $M'$ such that $M \longrightarrow M'$.
+\end{corollary}
 
-    \begin{proof}
-        Immediate from Unique Decomposition.
-        % \begin{enumerate}
-        % 	\item $ M \in V^A$.
-        % 	\item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
-        % \end{enumerate}
-        % \begin{itemize}
-        % 	\item If $ M \in V^A$,
-        % 		it is obvious.
-        % 	\item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
-        % 		we can redex $R^B$.
-        % \end{itemize}
-    \end{proof}
-
-    \endinput
+\begin{proof}
+    Immediate from Unique Decomposition.
+    % \begin{enumerate}
+    % 	\item $ M \in V^A$.
+    % 	\item There is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$.
+    % \end{enumerate}
+    % \begin{itemize}
+    % 	\item If $ M \in V^A$,
+    % 		it is obvious.
+    % 	\item If there is an unique triple of $(B, E^A_B, R^B)$ such that ($B = \varepsilon$ or $B = \beta$) and $M = E^A_B[R^B]$,
+    % 		we can redex $R^B$.
+    % \end{itemize}
+\end{proof}
