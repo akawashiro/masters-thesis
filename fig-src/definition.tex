@@ -1,36 +1,23 @@
 \subsection{Syntax}
 
 \begin{align*}
-  \textrm{Terms}             &  & M,N,L,O,P                & ::= c \mid x \mid \lambda x:\tau.M\ \mid M\ M \mid \TB_\alpha M                                \\
-                             &  &                          & \ \ \ \ \mid \TBL_\alpha M \mid \Lambda\alpha.M \mid M\ A \mid M\ \varepsilon \mid \%_\alpha M \\
-  \textrm{Types}             &  & \tau,\sigma,\rho,\pi,\xi & ::= X \mid \Pi x:\tau.\tau \mid \tau\ M \mid \TW_{\alpha} \tau \mid \F\alpha.\tau                 \\
-  \textrm{Kinds}             &  & K,J,I,H,G                & ::= * \mid \Pi x:\tau.K                                                                        \\
-  \textrm{Type environments} &  & \Gamma                   & ::= \emptyset \mid \Gamma,x:\tau@A                                                             \\
-  \textrm{Signature}         &  & \Sigma                   & ::= \emptyset \mid \Sigma,X::K                                                                 \\
-                             &  &                          & \ \ \ \ \mid \Sigma,c:\tau                                                                     \\
-  \textrm{Stage variables}   &  &                          & \alpha,\beta,\gamma,...                                                                        \\
-  \textrm{Stage}             &  &                          & A,B,C,...                                                                                      \\
-  \textrm{Variables}         &  &                          & x,y,z,...                                                                                      \\
-  \textrm{Type variables}    &  &                          & X,Y,Z,...                                                                                      \\
+    \textrm{Terms}             &  & M,N,L,O,P                & ::= c \mid x \mid \lambda x:\tau.M\ \mid M\ M \mid \TB_\alpha M                                \\
+    &  &                          & \ \ \ \ \mid \TBL_\alpha M \mid \Lambda\alpha.M \mid M\ A \mid \%_\alpha M \\ % \mid M\ \varepsilon 
+    \textrm{Types}             &  & \tau,\sigma,\rho,\pi,\xi & ::= X \mid \Pi x:\tau.\tau \mid \tau\ M \mid \TW_{\alpha} \tau \mid \F\alpha.\tau                 \\
+    \textrm{Kinds}             &  & K,J,I,H,G                & ::= * \mid \Pi x:\tau.K                                                                        \\
+    \textrm{Type environments} &  & \Gamma                   & ::= \emptyset \mid \Gamma,x:\tau@A                                                             \\
+    \textrm{Signature}         &  & \Sigma                   & ::= \emptyset \mid \Sigma,X::K                                                                 \\
+    &  &                          & \ \ \ \ \mid \Sigma,c:\tau                                                                     \\
+    \textrm{Stage variables}   &  &                          & \alpha,\beta,\gamma,...                                                                        \\
+    \textrm{Stage}             &  &                          & A,B,C,...                                                                                      \\
+    \textrm{Variables}         &  &                          & x,y,z,...                                                                                      \\
+    \textrm{Type variables}    &  &                          & X,Y,Z,...                                                                                      \\
 \end{align*}
 
 \subsection{Reduction}
 
-\figheader{Level of subterms}{}
-
-Suppose we have term \( M \).
-\begin{itemize}
-    \item \( M \) is a level 0 subterm of \( M \).
-    \item If \( N \) is a level \( n \) subterm of \( M \), all subterms of \(
-        N \) are level \( n \) subterms of \( M \). But ones which lives in
-        types are not level \( n \) subterms of \( M \).
-    \item If \( N \) is a level \( n \) subterm of \( M \), all subterms of \(
-        N \) which lives in types are level \( n + 1 \) subterms. But ones
-        which lives in types in terms in types are not level \( n + 1 \)
-        subterms.
-\end{itemize}
-
-\figheader{Basic reduction}{}
+\figheader{Basic reduction}{\rulefbox{M \longrightarrow_\text{basic} M'}}
+There are theree basic reductions.
 \begin{center}
   \begin{align*}
      & (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N]         \\
@@ -39,18 +26,29 @@ Suppose we have term \( M \).
   \end{align*}
 \end{center}
 
-\figheader{Level $n$ reduction}{\rulefbox{M \longrightarrow_n M'}}
-\( M \longrightarrow_n M' \) if and only if we can get \( M' \) by using one
-basic reduction for a level \( n \) subterm of \( M \).  In addition to it, \(
-M \longrightarrow_{n\beta} M' \) if and only if we can get \( M' \) by using
-one \( \longrightarrow_\beta \) reduction for a level \( n \) subterm of \( M
-\).  \( M \longrightarrow_{n\blacklozenge} M' \) and \( M
-\longrightarrow_{n\Lambda} M' \) are defined just same as \( M
-\longrightarrow_{n\beta} M' \).
+\figheader{Labeled reduction}{\rulefbox{M \longrightarrow_D M'}}
+A label of reduction is a sequence of variables. We use metavariable \( D, E, F \) for labels.
+\begin{center}
+    \infrule{M\longrightarrow_\text{basic}M'}{M\longrightarrow_\varepsilon M'} \\[2mm]
+    \infrule{M \longrightarrow_D M'}{\lambda x:\tau.M \longrightarrow_D \lambda x:\tau.M'} \hfil
+    \infrule{\tau \longrightarrow_D \tau'}{\lambda x:\tau.M \longrightarrow_{xD} \lambda x:\tau'.M} \hfil
+    \infrule{M \longrightarrow_D M'}{M\ N \longrightarrow_D M'\ N} \hfil
+    \infrule{N \longrightarrow_D N'}{M\ N \longrightarrow_D M\ N'} \hfil
+    \infrule{M \longrightarrow_D M'}{\TB_\alpha M \longrightarrow_D \TB_\alpha M'} \\[2mm]
+    \infrule{M \longrightarrow_D M'}{\TBL_\alpha M \longrightarrow_D \TBL_\alpha M'} \hfil
+    \infrule{M \longrightarrow_D M'}{\Lambda\alpha.M \longrightarrow_D \Lambda\alpha.M'} \hfil
+    \infrule{M \longrightarrow_D M'}{M\ A \longrightarrow_D M'\ A} \hfil
+    \infrule{M \longrightarrow_D M'}{\%_\alpha M \longrightarrow_D \%_\alpha M'} \\[2mm]
+    \infrule{\tau \longrightarrow_D \tau'}{\Pi x:\tau \longrightarrow_{xD} \Pi x:\tau'} \hfil
+    \infrule{\tau \longrightarrow_D \tau'}{\tau\ M \longrightarrow_D \tau'\ M} \hfil
+    \infrule{M \longrightarrow_D M'}{\tau\ M \longrightarrow_D \tau\ M'} \hfil
+    \infrule{\tau \longrightarrow_D \tau'}{\TW_\alpha\tau \longrightarrow_D \TW_\alpha\tau'} \hfil
+    \infrule{\tau \longrightarrow_D \tau'}{\forall\alpha.\tau \longrightarrow_D \forall\alpha.\tau'}
+\end{center}
 
 \figheader{Term reduction}{\rulefbox{M \longrightarrow M'}}
-\( M \longrightarrow M' \) if and only if there is \( n \) such that \( M
-\longrightarrow_n M' \).
+\( M \longrightarrow M' \) if and only if there is \( D \) such that \( M
+\longrightarrow_D M' \).
 
 \subsection{Type System}
 
@@ -562,16 +560,25 @@ I don't want append \( \G\AVS \sigma' :: * @ A \) to \TAApp.
     } \hfil
 \end{center}
 
-\figheader{Algorithmic Reduction}{\rulefbox{M \AER M'}}
+\figheader{Algorithmic basic reduction}{\rulefbox{M \longrightarrow_{\text{Abasic}} M'}}
 \begin{center}
     \begin{align*}
-        & (\lambda x:\tau.M) N \RA M[x \mapsto N]       &  & \textsc{(A-$\beta$)}   \\
-        & \TBL_\alpha (\TB_\alpha M) \RA M              &  & \textsc{(A-$\TBL\TB$)} \\
-        & (\Lambda \alpha.M)\ A \RA M[\alpha \mapsto A] &  & \textsc{(A-$\Lambda$)} \\
-        & \%_\alpha M \RA M \qquad (\emptyset = \text{FV}(\%_\alpha M)) &  & \textsc{(A-$\%$)}
+        & (\lambda x:\tau.M) N \longrightarrow_{\text{A}\beta} M[x \mapsto N]       &  & \textsc{(A-$\beta$)}   \\
+        & \TBL_\alpha (\TB_\alpha M) \longrightarrow_{\text{A}\blacklozenge} M              &  & \textsc{(A-$\TBL\TB$)} \\
+        & (\Lambda \alpha.M)\ A \longrightarrow_{\text{A}\Lambda} M[\alpha \mapsto A] &  & \textsc{(A-$\Lambda$)} \\
+        & \%_\alpha M \longrightarrow_{\text{A}\%} M \qquad (\emptyset = \text{FV}(\%_\alpha M)) &  & \textsc{(A-$\%$)}
     \end{align*}
-    And take the congruence on terms including level \( n \) subterms for all \( n \).
 \end{center}
 
+\figheader{Algorithmic labeled reduction}{\rulefbox{M \longrightarrow_{\text{A}D} M'}}
+Defined just same as basic labeled reduction.
+
+\figheader{Algorithmic reduction}{\rulefbox{M \longrightarrow_\text{A} M'}}
+\( M \longrightarrow_\text{A} M' \) if and only if there is \( D \) such that \( M
+\longrightarrow_{\text{A}D} M' \).
+
 \figheader{Algorithmic Term Equivalence}{\rulefbox{\G \AV M \longrightarrow_A M'@A \ \text{and} \ \G \AV M \E M'@A}}
+\ANF is a function which returns the normal form of \( M \) under the algorithmic reduction.
+\begin{center}
 \infrule[\QAANF]{ \ANF(M) \E_\alpha \ANF(N) }{\G \AV M \E N@A} \hfil
+\end{center}
