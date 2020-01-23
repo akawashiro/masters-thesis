@@ -1867,49 +1867,26 @@ We generalize Inversion Lemma to use induction.
     }
 \end{proof}
 
-\begin{lemma}[Type Preservation on Level 0 Reduction]
-    \label{lemma:TypePreservationonLevel0Reduction}
-    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
+\begin{lemma}[Type Preservation on Label \( \varepsilon \) Reduction]
+    \label{lemma:TypePreservationOnLabelEpsilonReduction}
+    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_\varepsilon M' \), then \( \G \V M' : \tau @ A \).
 \end{lemma}
 
 \begin{proof}
-    First, there are three base cases for $M \longrightarrow_0 M'$.  They are $M
-    \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M
-    \longrightarrow_\blacklozenge M'$.  For each case, we can use
-    straightforward induction on typing derivations.
+    Straightforward induction on typing derivations using
+    \ref{lemma:PreservationOnBetaReduction},
+    \ref{lemma:PreservationOnLambdaReduction} and
+    \ref{lemma:PreservationOnBlackReduction}.
 \end{proof}
 
-\begin{lemma}[Equivalence Preservation on Level 0 Reduction]
-    \label{lemma:EquivalencePreservationonLevel0Reduction}
-    If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_0 M'' \), then \( \G \V M'' \E M' : \tau @ A \).
+\begin{lemma}[Equivalence Preservation on Label \( \varepsilon \) Reduction]
+    \label{lemma:EquivalencePreservationOnLabelEpsilonReduction}
+    If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_\varepsilon M'' \), then \( \G \V M'' \E M' : \tau @ A \).
 \end{lemma}
 
 \begin{proof}
-    By case analysis on \( M \longrightarrow_0 M'' \) using \QTrans.
+    By case analysis on \( M \longrightarrow_\varepsilon M'' \) using \QTrans.
 \end{proof}
-
-% \begin{lemma}[Preservation on Level 0 Reduction]
-%     \label{lemma:PreservationonLevel0Reduction}
-%     If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
-% \end{lemma}
-%
-% \begin{proof}
-%     Prove by induction on \( \G \V M : \tau @ A \) using Lemma
-%     \ref{lemma:PreservationOnBetaReduction},
-%     \ref{lemma:PreservationOnBlackReduction}, and
-%     \ref{lemma:PreservationOnLambdaReduction}.
-% \end{proof}
-
-% \begin{lemma}[Preservation on level \( n \) reduction]
-%     \label{lemma:PreservationonLevelnReduction}
-%     If \( \G \V M : \tau @ A \) and \( M \longrightarrow_n M' \), then \( \G \V M' : \tau @ A \).
-% \end{lemma}
-%
-% \begin{proof}
-%     By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
-%     typed. Then, it is a corollary of
-%     \ref{lemma:PreservationonLevel0Reduction}.
-% \end{proof}
 
 \begin{theorem}[Type Preservation]
     \label{theorem:TypePreservation}
@@ -1917,10 +1894,11 @@ We generalize Inversion Lemma to use induction.
 \end{theorem}
 
 \begin{proof} 
-    By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
-    typed. So, all type and equivalence is preserved by Lemma
-    \ref{lemma:TypePreservationonLevel0Reduction} and
-    \ref{lemma:EquivalencePreservationonLevel0Reduction}.
+    By induction on \( \G \V M : \tau @ A \), all subterms are typed including
+    terms in types. So, we can prove all type and equivalence is preserved by
+    induction on \( M \longrightarrow M' \) by Lemma
+    \ref{lemma:TypePreservationOnLabelEpsilonReduction} and
+    \ref{lemma:EquivalencePreservationOnLabelEpsilonReduction}.
 \end{proof}
 
 \begin{dfn}[$\natural$ translation]
@@ -1958,7 +1936,7 @@ We generalize Inversion Lemma to use induction.
 \end{dfn}
 
 \begin{lemma}[Preservation of Equality in $\natural$]
-    If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
+    If $\G \V \tau \E \sigma :: K @ A$ then $\natural(\tau) = \natural(\sigma)$.
 \end{lemma}
 
 \begin{proof}
@@ -2052,33 +2030,87 @@ We generalize Inversion Lemma to use induction.
 
 \end{proof}
 
-\begin{lemma}[Strong Normalization of Level 0 Reduction]
-    \label{lemma:StrongNormalizationofLevel0Reduction}
-    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_{0} M_{i+1}$ for $i\ge 1$
+\begin{lemma}[Strong Normalization of Label \( \varepsilon \) Reduction]
+    \label{lemma:StrongNormalizationOfLabelEpsilonReduction}
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_\varepsilon M_{i+1}$ for $i\ge 1$
 \end{lemma}
 
 \begin{proof}
-    If there is an infinite reduction sequence in $\lambda^{\text{MD}}$
-    then there are infinite beta reductions in the sequence.
-    This is because reductions other than $\beta$-reduction reduce the size of a term.
-
-    Then, we show Strong Normalization by proof by contradiction.
-    We assume that there is an infinite reduction in a typed \LMD from typed term $M$.
-    We can construct a typed term of simply typed lambda calculus $\natural(M)$ from Preservation of Typing in $\natural$ and
-    $\natural(M)$ has infinite reductions from Preservation of Reduction in $\natural$.
-    However, $\lambda^\to$ has a property of Strong Normalization, so there is no infinite reductions.
+    If there is an infinite reduction sequence in $\lambda^{\text{MD}}$ then
+    there are infinite beta reductions in the sequence.  This is because
+    reductions other than $\beta$-reduction reduce the size of a term.  Then,
+    we show Strong Normalization by proof by contradiction.  We assume that
+    there is an infinite reduction in a typed \LMD from typed term $M$.  We can
+    construct a typed term of simply typed lambda calculus $\natural(M)$ from
+    Preservation of Typing in $\natural$ and $\natural(M)$ has infinite
+    reductions from Preservation of Reduction in $\natural$.  However,
+    $\lambda^\to$ has a property of Strong Normalization, so there is no
+    infinite reductions.
 \end{proof}
 
-\begin{lemma}[Strong Normalization of Level $n$ Reduction]
-    \label{lemma:StrongNormalizationofLevelnReduction}
-    \( n \) is a arbitary integer which is greater than 0.
-    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_n M_{i+1}$ for $i\ge 1$.
+\begin{dfn}[$\flat$ translation]
+    \( \flat \) translation is used when you extract \(
+    \longrightarrow_\varepsilon \) reduction from \( \longrightarrow_D \)
+    reduction. \( \flat \) is a function from a pair of a term of \LMD and a
+    variable sequence to a term of \LMD or \( \bot \). Because bound variables
+    can be renamed uniquely, \( \flat \) is a well-defined function.
+    \begin{align*}
+        & \flat(M, \varepsilon) = M \\
+        & \flat(\lambda x:\tau.M, xD) = \flat(\tau, D) \\
+        & \flat(\lambda x:\tau.M, yD) = \flat(M, D) \\
+        & \flat(M\ N, xD) = \flat(M, xD) & (x \text{ exists in } M \text{ as a bound variable}) \\
+        & \flat(M\ N, xD) = \flat(N, xD) & (x \text{ exists in } N \text{ as a bound variable}) \\
+        & \flat(\Lambda\alpha.M, D) = \flat(M, D) \\
+        & \flat(M\ A, D) = \flat(M, D) \\
+        & \flat(\%_\alpha M, D) = \flat(M, D) \\
+        & \flat(M, D) = \bot & (\text{otherwise}) \\
+        & \flat(\Pi x:\tau.\sigma, xD) = \flat(\tau, D) \\
+        & \flat(\Pi x:\tau.\sigma, yD) = \flat(\sigma, D) \\
+        & \flat(\tau\ M, xD) = \flat(\tau, xD) & (x \text{ exists in } \tau \text{ as a bound variable}) \\
+        & \flat(\tau\ M, xD) = \flat(M, xD) & (x \text{ exists in } M \text{ as a bound variable}) \\
+        & \flat(\TW_\alpha \tau, D) = \flat(\tau, D) \\
+        & \flat(\forall\alpha.\tau, D) = \flat(\tau, D) \\
+        & \flat(\tau, D) = \bot & (\text{otherwise})
+    \end{align*}
+\end{dfn}
+
+\begin{lemma}[Label \( \varepsilon \) Reduction from Label \( D \) Reduction]
+    We can extract label \( \varepsilon \) from label \( D \) reduction.
+    \label{lemma:LabelEpsilonReductionFromLabelDReduction}
+    \begin{itemize}
+        \item If \( M \longrightarrow_D M' \) then \( \flat(M,D) \longrightarrow_\varepsilon \flat(M',D) \)
+        \item If \( \tau \longrightarrow_D \tau' \) then \( \flat(\tau,D) \longrightarrow_\varepsilon \flat(\tau',D) \)
+    \end{itemize}
 \end{lemma}
 
 \begin{proof}
-    If \( \G\V M:\tau@A \) then there are \( \G', \sigma \) and \( B \) such that \( \G' \V N : \sigma @ B \) for any level \( n \) subterm \( N \). This is because \( N \) is embedded into \( M \) using \KApp or \TApp. Then, \( N \) is strong nomalizing because of Lemma \ref{lemma:StrongNormalizationofLevel0Reduction}.
+    By induction on the label \( D \) reduction relation.
 \end{proof}
 
+\begin{lemma}[Strong Normalization of Label \( D \) Reduction]
+    \label{lemma:StrongNormalizationofLabelDReduction}
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $\{M_i\}$ which satisfies that $M_i \longrightarrow_D M_{i+1}$ for any natural number \( i \).
+\end{lemma}
+
+\begin{proof}
+    By contradiction. We assume such \(\{M_i\}\) exists. From Lemma
+    \ref{lemma:LabelEpsilonReductionFromLabelDReduction}, there is another
+    infinite sequence of term \( \{ \flat(M_i, D) \} \) which satisfies that
+    $\flat(M_i, D) \longrightarrow_\varepsilon \flat(M_{i+1}, D)$ for any
+    natural number \( i \). This contradicts to Lemma
+    \ref{lemma:StrongNormalizationOfLabelEpsilonReduction}.
+\end{proof}
+
+\begin{lemma}[Commutablity of Label Reductions]
+    \label{lemma:CommutablityOfLabelReductions}
+    If \( M \longrightarrow_D M' \longrightarrow_{D'} M'' \) and \( \text{length}(D) \le \text{length}(D') \) then there is \( M''' \) such that \( M \longrightarrow_{D'} M''' \longrightarrow_D M'' \).
+\end{lemma}
+
+\begin{proof}
+    When \( \text{length}(D) \le \text{length}(D') \), label \( D' \)
+    reductions have no effect to label \( D \) reductions. So, we can get the
+    same result \( M '' \) after the conversion.
+\end{proof}
 
 \begin{theorem}[Strong Normalization]
     \label{theorem:StrongNormalization}
@@ -2089,7 +2121,7 @@ We generalize Inversion Lemma to use induction.
     Maximum value of levels of subterms of \( M \) is finite because the size
     of \( M \) is finite. So the maximum length of \( \{ M_i \} \) is finite
     from Lemma \ref{lemma:StrongNormalizationofLevel0Reduction} and
-    \ref{lemma:StrongNormalizationofLevelnReduction}.
+    \ref{lemma:StrongNormalizationofLabelDReduction}.
 \end{proof}
 
 \begin{lemma}[Confluence of Level 0 Reduction]
@@ -2115,7 +2147,7 @@ We generalize Inversion Lemma to use induction.
 \end{lemma}
 
 \begin{proof}
-    Same as Lemma \ref{lemma:StrongNormalizationofLevelnReduction}.
+    Same as Lemma \ref{lemma:StrongNormalizationofLabelDReduction}.
 \end{proof}
 
 \begin{theorem}[Confluence]
