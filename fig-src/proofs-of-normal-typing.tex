@@ -2118,37 +2118,51 @@ We generalize Inversion Lemma to use induction.
 \end{theorem}
 
 \begin{proof}
-    Maximum value of levels of subterms of \( M \) is finite because the size
-    of \( M \) is finite. So the maximum length of \( \{ M_i \} \) is finite
-    from Lemma \ref{lemma:StrongNormalizationofLevel0Reduction} and
-    \ref{lemma:StrongNormalizationofLabelDReduction}.
+    We write \( M \longrightarrow_n M' \) if and only if there is a variable sequence \( D \) such that \( \text{length}(D) \le n \) and \( M \longrightarrow_D M' \).
+    If the relation of \( M \longrightarrow_n M' \) is strong normalizing for any \( n \) then \( M \longrightarrow M' \) is strong normalizing.
+    We prove it by induction on \( n \).
+    \begin{itemize}
+        \item When \( n = 0 \), \\
+            it is clear from Lemma \ref{lemma:StrongNormalizationOfLabelEpsilonReduction}.
+        \item When \( n = k + 1 \), \\
+            we can assume it is true for \( n = k \) from the induction
+            hypothesis. Prove by contradiction. Assume there is a infinite
+            sequence terms $\{M_i\}$ which satisfies that $M_i
+            \longrightarrow_D M_{i+1}$ for any natural number \( i \). From the
+            induction hypothesis, there are infinite label \( D \) reductions
+            such that \( \text{length}(D) = k + 1 \). Using Lemma
+            \ref{lemma:CommutablityOfLabelReductions}, we can make another
+            infinite sequence terms $\{N_i\}$ which satisfies that $N_i
+            \longrightarrow_D N_{i+1}$ for any natural number \( i \). This
+            contradicts to Lemma \ref{lemma:StrongNormalizationofLabelDReduction}.
+    \end{itemize}
 \end{proof}
 
-\begin{lemma}[Confluence of Level 0 Reduction]
-    \label{lemma:ConfluenceofLevel0Reduction}
-    For any term $M$, if $M \longrightarrow_0^* M'$ and $M \longrightarrow_0^* M''$,
-    there exists $M'''$ that satisfies $M' \longrightarrow_0^* M'''$ and $M'' \longrightarrow_0^* M'''$.
-\end{lemma}
-
-\begin{proof}
-    Because we show the Strong Normalization of $\lambda^{\text{MD}}$, we can
-    use Newman's lemma to prove Church-Rosser Property of
-    $\lambda^{\text{MD}}$.  Then, what we must show is Weak Church-Rosser
-    Property.  When we consider two different redexes in a
-    $\lambda^{\text{MD}}$ term, they can only be disjoint, or one is a part of
-    the other.  In short, they never overlap each other.  So, we can reduce one
-    of them after we reduce another.
-\end{proof}
-
-\begin{lemma}[Confluence of Level n Reduction]
-    \label{lemma:ConfluenceofLevelnReduction}
-    For any term $M$, if $M \longrightarrow_n^* M'$ and $M \longrightarrow_n^* M''$,
-    there exists $M'''$ that satisfies $M' \longrightarrow_n^* M'''$ and $M'' \longrightarrow_n^* M'''$.
-\end{lemma}
-
-\begin{proof}
-    Same as Lemma \ref{lemma:StrongNormalizationofLabelDReduction}.
-\end{proof}
+% \begin{lemma}[Confluence of Level 0 Reduction]
+%     \label{lemma:ConfluenceofLevel0Reduction}
+%     For any term $M$, if $M \longrightarrow_0^* M'$ and $M \longrightarrow_0^* M''$,
+%     there exists $M'''$ that satisfies $M' \longrightarrow_0^* M'''$ and $M'' \longrightarrow_0^* M'''$.
+% \end{lemma}
+%
+% \begin{proof}
+%     Because we show the Strong Normalization of $\lambda^{\text{MD}}$, we can
+%     use Newman's lemma to prove Church-Rosser Property of
+%     $\lambda^{\text{MD}}$.  Then, what we must show is Weak Church-Rosser
+%     Property.  When we consider two different redexes in a
+%     $\lambda^{\text{MD}}$ term, they can only be disjoint, or one is a part of
+%     the other.  In short, they never overlap each other.  So, we can reduce one
+%     of them after we reduce another.
+% \end{proof}
+%
+% \begin{lemma}[Confluence of Level n Reduction]
+%     \label{lemma:ConfluenceofLevelnReduction}
+%     For any term $M$, if $M \longrightarrow_n^* M'$ and $M \longrightarrow_n^* M''$,
+%     there exists $M'''$ that satisfies $M' \longrightarrow_n^* M'''$ and $M'' \longrightarrow_n^* M'''$.
+% \end{lemma}
+%
+% \begin{proof}
+%     Same as Lemma \ref{lemma:StrongNormalizationofLabelDReduction}.
+% \end{proof}
 
 \begin{theorem}[Confluence]
     \label{theorem:Confluence}
@@ -2157,9 +2171,13 @@ We generalize Inversion Lemma to use induction.
 \end{theorem}
 
 \begin{proof}
-    Same as Theorem \ref{theorem:StrongNormalization} using Lemma
-    \ref{lemma:ConfluenceofLevel0Reduction} and
-    \ref{lemma:ConfluenceofLevelnReduction}.
+    Because we show the Strong Normalization of $\lambda^{\text{MD}}$, we can
+    use Newman's lemma to prove Church-Rosser Property of
+    $\lambda^{\text{MD}}$.  Then, what we must show is Weak Church-Rosser
+    Property. When we consider two different redexes in a
+    $\lambda^{\text{MD}}$ term, they can only be disjoint, or one is a part of
+    the other. In short, they never overlap each other.  So, we can reduce one
+    of them after we reduce another.
 \end{proof}
 
 \begin{theorem}[Staged Semantics is Subrelation of Normal Semantics]
