@@ -1867,9 +1867,9 @@ We generalize Inversion Lemma to use induction.
     }
 \end{proof}
 
-\begin{lemma}[Type Preservation on Label \( \varepsilon \) Reduction]
-    \label{lemma:TypePreservationOnLabelEpsilonReduction}
-    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_\varepsilon M' \), then \( \G \V M' : \tau @ A \).
+\begin{lemma}[Type Preservation on Level 0 Reduction]
+    \label{lemma:TypePreservationOnLevel0Reduction}
+    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
 \end{lemma}
 
 \begin{proof}
@@ -1879,13 +1879,13 @@ We generalize Inversion Lemma to use induction.
     \ref{lemma:PreservationOnBlackReduction}.
 \end{proof}
 
-\begin{lemma}[Equivalence Preservation on Label \( \varepsilon \) Reduction]
-    \label{lemma:EquivalencePreservationOnLabelEpsilonReduction}
-    If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_\varepsilon M'' \), then \( \G \V M'' \E M' : \tau @ A \).
+\begin{lemma}[Equivalence Preservation on Level 0 Reduction]
+    \label{lemma:EquivalencePreservationOnLevel0Reduction}
+    If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_0 M'' \), then \( \G \V M'' \E M' : \tau @ A \).
 \end{lemma}
 
 \begin{proof}
-    By case analysis on \( M \longrightarrow_\varepsilon M'' \) using \QTrans.
+    By case analysis on \( M \longrightarrow_0 M'' \) using \QTrans.
 \end{proof}
 
 \begin{theorem}[Type Preservation]
@@ -1897,8 +1897,8 @@ We generalize Inversion Lemma to use induction.
     By induction on \( \G \V M : \tau @ A \), all subterms are typed including
     terms in types. So, we can prove all type and equivalence is preserved by
     induction on \( M \longrightarrow M' \) by Lemma
-    \ref{lemma:TypePreservationOnLabelEpsilonReduction} and
-    \ref{lemma:EquivalencePreservationOnLabelEpsilonReduction}.
+    \ref{lemma:TypePreservationOnLevel0Reduction} and
+    \ref{lemma:EquivalencePreservationOnLevel0Reduction}.
 \end{proof}
 
 \begin{dfn}[$\natural$ translation]
@@ -2030,8 +2030,8 @@ We generalize Inversion Lemma to use induction.
 
 \end{proof}
 
-\begin{lemma}[Strong Normalization of Label \( \varepsilon \) Reduction]
-    \label{lemma:StrongNormalizationOfLabelEpsilonReduction}
+\begin{lemma}[Strong Normalization of Level 0 Reduction]
+    \label{lemma:StrongNormalizationOfLevel0Reduction}
     If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_\varepsilon M_{i+1}$ for $i\ge 1$
 \end{lemma}
 
@@ -2048,68 +2048,36 @@ We generalize Inversion Lemma to use induction.
     infinite reductions.
 \end{proof}
 
-\begin{dfn}[$\flat$ translation]
-    \( \flat \) translation is used when you extract \(
-    \longrightarrow_\varepsilon \) reduction from \( \longrightarrow_D \)
-    reduction. \( \flat \) is a function from a pair of a term of \LMD and a
-    variable sequence to a term of \LMD or \( \bot \). Because bound variables
-    can be renamed uniquely, \( \flat \) is a well-defined function.
-    \begin{align*}
-        & \flat(M, \varepsilon) = M \\
-        & \flat(\lambda x:\tau.M, xD) = \flat(\tau, D) \\
-        & \flat(\lambda x:\tau.M, yD) = \flat(M, D) \\
-        & \flat(M\ N, xD) = \flat(M, xD) & (x \text{ exists in } M \text{ as a bound variable}) \\
-        & \flat(M\ N, xD) = \flat(N, xD) & (x \text{ exists in } N \text{ as a bound variable}) \\
-        & \flat(\Lambda\alpha.M, D) = \flat(M, D) \\
-        & \flat(M\ A, D) = \flat(M, D) \\
-        & \flat(\%_\alpha M, D) = \flat(M, D) \\
-        & \flat(M, D) = \bot & (\text{otherwise}) \\
-        & \flat(\Pi x:\tau.\sigma, xD) = \flat(\tau, D) \\
-        & \flat(\Pi x:\tau.\sigma, yD) = \flat(\sigma, D) \\
-        & \flat(\tau\ M, xD) = \flat(\tau, xD) & (x \text{ exists in } \tau \text{ as a bound variable}) \\
-        & \flat(\tau\ M, xD) = \flat(M, xD) & (x \text{ exists in } M \text{ as a bound variable}) \\
-        & \flat(\TW_\alpha \tau, D) = \flat(\tau, D) \\
-        & \flat(\forall\alpha.\tau, D) = \flat(\tau, D) \\
-        & \flat(\tau, D) = \bot & (\text{otherwise})
-    \end{align*}
-\end{dfn}
+\begin{lemma}[Strong Normalization of Level \( n \) Reduction]
+    \label{lemma:StrongNormalizationOfLevelnReduction}
+    \( n \) is a arbitary natural number.
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $\{M_i\}$ which satisfies that $M_i \longrightarrow_n M_{i+1}$ for any natural number \( i \).
+\end{lemma}
 
-\begin{lemma}[Label \( \varepsilon \) Reduction from Label \( D \) Reduction]
-    We can extract label \( \varepsilon \) from label \( D \) reduction.
-    \label{lemma:LabelEpsilonReductionFromLabelDReduction}
+\begin{proof}
+    By induction on \( n \).
     \begin{itemize}
-        \item If \( M \longrightarrow_D M' \) then \( \flat(M,D) \longrightarrow_\varepsilon \flat(M',D) \)
-        \item If \( \tau \longrightarrow_D \tau' \) then \( \flat(\tau,D) \longrightarrow_\varepsilon \flat(\tau',D) \)
+        \item When \( n = 0 \), \\
+            it is clear from Lemma \ref{lemma:StrongNormalizationOfLevel0Reduction}.
+        \item When \( n = k + 1 \), \\
+            we can assume it is true for the case of \( n = k \).  Prove by
+            contradiction. We assume such \(\{M_i\}\) exists. From the
+            definition of level \( n \) reductions, there is another term
+            sequence \( \{ N_i \} \) which satisfies that \( N_i
+            \longrightarrow_k N_{i+1} \). This contradicts to the induction
+            hypothesis.
     \end{itemize}
-\end{lemma}
-
-\begin{proof}
-    By induction on the label \( D \) reduction relation.
 \end{proof}
 
-\begin{lemma}[Strong Normalization of Label \( D \) Reduction]
-    \label{lemma:StrongNormalizationofLabelDReduction}
-    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $\{M_i\}$ which satisfies that $M_i \longrightarrow_D M_{i+1}$ for any natural number \( i \).
+\begin{lemma}[Commutablity of Leveled Reductions]
+    \label{lemma:CommutablityOfLeveledReductions}
+    If \( M \longrightarrow_n M' \longrightarrow_m M'' \) and \( n < m \) then there is \( M''' \) such that \( M \longrightarrow_m M''' \longrightarrow_n M'' \).
 \end{lemma}
 
 \begin{proof}
-    By contradiction. We assume such \(\{M_i\}\) exists. From Lemma
-    \ref{lemma:LabelEpsilonReductionFromLabelDReduction}, there is another
-    infinite sequence of term \( \{ \flat(M_i, D) \} \) which satisfies that
-    $\flat(M_i, D) \longrightarrow_\varepsilon \flat(M_{i+1}, D)$ for any
-    natural number \( i \). This contradicts to Lemma
-    \ref{lemma:StrongNormalizationOfLabelEpsilonReduction}.
-\end{proof}
-
-\begin{lemma}[Commutablity of Label Reductions]
-    \label{lemma:CommutablityOfLabelReductions}
-    If \( M \longrightarrow_D M' \longrightarrow_{D'} M'' \) and \( \text{length}(D) \le \text{length}(D') \) then there is \( M''' \) such that \( M \longrightarrow_{D'} M''' \longrightarrow_D M'' \).
-\end{lemma}
-
-\begin{proof}
-    When \( \text{length}(D) \le \text{length}(D') \), label \( D' \)
-    reductions have no effect to label \( D \) reductions. So, we can get the
-    same result \( M '' \) after the conversion.
+    When \( n < m \), label \( m \)
+    reductions have no effect to label \( n \) reductions. So, we can get the
+    same result \( M'' \) after the conversion.
 \end{proof}
 
 \begin{theorem}[Strong Normalization]
@@ -2118,23 +2086,25 @@ We generalize Inversion Lemma to use induction.
 \end{theorem}
 
 \begin{proof}
-    We write \( M \longrightarrow_n M' \) if and only if there is a variable sequence \( D \) such that \( \text{length}(D) \le n \) and \( M \longrightarrow_D M' \).
-    If the relation of \( M \longrightarrow_n M' \) is strong normalizing for any \( n \) then \( M \longrightarrow M' \) is strong normalizing.
+    We write \( M \longrightarrow_{\le n} M' \) if and only if there is a integer \( m \) such that \( M \longrightarrow_m M' \).
+    If the relation of \( M \longrightarrow_{\le n} M' \) is strong normalizing for any \( n \) then \( M \longrightarrow M' \) is strong normalizing.
     We prove it by induction on \( n \).
     \begin{itemize}
         \item When \( n = 0 \), \\
-            it is clear from Lemma \ref{lemma:StrongNormalizationOfLabelEpsilonReduction}.
+            it is clear from Lemma \ref{lemma:StrongNormalizationOfLevel0Reduction}.
         \item When \( n = k + 1 \), \\
             we can assume it is true for \( n = k \) from the induction
             hypothesis. Prove by contradiction. Assume there is a infinite
             sequence terms $\{M_i\}$ which satisfies that $M_i
-            \longrightarrow_D M_{i+1}$ for any natural number \( i \). From the
-            induction hypothesis, there are infinite label \( D \) reductions
-            such that \( \text{length}(D) = k + 1 \). Using Lemma
-            \ref{lemma:CommutablityOfLabelReductions}, we can make another
+            \longrightarrow_{\le k+1} M_{i+1}$ for any natural number \( i \).
+            From the induction hypothesis, there are infinite level \( k + 1 \)
+            reductions. Using Lemma
+            \ref{lemma:CommutablityOfLeveledReductions}, we can make another
             infinite sequence terms $\{N_i\}$ which satisfies that $N_i
-            \longrightarrow_D N_{i+1}$ for any natural number \( i \). This
-            contradicts to Lemma \ref{lemma:StrongNormalizationofLabelDReduction}.
+            \longrightarrow_D N_{i+1}$ for any natural number \( i \) by
+            swapping all level \( k + 1 \) reductions in \( \{ M_i \} \) toward
+            the front. This contradicts to Lemma
+            \ref{lemma:StrongNormalizationOfLevelnReduction}.
     \end{itemize}
 \end{proof}
 
@@ -2161,7 +2131,7 @@ We generalize Inversion Lemma to use induction.
 % \end{lemma}
 %
 % \begin{proof}
-%     Same as Lemma \ref{lemma:StrongNormalizationofLabelDReduction}.
+%     Same as Lemma \ref{lemma:StrongNormalizationOfLevelnReduction}.
 % \end{proof}
 
 \begin{theorem}[Confluence]

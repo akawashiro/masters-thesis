@@ -26,29 +26,28 @@ There are theree basic reductions.
   \end{align*}
 \end{center}
 
-\figheader{Labeled reduction}{\rulefbox{M \longrightarrow_D M'}}
-A label of reduction is a sequence of variables. We use metavariable \( D, E, F \) for labels.
+\figheader{Leveled reduction}{\rulefbox{M \longrightarrow_i M'}}
 \begin{center}
-    \infrule{M\longrightarrow_\text{basic}M'}{M\longrightarrow_\varepsilon M'} \\[2mm]
-    \infrule{M \longrightarrow_D M'}{\lambda x:\tau.M \longrightarrow_D \lambda x:\tau.M'} \hfil
-    \infrule{\tau \longrightarrow_D \tau'}{\lambda x:\tau.M \longrightarrow_{xD} \lambda x:\tau'.M} \hfil
-    \infrule{M \longrightarrow_D M'}{M\ N \longrightarrow_D M'\ N} \hfil
-    \infrule{N \longrightarrow_D N'}{M\ N \longrightarrow_D M\ N'} \hfil
-    \infrule{M \longrightarrow_D M'}{\TB_\alpha M \longrightarrow_D \TB_\alpha M'} \\[2mm]
-    \infrule{M \longrightarrow_D M'}{\TBL_\alpha M \longrightarrow_D \TBL_\alpha M'} \hfil
-    \infrule{M \longrightarrow_D M'}{\Lambda\alpha.M \longrightarrow_D \Lambda\alpha.M'} \hfil
-    \infrule{M \longrightarrow_D M'}{M\ A \longrightarrow_D M'\ A} \hfil
-    \infrule{M \longrightarrow_D M'}{\%_\alpha M \longrightarrow_D \%_\alpha M'} \\[2mm]
-    \infrule{\tau \longrightarrow_D \tau'}{\Pi x:\tau \longrightarrow_{xD} \Pi x:\tau'} \hfil
-    \infrule{\tau \longrightarrow_D \tau'}{\tau\ M \longrightarrow_D \tau'\ M} \hfil
-    \infrule{M \longrightarrow_D M'}{\tau\ M \longrightarrow_D \tau\ M'} \hfil
-    \infrule{\tau \longrightarrow_D \tau'}{\TW_\alpha\tau \longrightarrow_D \TW_\alpha\tau'} \hfil
-    \infrule{\tau \longrightarrow_D \tau'}{\forall\alpha.\tau \longrightarrow_D \forall\alpha.\tau'}
+    \infrule{M\longrightarrow_\text{basic}M'}{M\longrightarrow_0 M'} \\[2mm]
+    \infrule{M \longrightarrow_i M'}{\lambda x:\tau.M \longrightarrow_i \lambda x:\tau.M'} \hfil
+    \infrule{\tau \longrightarrow_i \tau'}{\lambda x:\tau.M \longrightarrow_{i+1} \lambda x:\tau'.M} \hfil
+    \infrule{M \longrightarrow_i M'}{M\ N \longrightarrow_i M'\ N} \hfil
+    \infrule{N \longrightarrow_i N'}{M\ N \longrightarrow_i M\ N'} \hfil
+    \infrule{M \longrightarrow_i M'}{\TB_\alpha M \longrightarrow_i \TB_\alpha M'} \\[2mm]
+    \infrule{M \longrightarrow_i M'}{\TBL_\alpha M \longrightarrow_i \TBL_\alpha M'} \hfil
+    \infrule{M \longrightarrow_i M'}{\Lambda\alpha.M \longrightarrow_i \Lambda\alpha.M'} \hfil
+    \infrule{M \longrightarrow_i M'}{M\ A \longrightarrow_i M'\ A} \hfil
+    \infrule{M \longrightarrow_i M'}{\%_\alpha M \longrightarrow_i \%_\alpha M'} \\[2mm]
+    \infrule{\tau \longrightarrow_i \tau'}{\Pi x:\tau \longrightarrow_{i+1} \Pi x:\tau'} \hfil
+    \infrule{\tau \longrightarrow_i \tau'}{\tau\ M \longrightarrow_i \tau'\ M} \hfil
+    \infrule{M \longrightarrow_i M'}{\tau\ M \longrightarrow_i \tau\ M'} \hfil
+    \infrule{\tau \longrightarrow_i \tau'}{\TW_\alpha\tau \longrightarrow_i \TW_\alpha\tau'} \hfil
+    \infrule{\tau \longrightarrow_i \tau'}{\forall\alpha.\tau \longrightarrow_i \forall\alpha.\tau'}
 \end{center}
 
 \figheader{Term reduction}{\rulefbox{M \longrightarrow M'}}
-\( M \longrightarrow M' \) if and only if there is \( D \) such that \( M
-\longrightarrow_D M' \).
+\( M \longrightarrow M' \) if and only if there is \( i \) such that \( M
+\longrightarrow_i M' \).
 
 \subsection{Type System}
 
