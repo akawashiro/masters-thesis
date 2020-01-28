@@ -280,7 +280,7 @@ We show \( \natural \) translation preserves typing and reduction of \LMD.
     \ref{lemma:PreservationOfBlacklozengeReductionInNatural}.
 \end{proof}
 
-Finally, we can prove Strong Normalization on level 0 subterms.
+Finally, we can start the proof of Strong Normalization.
 
 \begin{lemma}[Strong Normalization of Level 0 Reduction]
     \label{lemma:StrongNormalizationofLevel0Reduction}
@@ -300,21 +300,40 @@ Finally, we can prove Strong Normalization on level 0 subterms.
     property of Strong Normalization, so there is no infinite reductions.
 \end{proof}
 
-General Strong Normalization can be proved easily using Lemma
-\ref{lemma:StrongNormalizationofLevel0Reduction}.
-
-\begin{lemma}[Strong Normalization of Level $n$ Reduction]
-    \label{lemma:StrongNormalizationofLevelnReduction}
-    \( n \) is a arbitrary integer which is greater than 0.
-    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_n M_{i+1}$ for $i\ge 1$.
+\begin{lemma}[Strong Normalization of Level \( n \) Reduction]
+    \label{lemma:StrongNormalizationOfLevelnReduction}
+    \( n \) is a arbitary natural number.
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $\{M_i\}$ which satisfies that $M_i \longrightarrow_n M_{i+1}$ for any natural number \( i \).
 \end{lemma}
 
 \begin{proof}
-    If \( \G\V M:\tau@A \) then there are \( \G', \sigma \) and \( B \) such
-    that \( \G' \V N : \sigma @ B \) for any level \( n \) subterm \( N \).
-    This is because \( N \) is embedded into \( M \) using \KApp or \TApp.
-    Then, \( N \) is strong normalizing because of Lemma
-    \ref{lemma:StrongNormalizationofLevel0Reduction}.
+    By induction on \( n \).
+    \begin{itemize}
+        \item When \( n = 0 \), \\
+            it is clear from Lemma \ref{lemma:StrongNormalizationOfLevel0Reduction}.
+        \item When \( n = k + 1 \), \\
+            we can assume it is true for the case of \( n = k \).  Prove by
+            contradiction. We assume such \(\{M_i\}\) exists. From the
+            definition of level \( n \) reductions, there is another term
+            sequence \( \{ N_i \} \) which satisfies that \( N_i
+            \longrightarrow_k N_{i+1} \). This contradicts to the induction
+            hypothesis.
+    \end{itemize}
+\end{proof}
+
+In order to prove the relation of \( M \longrightarrow \) is strong
+normalizing, we need to exchange different types of reductions. This lemma
+enables it.
+
+\begin{lemma}[Commutablity of Leveled Reductions]
+    \label{lemma:CommutablityOfLeveledReductions}
+    If \( M \longrightarrow_n M' \longrightarrow_m M'' \) and \( n < m \) then there is \( M''' \) such that \( M \longrightarrow_m M''' \longrightarrow_n M'' \).
+\end{lemma}
+
+\begin{proof}
+    When \( n < m \), label \( m \)
+    reductions have no effect to label \( n \) reductions. So, we can get the
+    same result \( M'' \) after the conversion.
 \end{proof}
 
 \begin{theorem}[Strong Normalization]
@@ -323,41 +342,31 @@ General Strong Normalization can be proved easily using Lemma
 \end{theorem}
 
 \begin{proof}
-    Maximum value of levels of subterms of \( M \) is finite because the size
-    of \( M \) is finite. So the maximum length of \( \{ M_i \} \) is finite
-    from Lemma \ref{lemma:StrongNormalizationofLevel0Reduction} and
-    \ref{lemma:StrongNormalizationofLevelnReduction}.
+    We write \( M \longrightarrow_{\le n} M' \) if and only if there is a integer \( m \) such that \( M \longrightarrow_m M' \).
+    If the relation of \( M \longrightarrow_{\le n} M' \) is strong normalizing for any \( n \) then \( M \longrightarrow M' \) is strong normalizing.
+    We prove it by induction on \( n \).
+    \begin{itemize}
+        \item When \( n = 0 \), \\
+            it is clear from Lemma \ref{lemma:StrongNormalizationOfLevel0Reduction}.
+        \item When \( n = k + 1 \), \\
+            we can assume it is true for \( n = k \) from the induction
+            hypothesis. Prove by contradiction. Assume there is a infinite
+            sequence terms $\{M_i\}$ which satisfies that $M_i
+            \longrightarrow_{\le k+1} M_{i+1}$ for any natural number \( i \).
+            From the induction hypothesis, there are infinite level \( k + 1 \)
+            reductions. Using Lemma
+            \ref{lemma:CommutablityOfLeveledReductions}, we can make another
+            infinite sequence terms $\{N_i\}$ which satisfies that $N_i
+            \longrightarrow_D N_{i+1}$ for any natural number \( i \) by
+            swapping all level \( k + 1 \) reductions in \( \{ M_i \} \) toward
+            the front. This contradicts to Lemma
+            \ref{lemma:StrongNormalizationOfLevelnReduction}.
+    \end{itemize}
 \end{proof}
 
 Confluence is a property that any reduction sequences from one typed term
 converge.  Since we have proved Strong Normalization, we can use Newman's
 Lemma~\cite{DBLP:books/daglib/0092409} to prove Confluence.
-
-\begin{lemma}[Confluence of Level 0 Reduction]
-    \label{lemma:ConfluenceofLevel0Reduction}
-    For any term $M$, if $M \longrightarrow_0^* M'$ and $M \longrightarrow_0^* M''$,
-    there exists $M'''$ that satisfies $M' \longrightarrow_0^* M'''$ and $M'' \longrightarrow_0^* M'''$.
-\end{lemma}
-
-\begin{proof}
-    Because we show the Strong Normalization of $\lambda^{\text{MD}}$, we can
-    use Newman's lemma to prove Church-Rosser Property of
-    $\lambda^{\text{MD}}$.  Then, what we must show is Weak Church-Rosser
-    Property.  When we consider two different redexes in a
-    $\lambda^{\text{MD}}$ term, they can only be disjoint, or one is a part of
-    the other.  In short, they never overlap each other.  So, we can reduce one
-    of them after we reduce another.
-\end{proof}
-
-\begin{lemma}[Confluence of Level n Reduction]
-    \label{lemma:ConfluenceofLevelnReduction}
-    For any term $M$, if $M \longrightarrow_n^* M'$ and $M \longrightarrow_n^* M''$,
-    there exists $M'''$ that satisfies $M' \longrightarrow_n^* M'''$ and $M'' \longrightarrow_n^* M'''$.
-\end{lemma}
-
-\begin{proof}
-    Same as Lemma \ref{lemma:StrongNormalizationofLevelnReduction}.
-\end{proof}
 
 \begin{theorem}[Confluence]
 	For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$ then
