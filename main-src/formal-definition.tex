@@ -496,16 +496,19 @@ the rule \QPercent{} makes sense.
 
 % What is algorithmic typing?
 
-Algorithmic typing rules are rules for implementation of type checker which
-takes an environment \( \Gamma \), a signature \( \Sigma \), a term \( M \), a
-type \( \tau \) and a stage \( A \) and returns \( \G \V M : \tau @ A \) or
-not. We already defined typing rules for \LMD in Section \ref{sec:typing}, but
-they include some non-syntax directed rules. Non-syntax directed rules means
-their premise cannot be decided from the goal. When we implement the type
-checker of \LMD, it is necessary to make up type derivation trees from bottom
-to up. So, we need to make all typing rules syntax-directed. And, of course,
-algorithmic typing is equivalent to the original typing. We show the
-equivalence in Section \ref{sec:properties}.
+Algorithmic typing rules are rules for implementation of type inference program
+which takes an environment \( \Gamma \), a signature \( \Sigma \), a term \( M
+\), and a stage \( A \) and returns a type \( \tau \) which satisfies \( \G \V
+M : \tau @ A \). If there is no such \( \tau \), the algorithm tells failure.
+We already defined typing rules for \LMD in Section \ref{sec:typing}, but they
+include some non-syntax directed rules. Non-syntax directed rules mean their
+premise cannot be decided from the goal. When we implement the type inference
+program of \LMD, it is necessary to make up type derivation trees from bottom
+to up.  So, we need to make all the typing rules syntax-directed. And, of
+course, algorithmic typing is equivalent to the original typing. Using this
+algorithmic typing, we can make the type inference program easily just by
+applying the unique suitable rule one by one. We show the equivalence in
+Section \ref{sec:properties}.
 
 % Judgements
 
