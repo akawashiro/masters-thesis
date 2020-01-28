@@ -142,56 +142,53 @@ environment $\G$.
 
 % Reduction
 
-Next, we define the reduction relation of \LMD. However, we need the concept of
-level of subterms first. This is because we must distinguish reductions on
-terms from reductions on terms in types in proof of properties.
-
-\begin{definition}[Level of subterms]
-    Suppose we have term \( M \).
-    \begin{itemize}
-        \item \( M \) is a level 0 subterm of \( M \).
-        \item If \( N \) is a level \( n \) subterm of \( M \), all subterms of \(
-            N \) are level \( n \) subterms of \( M \). But ones which lives in
-            types are not level \( n \) subterms of \( M \).
-        \item If \( N \) is a level \( n \) subterm of \( M \), all subterms of \(
-            N \) which lives in types are level \( n + 1 \) subterms. But ones
-            which lives in types in terms in types are not level \( n + 1 \)
-            subterms.
-    \end{itemize}
-\end{definition}
-
-There are three basic reductions, $M \longrightarrow_\beta N$, $M
-\longrightarrow_\blacklozenge N$, and $M \longrightarrow_\Lambda N$.  The
-relation $\longrightarrow_\beta$ represents ordinary $\beta$-reduction in the
-\(\lambda\)-calculus; the relation $\longrightarrow_\blacklozenge$ represents
-that quotation $\TB_\alpha M$ is canceled by escape and $M$ is spliced into the
-code fragment surrounding the escape; the relation $\longrightarrow_\Lambda$
-means that a stage abstraction applied to  stage $A$ reduces to the body of the
-abstraction where $A$ is substituted for the stage variable.  There is no
-reduction rule for CSP as with Hanada and Igarashi \cite{Hanada2014}.  The CSP
-operator $\%_\alpha$ disappears when $\varepsilon$ is substituted for $\alpha$.
+Next, we define the reduction relation of \LMD. There are three basic
+reductions, $M \longrightarrow_\beta N$, $M \longrightarrow_\blacklozenge N$,
+and $M \longrightarrow_\Lambda N$.  The relation $\longrightarrow_\beta$
+represents ordinary $\beta$-reduction in the \(\lambda\)-calculus; the relation
+$\longrightarrow_\blacklozenge$ represents that quotation $\TB_\alpha M$ is
+canceled by escape and $M$ is spliced into the code fragment surrounding the
+escape; the relation $\longrightarrow_\Lambda$ means that a stage abstraction
+applied to  stage $A$ reduces to the body of the abstraction where $A$ is
+substituted for the stage variable.  There is no reduction rule for CSP as with
+Hanada and Igarashi \cite{Hanada2014}.  The CSP operator $\%_\alpha$ disappears
+when $\varepsilon$ is substituted for $\alpha$.
 
 \begin{definition}[Basic reduction]
     The relations $M \longrightarrow_\beta N$, $M \longrightarrow_\blacklozenge N$, and $M \longrightarrow_\Lambda N$ are defined as following.
-    \begin{align*}
-        & (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N]         \\
-        & \TBL_\alpha (\TB_\alpha M)\longrightarrow_\blacklozenge M         \\
-        & (\Lambda \alpha.M)\ A \longrightarrow_\Lambda M[\alpha \mapsto A]
-    \end{align*}
+\begin{center}
+  \begin{align*}
+     & (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N]         \\
+     & \TBL_\alpha (\TB_\alpha M)\longrightarrow_\blacklozenge M         \\
+     & (\Lambda \alpha.M)\ A \longrightarrow_\Lambda M[\alpha \mapsto A]
+  \end{align*}
+\end{center}
 \end{definition}
 
-Then, we define level \( n \) reduction, \( M \longrightarrow_n M' \).
-Intuitively, it means we can get \( M' \) by reducing a level \( n \) subterm
-of \( M \).
+Then, we define level \( n \) reduction, \( M \longrightarrow_n M' \). Because
+we compare two terms with \( \alpha \) equivalence in the algorithmic typing,
+we must reduce terms in type annotations.  Intuitively, the level of reduction
+represents the number of nested colon ":" which is used in type annotations. 
 
-\begin{definition}[Level $n$ reduction]
-    \( M \longrightarrow_n M' \) if and only if we can get \( M' \) by using one
-    basic reduction for a level \( n \) subterm of \( M \).  In addition to it, \(
-    M \longrightarrow_{n\beta} M' \) if and only if we can get \( M' \) by using
-    one \( \longrightarrow_\beta \) reduction for a level \( n \) subterm of \( M
-    \).  \( M \longrightarrow_{n\blacklozenge} M' \) and \( M
-    \longrightarrow_{n\Lambda} M' \) are defined just same as \( M
-    \longrightarrow_{n\beta} M' \).
+\begin{definition}[Leveled reduction]
+    The relations \( M \longrightarrow_i M' \) are defined as following.
+    \begin{center}
+        \infrule{M\longrightarrow_\text{basic}M'}{M\longrightarrow_0 M'} \\[2mm]
+        \infrule{M \longrightarrow_i M'}{\lambda x:\tau.M \longrightarrow_i \lambda x:\tau.M'} \hfil
+        \infrule{\tau \longrightarrow_i \tau'}{\lambda x:\tau.M \longrightarrow_{i+1} \lambda x:\tau'.M} \hfil
+        \infrule{M \longrightarrow_i M'}{M\ N \longrightarrow_i M'\ N} \hfil
+        \infrule{N \longrightarrow_i N'}{M\ N \longrightarrow_i M\ N'} \hfil
+        \infrule{M \longrightarrow_i M'}{\TB_\alpha M \longrightarrow_i \TB_\alpha M'} \\[2mm]
+        \infrule{M \longrightarrow_i M'}{\TBL_\alpha M \longrightarrow_i \TBL_\alpha M'} \hfil
+        \infrule{M \longrightarrow_i M'}{\Lambda\alpha.M \longrightarrow_i \Lambda\alpha.M'} \hfil
+        \infrule{M \longrightarrow_i M'}{M\ A \longrightarrow_i M'\ A} \hfil
+        \infrule{M \longrightarrow_i M'}{\%_\alpha M \longrightarrow_i \%_\alpha M'} \\[2mm]
+        \infrule{\tau \longrightarrow_i \tau'}{\Pi x:\tau \longrightarrow_{i+1} \Pi x:\tau'} \hfil
+        \infrule{\tau \longrightarrow_i \tau'}{\tau\ M \longrightarrow_i \tau'\ M} \hfil
+        \infrule{M \longrightarrow_i M'}{\tau\ M \longrightarrow_i \tau\ M'} \hfil
+        \infrule{\tau \longrightarrow_i \tau'}{\TW_\alpha\tau \longrightarrow_i \TW_\alpha\tau'} \hfil
+        \infrule{\tau \longrightarrow_i \tau'}{\forall\alpha.\tau \longrightarrow_i \forall\alpha.\tau'}
+    \end{center}
 \end{definition}
 
 Finally, we define the reduction relation of \LMD.
