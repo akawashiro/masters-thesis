@@ -10,19 +10,13 @@ reduction.
 
 % Substitution Lemma
 
-The Substitution Lemma in \LMD{} is a little more complicated than usual
-because there are eight judgment forms and two kinds of substitution.
-The Term Substitution Lemma states that term substitution $[z \mapsto M]$
-preserves derivability of judgments. The Stage Substitution Lemma
-states similarly for stage substitution $[\alpha\mapsto A]$.
+The Substitution Lemma in \LMD{} is a little more complicated than usual because there are eight judgment forms and two kinds of substitution.  The Term Substitution Lemma states that term substitution $[z \mapsto M]$ preserves derivability of judgments. The Stage Substitution Lemma states a similar property for stage substitution $[\alpha\mapsto A]$.  
 
 We let $\mathcal{J}$ stand for the judgments $K \iskind @A$, $\tau::K@A$,
 $M:\tau@A$, $K \E J @ A$, $\tau \E \sigma @ A$, and
 $M \E N : \tau @ A$.  Substitutions $\mathcal{J}[z \mapsto M]$ and
 $\mathcal{J}[\alpha \mapsto A]$ are defined in a straightforward
 manner.  Using these notations, the two substitution lemmas are stated as follows:
-
-We proved the next two lemmas by simultaneous induction on derivations.
 
 \begin{lemma}[Term Substitution]
     \label{lemma:TermSubstitution}
@@ -35,22 +29,26 @@ We proved the next two lemmas by simultaneous induction on derivations.
     If $\G \V \mathcal{J}$, then $\G[\beta\mapsto B] \V \mathcal{J}[\beta\mapsto B]$.  Similarly, if $\V \G$, then $\V \G[\beta\mapsto B]$.
 \end{lemma}
 
+\begin{proof}
+    By simultaneous induction on derivations.
+\end{proof}
+
 % Agreement
 
 We prove agreement to use later in the completeness of the algorithmic typing.
 
 \begin{lemma}[Agreement]
     \label{lemma:Agreement}
-	\begin{enumerate}
-		\item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
-		\item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
-		\item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
-		\item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
-		\item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
-	\end{enumerate}
+    \begin{enumerate}
+        \item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
+        \item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
+        \item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
+        \item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
+        \item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
+    \end{enumerate}
 \end{lemma}
 \begin{proof}
-	We can prove using induction on the derivation tree.
+    By induction on the derivation tree.
 \end{proof}
 
 
@@ -131,7 +129,7 @@ e.g., \cite{harper1993framework}), we prove this theorem by translating \LMD to
 the simply typed lambda calculus. As with Preservation, we prove Strong
 Normalization on Level 0 Reduction first. In order to prove it, we define
 translation function \( \natural \) from \LMD to the simply typed lambda
-calculus and prove it preserve reductions of \LMD especially \( \beta \)
+calculus and prove it preserves reductions of \LMD in particular, \( \beta \)
 reduction.
 
 \begin{definition}[$\natural$ translation]
@@ -170,14 +168,14 @@ reduction.
     \end{multicols}
 \end{definition}
 
-We show \( \natural \) translation preserves typing and reduction of \LMD.
+We show \( \natural \) translation preserves typing and reductions of \LMD.
 
 \begin{lemma}[Preservation of Equality in $\natural$]
     If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
 \end{lemma}
 
 \begin{proof}
-    We can prove using induction on the type derivation tree.
+    By induction on the type derivation tree.
 \end{proof}
 
 \begin{lemma}[Preservation of Typing in $\natural$]
@@ -193,7 +191,7 @@ We show \( \natural \) translation preserves typing and reduction of \LMD.
             \G \V M : (\Pi(x:\sigma).\tau) @ A \text{ and } \G \V N :\sigma @A
         }
         From the induction hypothesis, we have $\natural(\G) \V \natural(M) : \natural(\sigma) \to \natural(\tau)$ and $\natural(\G) \V \natural(N) : \natural(\sigma)$.
-        Use the Application rule in $\lambda^\to$, we get $\natural(\G) \V \natural(M)\ \natural(N) : \natural(\tau)$.
+        Using the Application rule in $\lambda^\to$, we get $\natural(\G) \V \natural(M)\ \natural(N) : \natural(\tau)$.
         Because $\natural(M)\ \natural(N) = \natural(M\ N)$ from the definition of $\natural$, $\natural(\G) \V \natural(M\ N) : \natural(\tau)$ in $\lambda^\to$.
     \end{rneqncase}
     \begin{rneqncase}{\TConv{}}{
@@ -211,7 +209,7 @@ We show \( \natural \) translation preserves typing and reduction of \LMD.
 \end{lemma}
 
 \begin{proof}
-    We prove by induction on the type derivation tree of $\G, x:\sigma \V M:\tau@A$.
+    By induction on the type derivation tree of $\G, x:\sigma \V M:\tau@A$.
 \end{proof}
 
 \begin{lemma}[Preservation of $\beta$-Reduction in $\natural$]
@@ -222,14 +220,14 @@ We show \( \natural \) translation preserves typing and reduction of \LMD.
 
 \begin{proof}
     {
-        We prove by induction on the derivation of $\beta$ reduction of \LMD.
+        By induction on the derivation of $\beta$ reduction of \LMD.
         We show only the main case.
         \newcommand{\R}{\longrightarrow_{\beta}}
         \begin{rneqncase}{$(\lambda x:\tau.M)\ N \R M[x \mapsto N]$}{}
             From the definition of $\natural$,
             $\natural((\lambda x:\tau.M)\ N)$ = $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$.
             Because $\lambda x:\natural(\tau).\natural(M)\ \natural(N)$ is a typed term in $\lambda^\to$,
-            we can do $\beta$ reduction from it.
+            we can perform $\beta$ reduction from it.
             As a result of the reduction, we get $\natural(M)[x\mapsto\natural(N)]$.
             From Preservation of substitution in $\natural$, $\natural(M[x \mapsto N])$ = $\natural(M)[x\mapsto\natural(N)]$.
         \end{rneqncase}
@@ -289,15 +287,17 @@ Finally, we can start the proof of Strong Normalization.
 
 \begin{proof}
     If there is an infinite reduction sequence in $\lambda^{\text{MD}}$ then
-    there are infinite beta reductions in the sequence.  This is because
-    reductions other than $\beta$-reduction reduce the size of a term.  Then,
-    we show Strong Normalization by proof by contradiction.  We assume that
-    there is an infinite reduction in a typed \LMD from typed term $M$.  We can
-    construct a typed term of simply typed lambda calculus $\natural(M)$ from
-    Lemma \ref{lemma:PreservationOfTypingInNatural} and $\natural(M)$ has
-    infinite reductions from Lemma \ref{lemma:PreservationOfBetaReductionInNatural}
-    and \ref{lemma:PreservationOfLevel0Reduction}. However, $\lambda^\to$ has a
-    property of Strong Normalization, so there is no infinite reductions.
+    there are infinite beta reductions in the sequence because reductions other
+    than $\beta$-reduction reduce the size of a term.  Then, we show Strong
+    Normalization by proof by contradiction.  We assume that there is an
+    infinite reduction in a typed \LMD from typed term $M$.  We can construct a
+    typed term of simply typed lambda calculus $\natural(M)$ from Lemma
+    \ref{lemma:PreservationOfTypingInNatural} and thus $\natural(M)$ has
+    infinite reductions from Lemma
+    \ref{lemma:PreservationOfBetaReductionInNatural} and
+    \ref{lemma:PreservationOfLevel0Reduction}. However, $\lambda^\to$ has a
+    property of Strong Normalization\cite{TAPL}, so there is no infinite
+    reductions.
 \end{proof}
 
 \begin{lemma}[Strong Normalization of Level \( n \) Reduction]
@@ -332,7 +332,7 @@ enables it.
 
 \begin{proof}
     When \( n < m \), label \( m \)
-    reductions have no effect to label \( n \) reductions. So, we can get the
+    reductions have no effect to label \( n \) reductions. Thus, we can get the
     same result \( M'' \) after the conversion.
 \end{proof}
 
@@ -369,6 +369,7 @@ converge.  Since we have proved Strong Normalization, we can use Newman's
 Lemma~\cite{DBLP:books/daglib/0092409} to prove Confluence.
 
 \begin{theorem}[Confluence]
+    \label{theorem:confluence}
 	For any term $M$, if $M \longrightarrow^* M'$ and $M \longrightarrow^* M''$ then
 	there exists $M'''$ that satisfies $M' \longrightarrow^* M'''$ and $M'' \longrightarrow^* M'''$.
 \end{theorem}
@@ -409,11 +410,11 @@ immediately stuck and the staged semantics is deterministic.
 \end{theorem}
 
 \begin{proof}
-  We can prove by straightforward induction on typing derivations.
+  By straightforward induction on typing derivations.
 \end{proof}
 
-The type environment $\G$ in the statement usually has to be empty; in other
-words, the term has to be closed. The condition is relaxed here because
+The type environment $\G$ of a statement usually must be empty; in other
+words, the term must be closed. The condition is relaxed here because
 variables at stages higher than \(\varepsilon\) are considered symbols. In
 fact, this relaxation is required for proof by induction to work.
 
@@ -426,9 +427,9 @@ Progress is a corollary of Unique Decomposition.
 
 \subsection{Properties of Algorithmic Typing}
 
-In this subsection, we prove properties of algorithmic typing of \LMD. Main
+In this subsection, we prove properties of algorithmic typing of \LMD. The main
 purpose of this subsection is prove the completeness and soundness of
-algorithmic typing which means the equivalence with the original typing. We
+algorithmic typing which gives the equivalence with the original typing. We
 start from proving properties of algorithmic reduction because it is used to
 define term equivalence in \QAANF. \ANF is a function which returns normal form
 of a term in algorithmic reduction and \( \E_\alpha \) means \( \alpha \)
@@ -439,8 +440,9 @@ equivalence.
 \end{center}
 
 First, we prove the uniqueness of \( \ANF(M) \) for all typed term \( M \)
-using Strong Normalization and Confluence of algorithmic reduction. Luckily, we
-can prove them just same as the normal reduction.
+using Strong Normalization and Confluence of algorithmic reduction.
+Fortunately, we can prove these two properties similarly to the original
+reduction.
 
 \begin{lemma}[Strong Normalization of Algorithmic Reduction]
     \label{lemma:StrongNormalizationofAlgorithmicReduction}
@@ -458,7 +460,7 @@ can prove them just same as the normal reduction.
 \end{lemma}
 
 \begin{proof}
-    It can be proved just same as the normal reduction.
+    By argument similar that in Thorem \ref{theorem:confluence} 
 \end{proof}
 
 \begin{lemma}[Uniqueness of Algorithmic Reduction Normal Form]
@@ -467,7 +469,7 @@ can prove them just same as the normal reduction.
 \end{lemma}
 
 \begin{proof}
-    It is obvious from Lemma \ref{lemma:StrongNormalizationofAlgorithmicReduction} and \ref{lemma:ConfluenceofAlgorithmicReduction}.
+    Immediate from Lemma \ref{lemma:StrongNormalizationofAlgorithmicReduction} and \ref{lemma:ConfluenceofAlgorithmicReduction}.
 \end{proof}
 
 Then, we prove the relationship between one step algorithmic reduction and substitutions.
@@ -479,10 +481,10 @@ Then, we prove the relationship between one step algorithmic reduction and subst
 \end{lemma}
 
 \begin{proof}
-    Prove by induction on the derivation of \( M \RA M' \).
+    By induction on the derivation of \( M \RA M' \).
     \begin{rneqncase}{\textsc{A-\%}}{\%M \RA M \text{ and } \text{FV}(M)=\emptyset}
         From \( \text{FV}(M)=\emptyset \), \( z \notin \text{FV}(M) \) and \( z \notin \text{FV}(M') \).
-        Then \( \ANF(M) \E_\alpha \ANF(M') \) is obvious.
+        Then \( \ANF(M) \E_\alpha \ANF(M') \) is clear.
     \end{rneqncase}
 
     \begin{rneqncase}{\textsc{A-$\beta$}}{(\lambda x:\tau.M)\ N \RA M[x\mapsto N]}
@@ -503,18 +505,20 @@ Then, we prove the relationship between one step algorithmic reduction and subst
 \end{lemma}
 
 \begin{proof}
-    Prove by induction on the derivation of \( M \RA M' \).
+    By induction on the derivation of \( M \RA M' \).
 \end{proof}
 
-Next, we prove that we can get the same term in two different ways. On the one
-hand, we calculate the algorithmic normal form after the substitution. On the
-other hand, we calculate the algorithmic normal form after the substitution for
-the algorithmic normal form. This lemma is crucial for Term Substitution Lemma
-of Algorithmic Judgement and Stage Substitution Lemma of Algorithmic
-Judgement (Lemma \ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} and
-Lemma \ref{lemma:StageSubstitutionLemmaofAlgorithmicJudgement}). In
-\cite{attapl}, they use weak head normal form but we changed it to normal form.
-This is because we couldn't prove this lemma for weak head normal form.
+Next, we prove that we can derive the same term in two different ways. On the
+one hand, we may calculate the algorithmic normal form after the substitution.
+On the other hand, we may calculate the algorithmic normal form after the
+substitution for the algorithmic normal form. This property (state formally in
+Lemma \ref{lemma:AlgorithmicNomalFormAndTermSubstitution}) is crucial for Term
+Substitution Lemma of Algorithmic Judgement and Stage Substitution Lemma of
+Algorithmic Judgement (Lemma
+\ref{lemma:TermSubstitutionLemmaOfAlgorithmicJudgement} and Lemma
+\ref{lemma:StageSubstitutionLemmaofAlgorithmicJudgement}). In \cite{attapl},
+they use weak head normal form, but here we use normal form because we couldn't
+prove this lemma for weak head normal form.
 
 \begin{lemma}[Algorithmic Normal Form and Term Substitution]
     \label{lemma:AlgorithmicNomalFormAndTermSubstitution}
@@ -525,7 +529,7 @@ This is because we couldn't prove this lemma for weak head normal form.
 \begin{proof}
     Prove by induction on the length \( n \) of reduction from \( M \) to \( \ANF(M) \).
     \begin{rneqncase}{$n$ = 0}{M = \ANF(M) }
-        It is obvious.
+        It is immediate.
     \end{rneqncase}
     \begin{rneqncase}{$n$ = 1}{M \RA M' \text{ and } \ANF(M) = M' }
         From Lemma \ref{lemma:AlgorithmicReductionAndTermSubstitution}.
@@ -559,8 +563,8 @@ substitution lemmas.
 \end{lemma}
 
 \begin{proof}
-    Prove by induction on the derivation of \( \G, z:\xi@B, \D \AVS \mathcal{J}
-    \). Most cases are the same with Lemma \ref{lemma:TermSubstitution}. I show
+    By induction on the derivation of \( \G, z:\xi@B, \D \AVS \mathcal{J}
+    \). Most cases are the same with Lemma \ref{lemma:TermSubstitution}. We show
     only different cases.
 
     \begin{rneqncase}{\textsc{QA-ANF}}{
