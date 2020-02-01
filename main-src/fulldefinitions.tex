@@ -2,12 +2,11 @@
 
 \begin{align*}
   \textrm{Terms}             &  & M,N,L,O,P                & ::= c \mid x \mid \lambda x:\tau.M\ \mid M\ M \mid \TB_\alpha M                                \\
-                             &  &                          & \ \ \ \ \mid \TBL_\alpha M \mid \Lambda\alpha.M \mid M\ A \mid M\ \varepsilon \mid \%_\alpha M \\
+                             &  &                          & \ \ \ \ \mid \TBL_\alpha M \mid \Lambda\alpha.M \mid M\ A \mid \%_\alpha M \\
   \textrm{Types}             &  & \tau,\sigma,\rho,\pi,\xi & ::= X \mid \Pi x:\tau.\tau \mid \tau\ M \mid \TW_{\alpha} \tau \mid \F\alpha.\tau                 \\
   \textrm{Kinds}             &  & K,J,I,H,G                & ::= * \mid \Pi x:\tau.K                                                                        \\
   \textrm{Type environments} &  & \Gamma                   & ::= \emptyset \mid \Gamma,x:\tau@A                                                             \\
-  \textrm{Signature}         &  & \Sigma                   & ::= \emptyset \mid \Sigma,X::K                                                                 \\
-                             &  &                          & \ \ \ \ \mid \Sigma,c:\tau                                                                     \\
+  \textrm{Signature}         &  & \Sigma                   & ::= \emptyset \mid \Sigma,X::K  \mid \Sigma,c:\tau \\
   \textrm{Stage variables}   &  &                          & \alpha,\beta,\gamma,...                                                                        \\
   \textrm{Stage}             &  &                          & A,B,C,...                                                                                      \\
   \textrm{Variables}         &  &                          & x,y,z,...                                                                                      \\
@@ -16,49 +15,28 @@
 
 \subsection{Reduction}
 
-\figheader{Level of subterms}{}
+\figheader{Reduction}{\rulefbox{M \longrightarrow M'}}
 
-Suppose we have term \( M \).
-\begin{itemize}
-    \item \( M \) is a level 0 subterm of \( M \).
-    \item If \( N \) is a level \( n \) subterm of \( M \), all subterms of \(
-        N \) are level \( n \) subterms of \( M \). But ones which lives in
-        types are not level \( n \) subterms of \( M \).
-    \item If \( N \) is a level \( n \) subterm of \( M \), all subterms of \(
-        N \) which lives in types are level \( n + 1 \) subterms. But ones
-        which lives in types in terms in types are not level \( n + 1 \)
-        subterms.
-\end{itemize}
+The relations $M \longrightarrow_\beta N$, $M \longrightarrow_\blacklozenge N$,
+and $M \longrightarrow_\Lambda N$ are the least compatible relations closed
+under the rules below.
 
-\figheader{Basic reduction}{}
-\begin{center}
-  \begin{align*}
-     & (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N]         \\
-     & \TBL_\alpha (\TB_\alpha M)\longrightarrow_\blacklozenge M         \\
-     & (\Lambda \alpha.M)\ A \longrightarrow_\Lambda M[\alpha \mapsto A]
-  \end{align*}
-\end{center}
+\begin{align*}
+    & (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N]         \\
+    & \TBL_\alpha (\TB_\alpha M)\longrightarrow_\blacklozenge M         \\
+    & (\Lambda \alpha.M)\ A \longrightarrow_\Lambda M[\alpha \mapsto A]
+\end{align*}
 
-\figheader{Level $n$ reduction}{\rulefbox{M \longrightarrow_n M'}}
-\( M \longrightarrow_n M' \) if and only if we can get \( M' \) by using one
-basic reduction for a level \( n \) subterm of \( M \).  In addition to it, \(
-M \longrightarrow_{n\beta} M' \) if and only if we can get \( M' \) by using
-one \( \longrightarrow_\beta \) reduction for a level \( n \) subterm of \( M
-\).  \( M \longrightarrow_{n\blacklozenge} M' \) and \( M
-\longrightarrow_{n\Lambda} M' \) are defined just same as \( M
-\longrightarrow_{n\beta} M' \).
-
-\figheader{Term reduction}{\rulefbox{M \longrightarrow M'}}
-\( M \longrightarrow M' \) if and only if there is \( n \) such that \( M
-\longrightarrow_n M' \).
+We write \( M \longrightarrow M' \) iff \( M \longrightarrow_{\beta} M' \), \(
+M \longrightarrow_\blacklozenge \) or \( M \longrightarrow_\Lambda \).
 
 \subsection{Type System}
 
 \figheader{Well-formed signatures}{\rulefbox{\vdash\Sigma}}
-  \begin{center}
+\begin{center}
     \infrule{
     }{
-      \vdash \emptyset
+        \vdash \emptyset
     }
     \hfil
     \infrule{
@@ -117,9 +95,9 @@ one \( \longrightarrow_\beta \) reduction for a level \( n \) subterm of \( M
       \G \V X::K@A
     } \hfil
     \infrule[{\KAbs}]{
-      \G\V \tau :: *@A \andalso \G,x:\tau@A\V \sigma::J@A
+      \G\V \tau :: *@A \andalso \G,x:\tau@A\V \sigma::*@A
     }{
-      \G\V(\Pi x:\tau.\sigma) :: (\Pi x:\tau.J)@A
+      \G\V(\Pi x:\tau.\sigma) :: *@A
     } \\[2mm]
     \infrule[{\KApp}]{
     \G\V \sigma:: (\Pi x:\tau.K)@A \andalso \G\V M:\tau@A
@@ -209,9 +187,9 @@ one \( \longrightarrow_\beta \) reduction for a level \( n \) subterm of \( M
 \begin{center}
   \infrule[{\QKAbs}]{
     \G\V \tau \E \sigma :: *@A \andalso
-    \G,x:\tau@A \V K \E J@A
+    \G,x:\tau@A \V K \E *@A
   }{
-    \G\V\Pi x:\tau.K \E \Pi x:\sigma.J@A
+    \G\V\Pi x:\tau.K \E * @A
   } \\[2mm]
   \infrule[\QKRefl]{
     \G\V K \iskind @A
@@ -417,7 +395,6 @@ one \( \longrightarrow_\beta \) reduction for a level \( n \) subterm of \( M
 \end{center}
 
 \figheader{Kinding}{\rulefbox{\G \AVS \tau::K @ A}}
-I don't want to append \( \G\AVS \tau' :: * @ A \) to the pre-condition of \KAApp. But it is needed in the proof of soundness.
 \begin{center}
     \infrule[{\KATConst}]{
         X::K \in \Sigma % \andalso
@@ -433,7 +410,7 @@ I don't want to append \( \G\AVS \tau' :: * @ A \) to the pre-condition of \KAAp
 
     \infrule[{\KAApp}]{
     \G\AVS \sigma:: (\Pi x:\tau.K)@A \andalso 
-    \G\AVS M:\tau'@A \andalso 
+    \G\AVS M:\tau'@A \\
     \G\AVS \tau' :: * @ A \andalso 
     \G\AVS \tau \E \tau' @ A
     }{
@@ -460,7 +437,6 @@ I don't want to append \( \G\AVS \tau' :: * @ A \) to the pre-condition of \KAAp
 % \red{\KACsp\ rule is not syntax-directed.}
 
 \figheader{Algorithmic Typing}{\rulefbox{\G\AVS M:\tau @A}}
-I don't want append \( \G\AVS \sigma' :: * @ A \) to \TAApp.
 \begin{center}
     \infrule[{\TAConst}]{
         c:\tau \in \Sigma \andalso
@@ -482,7 +458,7 @@ I don't want append \( \G\AVS \sigma' :: * @ A \) to \TAApp.
     } \\[2mm]
     \infrule[\TAApp]{
         \G\AVS M:(\Pi (x:\sigma).\tau) \andalso
-        \G\AVS N:\sigma'@A \andalso
+        \G\AVS N:\sigma'@A \\
         \G\AVS \sigma' :: * @ A \andalso
         \G\AVS \sigma\E\sigma' @A
     }{
@@ -570,8 +546,10 @@ I don't want append \( \G\AVS \sigma' :: * @ A \) to \TAApp.
         & (\Lambda \alpha.M)\ A \RA M[\alpha \mapsto A] &  & \textsc{(A-$\Lambda$)} \\
         & \%_\alpha M \RA M \qquad (\emptyset = \text{FV}(\%_\alpha M)) &  & \textsc{(A-$\%$)}
     \end{align*}
-    And take the congruence on terms including level \( n \) subterms for all \( n \).
 \end{center}
+    \( M \RA M' \) is defined by taking the minimum congruences of these four reductions on terms.
 
 \figheader{Algorithmic Term Equivalence}{\rulefbox{\G \AV M \E M'@A}}
+\begin{center}
 \infrule[\QAANF]{ \ANF(M) \E_\alpha \ANF(N) }{\G \AV M \E N@A} \hfil
+\end{center}
