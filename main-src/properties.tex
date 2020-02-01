@@ -2,7 +2,7 @@
 
 \section{Properties of \LMD \label{sec:properties}}
 
-\subsection{Properties of typing}
+\subsection{Properties of Typing}
 
 In this subsection, we show the basic properties of \LMD: preservation, strong
 normalization, confluence for full reduction, and progress for staged
@@ -39,13 +39,13 @@ We prove agreement to use later in the completeness of the algorithmic typing.
 
 \begin{lemma}[Agreement]
     \label{lemma:Agreement}
-    \begin{enumerate}
+    \begin{itemize}
         \item If \(\G\V \tau::K@A\), then \(\G\V K\iskind@A \).
         \item If \(\G\V M:\tau@A\), then \(\G\V \tau::*@A\).
         \item If \(\G\V K\E J@A\), then \(\G\V K @A\) and \(\G\V J @A\).
         \item If \(\G\V \tau\E \sigma :: K@A\), then \(\G\V \tau::K@A\) and \(\G\V \sigma::K@A\).
         \item If \(\G\V M\E N : \tau@A\), then \(\G\V M:\tau@A\) and \(\G\V N:\tau@A\).
-    \end{enumerate}
+    \end{itemize}
 \end{lemma}
 \begin{proof}
     By induction on the derivation tree.
@@ -59,14 +59,14 @@ usual~\cite{TAPL}, the Inversion Lemma enables us to infer the types of
 subterms of a term from the shape of the term.
 
 \begin{lemma}[Inversion]\ 
-	\begin{enumerate}
+	\begin{itemize}
 		\item If $\G \V (\lambda x:\sigma.M) : \rho$ then there are $\sigma'$ and $\tau'$ such that
 		      $\rho = \Pi x:\sigma'.\tau'$, $\G \V \sigma \E \sigma'@A$ and $\G ,x:\sigma'@A\V M:\tau'@A$.
 		\item If $\G \V \TB_\alpha M : \tau@A$ then 
 		      there is $\sigma$ such that $\tau = \TW_\alpha \sigma$ and $\G \V M : \sigma@A$.
 		  \item If $\G \V \Lambda\alpha.M : \tau$ then 
 		  there is $\sigma$ such that $\sigma = \forall\alpha.\sigma$ and $\G \V M : \sigma@A$.% and $\alpha \notin \FTV(\G) \cup \FV(A)$.
-	\end{enumerate}
+	\end{itemize}
 \end{lemma}
 
 \begin{proof}
@@ -85,28 +85,21 @@ subterms of a term from the shape of the term.
 % Preservation
 
 Thanks to Term/Stage Substitution and Inversion, we can prove Type
-Preservation.  First, we prove Type and Equivalence Preservation on Level 0
-Reduction then prove general Type Preservation using it.
+Preservation.
 
-\begin{lemma}[Type Preservation on Level 0 Reduction]
-    \label{lemma:TypePreservationonLevel0Reduction}
-    If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
+\begin{lemma}[Type and Equivalence Preservation]
+    \label{lemma:TypeAndEquivalencePreservationon}
+    \begin{itemize}
+    \item If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
+    \item If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_0 M'' \), then \( \G \V M'' \E M' : \tau @ A \).
+    \end{itemize}
 \end{lemma}
 
 \begin{proof}
     First, there are three base cases for $M \longrightarrow_0 M'$.  They are $M
     \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M
     \longrightarrow_\blacklozenge M'$.  For each case, we can use
-    straightforward induction on typing derivations.
-\end{proof}
-
-\begin{lemma}[Equivalence Preservation on Level 0 Reduction]
-    \label{lemma:EquivalencePreservationonLevel0Reduction}
-    If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_0 M'' \), then \( \G \V M'' \E M' : \tau @ A \).
-\end{lemma}
-
-\begin{proof}
-    By case analysis on \( M \longrightarrow_0 M'' \) using \QTrans.
+    straightforward induction on derivations.
 \end{proof}
 
 \begin{theorem}[Type Preservation]
@@ -115,25 +108,17 @@ Reduction then prove general Type Preservation using it.
 \end{theorem}
 
 \begin{proof} 
-    By induction on \( \G \V M : \tau @ A \), all level \( n \) subterms are
-    typed. So, all type and equivalence is preserved by Lemma
-    \ref{lemma:TypePreservationonLevel0Reduction} and
-    \ref{lemma:EquivalencePreservationonLevel0Reduction}.
+    This is a corollary of Lemma~\ref{lemma:TypeAndEquivalencePreservationon}.
 \end{proof}
 
 % Strong Normalization and how to prove it
 
 Strong Normalization is also an important property, which guarantees that no
-typed term has an infinite reduction sequence.  Following standard proofs (see,
-e.g., \cite{harper1993framework}), we prove this theorem by translating \LMD to
-the simply typed lambda calculus. As with Preservation, we prove Strong
-Normalization on Level 0 Reduction first. In order to prove it, we define
-translation function \( \natural \) from \LMD to the simply typed lambda
-calculus and prove it preserves reductions of \LMD in particular, \( \beta \)
-reduction.
+typed term has an infinite reduction sequence. To prove this, we translate \LMD
+to LF~\cite{harper1993framework} preserving \( \beta \)-reductions.
 
 \begin{definition}[$\natural$ translation]
-    The $\natural$ translation is a translation from $\lambda^\text{MD}$ to the simply typed lambda calculus.
+    The $\natural$ translation is a translation from $\lambda^\text{MD}$ to \text{LF}.
     \begin{multicols}{2}
         \begin{itemize}
             \item Kind
@@ -142,6 +127,7 @@ reduction.
                 \end{align*}
             \item Term
                 \begin{align*}
+                    \natural(c) &= c & \\
                     \natural(x) &= x & \\
                     \natural(\lambda x:\tau.M) &= \lambda x:\natural(\tau).\natural(M) & \\
                     \natural(M\ N) &= \natural(M)\ \natural(N)& \\
@@ -153,8 +139,8 @@ reduction.
             \item Type
             \begin{align*}
                 \natural(X) &= X & \\
-                \natural(\Pi x:\tau.\sigma) &= \natural(\tau) \to \natural(\sigma) & \\
-                \natural(\tau\ x) &= \natural(\tau) & \\
+                \natural(\Pi x:\tau.\sigma) &= \Pi x:(\tau). \natural(\sigma) & \\
+                \natural(\tau\ M) &= \natural(\tau) \natural(M) & \\
                 \natural(\TW_\alpha \tau) &= \natural(\tau) & \\
                 \natural(\forall \alpha.\tau) &= \natural(\tau) &
             \end{align*}
@@ -162,13 +148,20 @@ reduction.
             \begin{align*}
                 \natural(\phi) &= \phi & \\
                 \natural(\G, x:T@A) &= \natural(\G), \natural(x):\natural(\tau) & \\
-                \natural(\G, X:K@A) &= \natural(\G) &
+            \end{align*}
+        \item Signature
+            \begin{align*}
+                \natural(\phi) &= \phi & \\
+                \natural(\Sigma, c:\tau) &= \natural(\Sigma),\natural(c):\natural(\tau) & \\
+                \natural(\Sigma, X:K) &= \natural(\Sigma), \natural(X):\natural(K) &
             \end{align*}
     \end{itemize}
     \end{multicols}
 \end{definition}
 
 We show \( \natural \) translation preserves typing and reductions of \LMD.
+
+\AK { ========== RESUME HERE ========== }
 
 \begin{lemma}[Preservation of Equality in $\natural$]
     If $\G \V \tau \E \sigma @ A$ then $\natural(\tau) = \natural(\sigma)$.
@@ -266,10 +259,10 @@ We show \( \natural \) translation preserves typing and reductions of \LMD.
     \end{itemize}
 \end{proof}
 
-\begin{lemma}[Preservation of Level 0 Reduction in \( \natural \) ]
+\begin{lemma}[Preservation of Level-0 Reduction in \( \natural \) ]
     \label{lemma:PreservationOfLevel0Reduction}
     If $\G \V M:\tau@A$ and $M \longrightarrow_0 N$ in $\lambda^{\text{MD}}$
-    then $\natural(M)$ =  $\natural(N)$ or \( M \longrightarrow N \) in the simply typed lambda calculus.
+    then $\natural(M)$ =  $\natural(N)$ or \( \natural(M) \longrightarrow \natural(N) \) in the simply typed lambda calculus.
 \end{lemma}
 
 \begin{proof}
@@ -280,8 +273,8 @@ We show \( \natural \) translation preserves typing and reductions of \LMD.
 
 Finally, we can start the proof of Strong Normalization.
 
-\begin{lemma}[Strong Normalization of Level 0 Reduction]
-    \label{lemma:StrongNormalizationofLevel0Reduction}
+\begin{lemma}[Strong Normalization of Level-0 Reduction]
+    \label{lemma:StrongNormalizationOfLevel0Reduction}
     If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow_{0} M_{i+1}$ for $i\ge 1$
 \end{lemma}
 
@@ -300,7 +293,7 @@ Finally, we can start the proof of Strong Normalization.
     reductions.
 \end{proof}
 
-\begin{lemma}[Strong Normalization of Level \( n \) Reduction]
+\begin{lemma}[Strong Normalization of Level-\( n \) Reduction]
     \label{lemma:StrongNormalizationOfLevelnReduction}
     \( n \) is a arbitary natural number.
     If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $\{M_i\}$ which satisfies that $M_i \longrightarrow_n M_{i+1}$ for any natural number \( i \).
@@ -314,14 +307,14 @@ Finally, we can start the proof of Strong Normalization.
         \item When \( n = k + 1 \), \\
             we can assume it is true for the case of \( n = k \).  Prove by
             contradiction. We assume such \(\{M_i\}\) exists. From the
-            definition of level \( n \) reductions, there is another term
+            definition of level-\( n \) reductions, there is another term
             sequence \( \{ N_i \} \) which satisfies that \( N_i
             \longrightarrow_k N_{i+1} \). This contradicts to the induction
             hypothesis.
     \end{itemize}
 \end{proof}
 
-In order to prove the relation of \( M \longrightarrow \) is strong
+In order to prove the relation of \( M \longrightarrow M' \) is strong
 normalizing, we need to exchange different types of reductions. This lemma
 enables it.
 
@@ -332,18 +325,38 @@ enables it.
 
 \begin{proof}
     When \( n < m \), label \( m \)
-    reductions have no effect to label \( n \) reductions. Thus, we can get the
+    reductions have no effect to label-\( n \) reductions. Thus, we can get the
     same result \( M'' \) after the conversion.
+\end{proof}
+
+\begin{definition}[]
+We write \( M \longrightarrow_{\le n} M' \) if and only if there is an integer \( m \) such that \( m \le n \) and \( M \longrightarrow_m M' \).
+\end{definition}
+
+\begin{lemma}[Upper Bound of Level]
+    \label{lemma:UpperBoundOfLevel}
+    If \( \G\V M_1:\tau@A \) then for any reduction sequence $\{M_i\}_{i\ge1}$ such that $M_i \longrightarrow M_{i+1}$ for $i\ge 1$, there is a natural number \( W \) which satisfies $M_i \longrightarrow_{\le W} M_{i+1}$ for $i\ge 1$.
+\end{lemma}
+
+\begin{proof}
+    \( W' \) is the number of type annotations in \( M \).
+    Then, we show this \( W' \) a qualified candiate of \( W \) in the lemma.
+    We prove by induction on the length of a reduction sequence reperesented by the variable \( i \).
+    \begin{itemize}
+        \item When \( i = 0 \),
+            it is easy because the level of reduction is bounnded the number of type annotations.
+        \item When \( i = k + 1 \),
+            the number of type annotaions in \( M \) is less than or equal to \( W' \) because no reduction generate an extra annotations.
+    \end{itemize}
 \end{proof}
 
 \begin{theorem}[Strong Normalization]
     \label{theorem:StrongNormalization}
-    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow M_{i+1}$ for $i\ge 1$
+    If \( \G\V M:\tau@A \) then there is no infinite sequence of terms $\{M_i\}_{i\ge1}$ and $M_i \longrightarrow M_{i+1}$ for $i\ge 1$.
 \end{theorem}
 
 \begin{proof}
-    We write \( M \longrightarrow_{\le n} M' \) if and only if there is a integer \( m \) such that \( M \longrightarrow_m M' \).
-    If the relation of \( M \longrightarrow_{\le n} M' \) is strong normalizing for any \( n \) then \( M \longrightarrow M' \) is strong normalizing.
+    If the relation of \( M \longrightarrow_{\le n} M' \) is strong normalizing for any \( n \) then \( M \longrightarrow M' \) is strong normalizing because there is a natural number \( W \) such that $M_i \longrightarrow_{\le W} M_{i+1}$ for $i\ge 1$ from Lemma \ref{lemma:UpperBoundOfLevel}.
     We prove it by induction on \( n \).
     \begin{itemize}
         \item When \( n = 0 \), \\
@@ -353,13 +366,13 @@ enables it.
             hypothesis. Prove by contradiction. Assume there is a infinite
             sequence terms $\{M_i\}$ which satisfies that $M_i
             \longrightarrow_{\le k+1} M_{i+1}$ for any natural number \( i \).
-            From the induction hypothesis, there are infinite level \( k + 1 \)
+            From the induction hypothesis, there are infinite level-\( (k + 1) \)
             reductions. Using Lemma
             \ref{lemma:CommutablityOfLeveledReductions}, we can make another
             infinite sequence terms $\{N_i\}$ which satisfies that $N_i
             \longrightarrow_D N_{i+1}$ for any natural number \( i \) by
-            swapping all level \( k + 1 \) reductions in \( \{ M_i \} \) toward
-            the front. This contradicts to Lemma
+            swapping all level-\( (k + 1) \) reductions in \( \{ M_i \} \) toward
+            the front. This contradicts Lemma
             \ref{lemma:StrongNormalizationOfLevelnReduction}.
     \end{itemize}
 \end{proof}

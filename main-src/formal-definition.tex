@@ -142,20 +142,8 @@ environment $\G$.
 
 % Reduction
 
-Next, we define the reduction relation of \LMD. There are three basic
-reductions, $M \longrightarrow_\beta N$, $M \longrightarrow_\blacklozenge N$,
-and $M \longrightarrow_\Lambda N$.  The relation $\longrightarrow_\beta$
-represents ordinary $\beta$-reduction in the \(\lambda\)-calculus; the relation
-$\longrightarrow_\blacklozenge$ represents that quotation $\TB_\alpha M$ is
-canceled by escape and $M$ is spliced into the code fragment surrounding the
-escape; the relation $\longrightarrow_\Lambda$ means that a stage abstraction
-applied to  stage $A$ reduces to the body of the abstraction where $A$ is
-substituted for the stage variable.  There is no reduction rule for CSP as with
-Hanada and Igarashi \cite{Hanada2014}.  The CSP operator $\%_\alpha$ disappears
-when $\varepsilon$ is substituted for $\alpha$.
-
-\begin{definition}[Basic reduction]
-    The relations $M \longrightarrow_\beta N$, $M \longrightarrow_\blacklozenge N$, and $M \longrightarrow_\Lambda N$ are defined as following.
+\begin{definition}[Reduction]
+    The relations $M \longrightarrow_\beta N$, $M \longrightarrow_\blacklozenge N$, and $M \longrightarrow_\Lambda N$ are the least compatible relations closed under the rules below.
 \begin{center}
   \begin{align*}
      & (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N]         \\
@@ -165,40 +153,23 @@ when $\varepsilon$ is substituted for $\alpha$.
 \end{center}
 \end{definition}
 
-Then, we define level \( n \) reduction, \( M \longrightarrow_n M' \). Because
-we compare two terms with \( \alpha \) equivalence in the algorithmic typing,
-we must reduce terms in type annotations.  Intuitively, the level of reduction
-represents the number of nested colon ":" which is used in type annotations. 
+We write \( M \longrightarrow M' \) iff \( M \longrightarrow_{\beta} M' \), \(
+M \longrightarrow_\blacklozenge \) or \( M \longrightarrow_\Lambda \).
 
-\begin{definition}[Leveled reduction]
-    The relations \( M \longrightarrow_i M' \) are defined as following.
-    \begin{center}
-        \infrule{M\longrightarrow_\text{basic}M'}{M\longrightarrow_0 M'} \\[2mm]
-        \infrule{M \longrightarrow_i M'}{\lambda x:\tau.M \longrightarrow_i \lambda x:\tau.M'} \hfil
-        \infrule{\tau \longrightarrow_i \tau'}{\lambda x:\tau.M \longrightarrow_{i+1} \lambda x:\tau'.M} \hfil
-        \infrule{M \longrightarrow_i M'}{M\ N \longrightarrow_i M'\ N} \hfil
-        \infrule{N \longrightarrow_i N'}{M\ N \longrightarrow_i M\ N'} \hfil
-        \infrule{M \longrightarrow_i M'}{\TB_\alpha M \longrightarrow_i \TB_\alpha M'} \\[2mm]
-        \infrule{M \longrightarrow_i M'}{\TBL_\alpha M \longrightarrow_i \TBL_\alpha M'} \hfil
-        \infrule{M \longrightarrow_i M'}{\Lambda\alpha.M \longrightarrow_i \Lambda\alpha.M'} \hfil
-        \infrule{M \longrightarrow_i M'}{M\ A \longrightarrow_i M'\ A} \hfil
-        \infrule{M \longrightarrow_i M'}{\%_\alpha M \longrightarrow_i \%_\alpha M'} \\[2mm]
-        \infrule{\tau \longrightarrow_i \tau'}{\Pi x:\tau \longrightarrow_{i+1} \Pi x:\tau'} \hfil
-        \infrule{\tau \longrightarrow_i \tau'}{\tau\ M \longrightarrow_i \tau'\ M} \hfil
-        \infrule{M \longrightarrow_i M'}{\tau\ M \longrightarrow_i \tau\ M'} \hfil
-        \infrule{\tau \longrightarrow_i \tau'}{\TW_\alpha\tau \longrightarrow_i \TW_\alpha\tau'} \hfil
-        \infrule{\tau \longrightarrow_i \tau'}{\forall\alpha.\tau \longrightarrow_i \forall\alpha.\tau'}
-    \end{center}
-\end{definition}
+The relation $\longrightarrow_\beta$ represents ordinary $\beta$-reduction in
+the \(\lambda\)-calculus; the relation $\longrightarrow_\blacklozenge$
+represents that quotation $\TB_\alpha M$ is canceled by escape and $M$ is
+spliced into the code fragment surrounding the escape; the relation
+$\longrightarrow_\Lambda$ means that a stage abstraction applied to  stage $A$
+reduces to the body of the abstraction where $A$ is substituted for the stage
+variable.  There is no reduction rule for CSP as with Hanada and Igarashi
+\cite{Hanada2014}.  The CSP operator $\%_\alpha$ disappears when $\varepsilon$
+is substituted for $\alpha$.
 
-Finally, we define the reduction relation of \LMD.
-
-\begin{definition}[Term reduction]
-    \( M \longrightarrow M' \) if and only if there is \( n \) such that \( M
-    \longrightarrow_n M' \).
-\end{definition}
-
-We show an example of a reduction sequence in Figure \ref{fig:example-of-reduction}. Underlines show the redexes.
+We show an example of a reduction sequence in
+Figure~\ref{fig:example-of-reduction}. Underlines show the redexes.  Please
+notice that terms in type annotaions are also reduced like
+Figure~\ref{fig:reduction-in-type-annotations}.
 
 \begin{figure}[tbp]
 \begin{align*}
@@ -211,6 +182,15 @@ We show an example of a reduction sequence in Figure \ref{fig:example-of-reducti
 \end{align*}
     \caption{Example of reduction.}
     \label{fig:example-of-reduction}
+\end{figure}
+
+\begin{figure}[tbp]
+    \begin{align*}
+        & \hspace{10mm} \lambda v:(\text{Vec }(\underline{1+3})).v \\
+        & \longrightarrow_\beta \lambda v:(\text{Vec }4).v
+    \end{align*}
+    \caption{Example of reduction in a type annotation.}
+    \label{fig:reduction-in-type-annotations}
 \end{figure}
 
 \subsection{Type System}
@@ -239,7 +219,7 @@ manner.  We will discuss each judgment below.
   \end{center}
 \end{figure}
 
-\subsubsection{Signature and Type Environment Well-formedness.}
+\subsubsection{Signature and Type Environment Well-formedness}
 The rules for Well-formed signatures and type environments are
 shown below:
 %
@@ -287,12 +267,12 @@ used at any stage.  In what follows, well-formedness is not explicitly
 mentioned but we assume that all signatures and type environments are
 well-formed.
 
-\subsubsection{Kind Well-formedness and Kinding.}
+\subsubsection{Kind Well-formedness and Kinding}
 
 The rules for kind well-formedness and kinding are a straightforward adaptation
 from \LLF and \LTP. So, we omit the definitions.
 
-\subsubsection{Typing.}
+\subsubsection{Typing}
 \label{sec:typing}
 
 \begin{figure}[tbp]
@@ -345,7 +325,7 @@ A\alpha \), then $\%_\alpha M$ is of type $\tau$ at stage $A\alpha$. Note that
 CSP is also applied to the type \(\tau\) (although it is implicit) in the
 conclusion. Thanks to implicit CSP, the typing rule is the same as in \LTP.
 
-\subsubsection{Kind, Type and Term Equivalence.}
+\subsubsection{Kind, Type and Term Equivalence}
 
 Since the syntax of kinds, types, and terms is mutually recursive, the
 corresponding notions of equivalence are also mutually recursive.  They are
@@ -399,7 +379,7 @@ For example, constants do not depend on the stage (see \TConst) and
 so \(\G\V \%_\alpha c \E c : \tau @ A\alpha\) holds but variables
 do depend on stages and so this rule does not apply.
 
-\subsubsection{Example.}
+\subsubsection{Example}
 
 We show an example of a dependently typed code generator in a
 hypothetical language based on \LTP.  
@@ -503,14 +483,14 @@ their premise cannot be decided from the goal. When we implement the type
 inference program of \LMD, it is necessary to make up type derivation trees
 from bottom to up.  So, we need to make all the typing rules syntax-directed so
 that algorithmic typing is equivalent to the original typing. Using this
-algorithmic typing, we can make the type inference program easily just by
+algorithmic typing, we can make the a type inference algorithm easily just by
 applying the unique suitable rule one by one. We show the equivalence in
 Section \ref{sec:properties}.
 
 % Judgements
 
 In algorithmic typing, there are 8 judgments as with original typing in Figure
-\ref{fig:LMD-six-judgments} i.e., well-formed signature, well-formed
+\ref{fig:LMD-six-judgments}, i.e., well-formed signature, well-formed
 environment, well-formed kinding, kinding, typing, kind equivalence, type
 equivalence, and term equivalence. We replace \( \V \) with \( \AV \) in
 judgments to distinguish them from judgments of the original typing and omit
@@ -564,7 +544,7 @@ as meta theorems.
 
 % Term equivalence rules -- especially on ANF
 
-Unlike all other rules of the algorithmic typing, the term equivalence rules of algorithmic typing are completely different from the original ones. We replaced all rules of term equivalence with \QAANF. Although the original equivalence rules check the equivalence of terms by constructing a derivation tree, the algorithmic equivalence rules calculate the normal form of two terms and compare them with just \( \alpha \) equivalence. \( \ANF(M) \) is the normal form of \( M \) under algorithmic reduction as defined in Figure \ref{fig:algorithmic-reduction}. Algorithmic reduction is composed of normal reductions of \LMD, which are \textsc{(A-$\beta$)}, \textsc{(A-$\TBL\TB$)}, and \textsc{(A-$\Lambda$)}, and one special reduction \textsc{(A-$\%$)}, which corresponds to \QPercent in the normal term equivalence rules. Just the same as the normal reduction \( M \longrightarrow M' \), we define level 0 algorithmic reduction and level \( n \) algorithmic reduction.  
+Unlike all other rules of the algorithmic typing, the term equivalence rules of algorithmic typing are completely different from the original ones. We replaced all rules of term equivalence with \QAANF. Although the original equivalence rules check the equivalence of terms by constructing a derivation tree, the algorithmic equivalence rules calculate the normal form of two terms and compare them with just \( \alpha \)-equivalence. \( \ANF(M) \) is the normal form of \( M \) under algorithmic reduction as defined in Figure \ref{fig:algorithmic-reduction}. Algorithmic reduction is composed of normal reductions of \LMD, which are \textsc{(A-$\beta$)}, \textsc{(A-$\TBL\TB$)}, and \textsc{(A-$\Lambda$)}, and one special reduction \textsc{(A-$\%$)}, which corresponds to \QPercent in the normal term equivalence rules. Just the same as the normal reduction \( M \longrightarrow M' \), we define level-0 algorithmic reduction and level-\( n \) algorithmic reduction.  
 
 \begin{center}
     \infrule[\QAANF]{ \ANF(M) \E_\alpha \ANF(N) }{\G \AV M \E N@A}
@@ -590,7 +570,7 @@ $\TB_\alpha$---can be reduced in an arbitrary order.  Following previous
 work~\cite{Hanada2014}, we introduce (small-step, call-by-value) staged
 semantics, where only $\beta$-reduction or $\Lambda$-reduction at stage
 $\varepsilon$ or the outer-most $\blacklozenge$-reduction are allowed, modeling
-an implementation. Please note that we deal only with reductions on level 0
+an implementation. Please note that we deal only with reductions on level-0
 subterms.
 
 We start with the definition of values. Since terms under quotations are
