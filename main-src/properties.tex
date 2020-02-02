@@ -249,7 +249,7 @@ We show \( \natural \) translation preserves typing and equivalence of \LMD.
 
 \begin{lemma}[Preservation of $\Lambda$-Reduction in $\natural$]
     \label{lemma:PreservationOfLambdaReductionInNatural}
-    If $\G \V M:\tau@A$ and $M \longrightarrow_\beta N$ in $\lambda^{\text{MD}}$
+    If $\G \V M:\tau@A$ and $M \longrightarrow_\Lambda N$ in $\lambda^{\text{MD}}$
     then $\natural(M)$ =  $\natural(N)$.
 \end{lemma}
 
@@ -265,7 +265,7 @@ We show \( \natural \) translation preserves typing and equivalence of \LMD.
 
 \begin{lemma}[Preservation of $\blacklozenge$-Reduction in $\natural$]
     \label{lemma:PreservationOfBlacklozengeReductionInNatural}
-    If $\G \V M:\tau@A$ and $M \longrightarrow_\blacklozenge N$ in $\lambda^{\text{MD}}$
+    If $\G \V M:\tau@A$ and ${M \longrightarrow_\blacklozenge N}$ in $\lambda^{\text{MD}}$
     then $\natural(M)$ =  $\natural(N)$.
 \end{lemma}
 
@@ -278,24 +278,33 @@ We show \( \natural \) translation preserves typing and equivalence of \LMD.
     \end{rneqncase}
 \end{proof}
 
+To prove Strong Normalization, we prove that there is no infinite sequence composed of \( \Lambda \) and \( \blacklozenge \)-reductions, first.
+
+\begin{lemma}[Strong Normalization without \( \beta \)-reduction]
+    \label{lemma:StrongNormalizationWithoutBetaReduction}
+    If \( \G\V M_1:\tau@A \) then there is no infinite sequence of terms $\{M_i\}_{i\ge1}$ which satisfies $M_i \longrightarrow_\Lambda M_{i+1}$ or $M_i \longrightarrow_\blacklozenge M_{i+1}$ for $i\ge 1$.
+\end{lemma}
+
+\begin{proof}
+    Prove by contradiction. If there is a such infinite sequence \( \{M_i\}_{i\ge1} \), there is another infinite sequence \( \{ N_i \}_{ i \ge 1 } \) which satisfies $N_i \longrightarrow_\blacklozenge N_{i+1}$ for \( i \ge 1 \). This is because both \( \Lambda \) and \( \blacklozenge \)-reductions reduce or preserve the number of \( \Lambda \) in the term, therefore we can perform \( \Lambda \)-reduction only finite times. However, \( \blacklozenge \)-reduction always reduces the size of the term, thus we can perform \( \blacklozenge \)-reduction only finite times also. 
+\end{proof}
+
 Then, we can prove Strong Normalization of \LMD.
 
 \begin{theorem}[Strong Normalization]
-    \label{lemma:StrongNormalizationOfLevel0Reduction}
-    If \( \G\V M_1:\tau@A \) then there is no infinite sequence of terms $(M_i)_{i\ge1}$ and $M_i \longrightarrow M_{i+1}$ for $i\ge 1$.
+    \label{theorem:StrongNormalization}
+    If \( \G\V M_1:\tau@A \) then there is no infinite sequence of terms $\{M_i\}_{i\ge1}$ which satisfies $M_i \longrightarrow M_{i+1}$ for $i\ge 1$.
 \end{theorem}
 
 \begin{proof}
-    If there is an infinite reduction sequence in \LMD then there are infinite
-    \( \beta \)-reductions in the sequence because reductions other than
-    $\beta$-reduction reduce the size of a term.  Then, we show Strong
-    Normalization by proof by contradiction. We assume that there is an
-    infinite reduction sequence \( \{ M_i \} \) of \LMD and \( \G\V M_1:\tau@A
-    \). From \( \{ M_i \} \), we can construct another infinite reduction
-    sequence \( \{ \natural(M_i) \} \). However, \( \natural(\G)
-    \vdash_{\natural(\Sigma)} \natural(M_1):\natural(\tau) \) from
-    Lemma~\ref{lemma:PreservationOfJudgementsInNatural} therefore the existence
-    of \( \{ \natural(M_i) \} \) contradicts to Strong Normalization of LF.
+
+    If there is an infinite reduction sequence in \LMD then there are infinite \( \beta \)-reductions in the sequence. If there are only finite \( \beta \)-reductions in the sequence, we can construct another infinite reduction sequence which is composed only of \( \Lambda \)-reduction and \( \blacklozenge \)-reduction. However, it contradicts to Lemma~\ref{lemma:StrongNormalizationWithoutBetaReduction}.
+    
+    Then, we show Strong Normalization by proof by contradiction. 
+    
+    We assume that there is an infinite reduction sequence \( \{ M_i \} \) of \LMD and \( \G\V M_1:\tau@A \). Thanks to discussion above, we can assume it contains infinite \( \beta \)-reductions. From \( \{ M_i \} \), we can construct another infinite reduction sequence \( \{ \natural(M_i) \} \). From Lemma~\ref{lemma:PreservationOfBetaReductionInNatural}, \ref{lemma:PreservationOfLambdaReductionInNatural}, \ref{lemma:PreservationOfBlacklozengeReductionInNatural}, there are infinite \( \beta \)-reductions in \( \{ \natural(M_i) \} \).
+    
+    However, \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(M_1):\natural(\tau) \) from Lemma~\ref{lemma:PreservationOfJudgementsInNatural} therefore the existence of \( \{ \natural(M_i) \} \) contradicts to Strong Normalization of LF.
 \end{proof}
 
 Confluence is a property that any reduction sequences from one typed term
