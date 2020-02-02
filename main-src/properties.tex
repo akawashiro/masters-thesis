@@ -10,18 +10,22 @@ reduction.
 
 % Substitution Lemma
 
-The Substitution Lemma in \LMD{} is a little more complicated than usual because there are eight judgment forms and two kinds of substitution.  The Term Substitution Lemma states that term substitution $[z \mapsto M]$ preserves derivability of judgments. The Stage Substitution Lemma states a similar property for stage substitution $[\alpha\mapsto A]$.  
+The Substitution Lemma in \LMD{} is a little more complicated than usual
+because there are eight judgment forms and two kinds of substitution.  The Term
+Substitution Lemma states that term substitution $[z \mapsto M]$ preserves
+derivability of judgments. The Stage Substitution Lemma states a similar
+property for stage substitution $[\alpha\mapsto A]$.  
 
-We let $\mathcal{J}$ stand for the judgments $K \iskind @A$, $\tau::K@A$,
-$M:\tau@A$, $K \E J @ A$, $\tau \E \sigma @ A$, and
-$M \E N : \tau @ A$.  Substitutions $\mathcal{J}[z \mapsto M]$ and
-$\mathcal{J}[\alpha \mapsto A]$ are defined in a straightforward
-manner.  Using these notations, the two substitution lemmas are stated as follows:
+We let $\mathcal{J}$ stand for the judgments \({K \iskind @A}\),
+\({\tau::K@A}\), \({M:\tau@A}\), \({K \E K' @ A}\), \({\tau \E \tau' @ A}\),
+and \({M \E M' : \tau @ A}\).  Substitutions \({\mathcal{J}[z \mapsto M]}\) and
+\({\mathcal{J}[\alpha \mapsto A]}\) are defined in a straightforward manner.
+Using these notations, the two substitution lemmas are stated as follows:
 
-\begin{lemma}[Term Substitution]\
+\begin{lemma}[Term Substitution]
     \label{lemma:TermSubstitution}
-    If $\G, z:\xi@B, \D \V \mathcal{J}$ and $\G\V N:\xi @B$, then $\G, (\D[z \mapsto N]) \V \mathcal{J}[z \mapsto N]$.  Similarly, if $\V \G, z:\xi@B, \D$ and
-    $\G\V N:\xi @B$, then $\V \G, (\D[z \mapsto N])$.
+    If \({\G, z:\xi@B, \D \V \mathcal{J}}\) and \({\G\V N:\xi @B}\), then \({\G, (\D[z \mapsto N]) \V \mathcal{J}[z \mapsto N]}\).  Similarly, if \({\V \G, z:\xi@B, \D}\) and
+    \( {\G\V N:\xi @B} \), then ${ \V \G, (\D[z \mapsto N]) }$.
 \end{lemma}
 
 \begin{lemma}[Stage Substitution]\
@@ -73,13 +77,13 @@ subterms of a term from the shape of the term.
   Each item is strengthened by statements about type equivalence.
   For example, the first statement is augmented by
   \begin{quotation}
-    If $\G \V \rho \E (\Pi x:\sigma.\tau) : K @A$, then there exist
-    $\sigma'$ and $\tau'$ such that $\rho = \Pi x:\sigma'.\tau'$ and
-    $\G \V \sigma \E \sigma' : K @A$ and
-    $\G, x:\sigma@A\V \tau \E \tau' : J @A$.
+      If ${\G \V \rho \E (\Pi x:\sigma.\tau) : K @A}$, then there exist
+      $\sigma'$ and $\tau'$ such that ${\rho = \Pi x:\sigma'.\tau'}$ and
+      ${\G \V \sigma \E \sigma' : K @A}$ and
+      ${\G, x:\sigma@A\V \tau \E \tau' : J @A}$.
   \end{quotation}
-  and its symmetric version.  Then, they are proved simultaneously by induction on derivations.
-  Similarly for the others.
+  and its symmetric version. Then, they are proved simultaneously by induction
+    on derivations. Similarly for the others.
 \end{proof}
 
 % Preservation
@@ -183,7 +187,7 @@ We show \( \natural \) translation preserves typing and equivalence of \LMD.
         \item If \( \G \V M : \tau @ A \) then \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(M) : \natural(\tau) \).
         \item If \( \G \V K \E K' @ A \) then \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(K) \E \natural(K') \), \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(K) \) and \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(K') \).
         \item If \( \G \V \tau \E \tau' : K @ A \) then \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(\tau) \E \natural(\tau') \), \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(\tau) : \natural(K) \) and \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(\tau') : \natural(K) \).
-        \item If \( \G \V M \E M' : \tau @ A \) then \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(M) \E \natural(M') \), \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(M) : \natural(\tau) \) and \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(M') : \natural(\tau) \)
+        \item If \({ \G \V M \E M' : \tau @ A }\) then \({ \natural(\G) \vdash_{\natural(\Sigma)} \natural(M) \E \natural(M') }\), \({ \natural(\G) \vdash_{\natural(\Sigma)} \natural(M) : \natural(\tau) }\) and \({ \natural(\G) \vdash_{\natural(\Sigma)} \natural(M') : \natural(\tau) }\).
     \end{itemize}
 \end{lemma}
 
@@ -194,16 +198,16 @@ We show \( \natural \) translation preserves typing and equivalence of \LMD.
     \begin{rneqncase}{\TApp{}}{
             \G \V M : (\Pi(x:\sigma).\tau) @ A \text{ and } \G \V N :\sigma @A
         }
-        From the induction hypothesis, we have \( \natural(\G)
+        From the induction hypothesis, we have \({ \natural(\G)
         \vdash_{\natural(\sigma)} \natural(M) : \Pi
-        x:\natural(\sigma).\natural(\tau) \) and \( \natural(\G)
-        \vdash_{\natural(\sigma)} \natural(N) : \natural(\sigma)\).  Using
-        \textsc{B-APP-OBJ} rule in LF, we get \( \natural(\G)
+        x:\natural(\sigma).\natural(\tau) }\) and \({ \natural(\G)
+        \vdash_{\natural(\sigma)} \natural(N) : \natural(\sigma) }\).  Using
+        \textsc{B-APP-OBJ} rule in LF, we get \\ \({ \natural(\G)
         \vdash_{\natural(\sigma)} \natural(M)\ \natural(N) : \natural(\tau)[x
-        \mapsto \natural(N)] \).  Because \( \natural(M)\ \natural(N) =
-        \natural(M\ N) \) from the definition of $\natural$ and \( \natural(\tau)[x \mapsto \natural(N)] = \natural(\tau[x \mapsto N]) \) from Lemma~\ref{lemma:SubstitutionAndNatural},
-        $\natural(\G) \vdash_{\natural(\sigma)} \natural(M\ N) :
-        \natural(\tau[x \mapsto N]) $ in LF.
+        \mapsto \natural(N)] }\).  Because \({ \natural(M)\ \natural(N) =
+        \natural(M\ N) }\) from the definition of $\natural$ and \({ \natural(\tau)[x \mapsto \natural(N)] = \natural(\tau[x \mapsto N]) }\) from Lemma~\ref{lemma:SubstitutionAndNatural}, \\
+        ${ \natural(\G) \vdash_{\natural(\sigma)} \natural(M\ N) :
+        \natural(\tau[x \mapsto N]) }$ in LF.
     \end{rneqncase}
     \begin{rneqncase}{\TConv{}}{
             \G\V M:\tau@A \text{ and } \G\V \tau \E \tau' : K @A
@@ -318,9 +322,9 @@ Now, we turn our attention to staged semantics.  First, the staged
 reduction relation is a subrelation of full reduction, so Subject
 Reduction holds also for the staged reduction.
 
-\begin{theorem}
+\begin{lemma}[Staged Reduction and Normal Reduction]
   If $M \longrightarrow_s M'$, then $M \longrightarrow M'$.
-\end{theorem}
+\end{lemma}
 \begin{proof}
     Easy from the definition of \( M \longrightarrow_s M' \).
 \end{proof}
@@ -385,8 +389,8 @@ reduction.
 
 \begin{lemma}[Confluence of Algorithmic Reduction]
     \label{lemma:ConfluenceofAlgorithmicReduction}
-    If \( \G \AVS M :\tau @ A\), \( M \RA^* M' \) and \(M \RA^* M''\)
-    then there is a \( M''' \) such that \( M' \RA^* M''' \) and \( M'' \RA^* M''' \).
+    If \({ \G \AVS M :\tau @ A }\), \\ \({ M \RA^* M' }\) and \({ M \RA^* M'' }\)
+    then there is a \( M''' \) such that \({ M' \RA^* M''' }\) and \({ M'' \RA^* M''' }\).
 \end{lemma}
 
 \begin{proof}
@@ -395,7 +399,7 @@ reduction.
 
 \begin{lemma}[Uniqueness of Algorithmic Reduction Normal Form]
     \label{lemma:UniquenessOfANF}
-    If \( \G \AVS M : \tau @ A \) then there is the unique normal form of \( M \), \( \ANF(M) \).
+    If \\ \({ \G \AVS M : \tau @ A }\) then there is the unique normal form of \( M \), \( \ANF(M) \).
 \end{lemma}
 
 \begin{proof}
@@ -406,7 +410,7 @@ Then, we prove the relationship between one step algorithmic reduction and subst
 
 \begin{lemma}[Algorithmic Reduction and Term Substitution]
     \label{lemma:AlgorithmicReductionAndTermSubstitution}
-    If \( \G, z:\xi@B, \D \AVS M : \tau @ A \) and \( M \RA M' \) then
+    If \\ \( \G, z:\xi@B, \D \AVS M : \tau @ A \), \( \G \AVS P : \xi @ B \) and \( M \RA M' \) then \\
     \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(M'[z\mapsto P]) \).
 \end{lemma}
 
@@ -452,8 +456,8 @@ prove this lemma for weak head normal form.
 
 \begin{lemma}[Algorithmic Normal Form and Term Substitution]
     \label{lemma:AlgorithmicNomalFormAndTermSubstitution}
-    If \\ \( \G, z:\xi@B, \D \AVS M : \tau @ A \) then
-    \( \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) \)
+    If \\ \( \G, z:\xi@B, \D \AVS M : \tau @ A \) and \( \G \AVS P : \xi @ B \) then \\
+    \({ \ANF(M[z\mapsto P]) \E_\alpha \ANF(\ANF(M)[z\mapsto P]) }\).
 \end{lemma}
 
 \begin{proof}
@@ -567,7 +571,7 @@ Now, we can say term \( M \) and \( \ANF(M) \) are equivalent.
 
 \begin{lemma}[ANF and Term Equivalence]
     \label{lemma:ANFandTermEquivalence}
-    If \( \G \V M : \tau @ A \) then \( \G \V M \E \ANF(M) : \tau @ A\).
+    If \( \G \V M : \tau @ A \) then \\ \({ \G \V M \E \ANF(M) : \tau @ A }\).
 \end{lemma}
 \begin{proof}
     Corollary of Lemma \ref{lemma:TypePreservationofAlgorithmicReduction} and
@@ -634,7 +638,7 @@ judgements, we use simultaneous induction for proof.
         Apply Lemma \ref{lemma:AlgorithmicTypePreservationofAlgorithmicReduction} to \( \G \V M, N : \tau @ A \), \( \G \AVS \ANF(M), \ANF(N) : \tau @ A \).
         \( \G \V \ANF(M) \E \ANF(N) : \tau @ A \) from using the induction hypothesis on \( \G \AVS \ANF(M), \ANF(N) : \tau @ A \) and \( \G \AV \ANF(M) \E_\alpha \ANF(N) @A \).
 
-        Apply \QTrans to \( \G \V \ANF(M) \E \ANF(N) : \tau @ A \) and \( \G \V M \E \ANF(M) : \tau @ A \) and \( \G \V N \E \ANF(N) : \tau @ A \), \( \G \V M \E N : \tau @ A \)
+        Apply \QTrans to \( \G \V \ANF(M) \E \ANF(N) : \tau @ A \) and \\ \({ \G \V M \E \ANF(M) : \tau @ A }\) and \( \G \V N \E \ANF(N) : \tau @ A \), \( \G \V M \E N : \tau @ A \)
     \end{rneqncase}
 \end{proof}
 
@@ -697,8 +701,8 @@ This lemma is used in \QPercent case in the proof of the completeness.
 \end{lemma}
 
 \begin{proof}
-    Prove by contradiction. Assume \( \G\V M:\tau@{A\alpha} \) and \( \G\V
-    M:\tau @A \) and \( \FV(M) \neq \emptyset \). Then, \( x : \tau @ B, x:
+    Prove by contradiction. Assume \( \G\V M:\tau@{A\alpha} \) and \({ \G\V
+    M:\tau @A }\) and \( \FV(M) \neq \emptyset \). Then, \( x : \tau @ B, x:
     \tau @ B\alpha \in \G \). However, from well-formedness of \( \G \), there
     is no such \( x \).
 \end{proof}
@@ -706,12 +710,12 @@ This lemma is used in \QPercent case in the proof of the completeness.
 This is the last theorem -- Completeness. It means that when a term is typed in
 the original typing, it is also typed in the algorithmic typing.
 
-\begin{theorem}[Completeness of Algorithmic Typing]
+\begin{theorem}[Completeness of Algorithmic Typing]\
     \label{theorem:CompletenessofAlgorithmicTyping}
     \begin{itemize}
         \item If \(\G\V K \) then \(\G\AVS K \).
-        \item If \(\G\V \tau ::K @ A \) then there is \(K'\) such that \( \G \AVS K' @ A \) and \( \G \AVS K\E K' @ A \) and \( \G\AVS \tau :: K' @ A \).
-        \item If \(\G\V M:\tau @ A \) then there is \(\tau'\) such that \( \G \AVS \tau' :: * @ A \) and \( \G \AVS \tau \E \tau' @ A \) and \( \G\AVS M:\tau' @ A \).
+        \item If \(\G\V \tau ::K @ A \) then there is \(K'\) such that \( \G \AVS K' @ A \) and \({ \G \AVS K\E K' @ A }\) and \({ \G\AVS \tau :: K' @ A }\).
+        \item If \(\G\V M:\tau @ A \) then there is \(\tau'\) such that \({ \G \AVS \tau' :: * @ A }\) and \({ \G \AVS \tau \E \tau' @ A }\) and \({ \G\AVS M:\tau' @ A }\).
         \item If \(\G\V K\E K' @ A \) then \(\G\AVS K\E K' @ A \).
         \item If \(\G\V \tau \E \tau' :: K @ A \) then \(\G\AVS \tau \E \tau' @ A \).
         \item If \(\G\V M\E M' : \tau @ A \) then \(\G \AVS M \E M' @ A \).
@@ -755,7 +759,7 @@ the original typing, it is also typed in the algorithmic typing.
     \begin{rneqncase}{\QTApp}{
             \G\V \tau\ M \E \sigma\ N :: K[x \mapsto M]@A \\
             \text{ is derived from }
-            \G\V \tau \E \sigma :: (\Pi x:\rho.K)@A \text{ and }
+            \G\V \tau \E \sigma :: (\Pi x:\rho.K)@A \text{ and } \\
             \G\V M \E N : \rho @A
         }
         From the induction hypothesis, \( \G\AVS \tau \E \sigma@A \) and \(
@@ -775,7 +779,7 @@ the original typing, it is also typed in the algorithmic typing.
     \end{rneqncase}
     \begin{rneqncase}{\QPercent}{
             \G\V\%_\alpha M \E M : \tau@{A\alpha}
-            \text{ is derived from }
+            \text{ is derived from } \\
             \G\V M:\tau@{A\alpha} \text{ and }
             \G\V M:\tau@A
         }
