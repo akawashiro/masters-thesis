@@ -302,13 +302,13 @@ Then, we can prove Strong Normalization of \LMD.
 
 \begin{proof}
 
-    If there is an infinite reduction sequence in \LMD then there are infinite \( \beta \)-reductions in the sequence. If there are only finite \( \beta \)-reductions in the sequence, we can construct another infinite reduction sequence which is composed only of \( \Lambda \)-reduction and \( \blacklozenge \)-reduction. However, it contradicts to Lemma~\ref{lemma:StrongNormalizationWithoutBetaReduction}.
+    If there is an infinite reduction sequence in \LMD then there are infinite \( \beta \)-reductions in the sequence. If there are only finite \( \beta \)-reductions in the sequence, we can construct another infinite reduction sequence which is composed only of \( \Lambda \)-reduction and \( \blacklozenge \)-reduction. However, it contradicts Lemma~\ref{lemma:StrongNormalizationWithoutBetaReduction}.
     
     Then, we show Strong Normalization by proof by contradiction. 
     
     We assume that there is an infinite reduction sequence \( \{ M_i \} \) of \LMD and \( \G\V M_1:\tau@A \). Thanks to discussion above, we can assume it contains infinite \( \beta \)-reductions. From \( \{ M_i \} \), we can construct another infinite reduction sequence \( \{ \natural(M_i) \} \). From Lemma~\ref{lemma:PreservationOfBetaReductionInNatural}, \ref{lemma:PreservationOfLambdaReductionInNatural}, \ref{lemma:PreservationOfBlacklozengeReductionInNatural}, there are infinite \( \beta \)-reductions in \( \{ \natural(M_i) \} \).
     
-    However, \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(M_1):\natural(\tau) \) from Lemma~\ref{lemma:PreservationOfJudgementsInNatural} therefore the existence of \( \{ \natural(M_i) \} \) contradicts to Strong Normalization of LF.
+    However, \( \natural(\G) \vdash_{\natural(\Sigma)} \natural(M_1):\natural(\tau) \) from Lemma~\ref{lemma:PreservationOfJudgementsInNatural} therefore the existence of \( \{ \natural(M_i) \} \) contradicts Strong Normalization of LF.
 \end{proof}
 
 Confluence is a property that any reduction sequences from one typed term
