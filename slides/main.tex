@@ -237,59 +237,41 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}[fragile]{Our Contribution: \LMD}
-    We design a multi-stage calculus \LMD by
-    introducing dependent types into \LTP [Hanada\&Igarashi'14].
+\begin{frame}[fragile]{本研究の貢献: \LMD}
+    既存の他段階計算体系 \LTP [Hanada\&Igarashi'14] を拡張して
+    依存型付他段階計算体系 \LMD を設計した
     \begin{itemize}
-        \item Features of multi-stage programming
-        \item Features of dependent types
+        \item 他段階計算の機能
+        \item 依存型の機能
     \end{itemize}
-    Technically
+    技術的な貢献
     \begin{itemize}
-        \item Define well-formed kind, kinding, typing and equivalence rules. 
-        \item Prove type soundness.
+        \item \LMD の型付け規則の設計
+        \item 型健全性の証明
+        \item 型推論アルゴリズムの設計と完全性・健全性の証明
     \end{itemize}
-    \note{
-        The contribution of our research is designing lambda-M-D by
-        introducing dependent types into multi-stage calculus lambda-T-P by
-        Hanada and Igarashi. lambda-MD have both of features of multi-stage
-        programming and features of dependent types. Technically, we define
-        well-formed kind, kinding, typing and equivalence rules and prove type
-        soundness.
-    }
 \end{frame}
 
-\section{Existing Multi-stage Calculus \LTP}
+\section{既存の他段階計算体系 \LTP}
 
-\begin{frame}{Contents}
+\begin{frame}{目次}
     \tableofcontents[currentsection]
-    \note{
-        From the next slide, I explain existing multi-stage calculus lambda-TP
-        which is the base of our lambda-MD.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Quick Overview of \LTP [Hanada\&Igarashi'14]}
+\begin{frame}[fragile]{\LTP [Hanada\&Igarashi'14] の概観}
     \begin{table}
         \begin{tabular}{ c | c | c }
             & \LTP & MetaOCaml \\[2mm]
             \hline
-            Quote & \( \textbf{let } a = \TB (1 + 2) \) & \verb| let a = <(1+2)> | \\[2mm]
-            Unquote & \( (\TB (\TBL a + \TBL a)) \) & \verb| <(~a)+(~a)> | \\[2mm]
-            Code type & \( \TW\ \text{int} \) & \verb| int code |
+            コードの作成 & \( \textbf{let } a = \TB (1 + 2) \) & \verb| let a = <(1+2)> | \\[2mm]
+            コードの埋め込み & \( (\TB (\TBL a + \TBL a)) \) & \verb| <(~a)+(~a)> | \\[2mm]
+            コード型 & \( \TW\ \text{int} \) & \verb| int code |
         \end{tabular}
     \end{table}
-    \note{
-        This is a quick overview of lambda-TP. In lambda-TP, we can make a code
-        value with a black triangle, quote, which corresponds to angle brackets
-        in MetaOCaml. Left-directed black triangle, unquote, is used to embed a
-        code values which corresponds to tilde in MetaOCaml. Code type is
-        represented with white triangle.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Terms of \LTP}
-    \begin{block}{Terms}
+\begin{frame}[fragile]{\LTP の項}
+    \begin{block}{項}
         \begin{tabbing}
             \hspace{5mm} \( M \) \= \( ::= c \) \hspace{20mm} \= (constants) \\
             \> \( \mid \TB M \) \> (quote) \\
@@ -298,62 +280,42 @@
             \> \( \mid x \mid \lambda x:\tau.M \mid M\ M \)
         \end{tabbing}
     \end{block}
-    * Simplified version
-    \note{
-        These are terms of lambda-TP. We omit some of them for simplicity. A
-        term of lambda-TP is a constant such as integer, a quoted term which
-        means code value in MetaOCaml, an unquote term which is the same as
-        tilde in MetaOCaml, Cross Stage Persistence (CSP) which I will explain
-        later slides or stuffs of simply typed lambda calculus.
-    }
+    * 説明の為に単純化しています
 \end{frame}
 
-\begin{frame}[fragile]{Types of \LTP}
-    \begin{block}{Types}
+\begin{frame}[fragile]{\LTP の型}
+    \begin{block}{型}
         \begin{tabbing}
-            \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (type-level constants, e.g., int) \\
-            \> \( \mid \TW\ \tau \) \> (code type) \\
-            \> \( \mid \tau \to \tau \) \> (function type)
+            \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (intなどの型レベル定数) \\
+            \> \( \mid \TW\ \tau \) \> (コード型) \\
+            \> \( \mid \tau \to \tau \) \> (関数型)
         \end{tabbing}
     \end{block}
 
-    \begin{block}{Typing Judgement}
+    \begin{block}{型付け判断}
         \begin{center}
             \( \G \V M : \tau @ n \)
         \end{center}
-        * \( n \) is a stage.
+        * \( n \) はステージ.
     \end{block}
-
-    \note{
-        Type of lambda-TP is type-level constants for example int or code type
-        or function type. Typing judgements of lambda-TP is that M is typed tau
-        at stage n under environment gamma.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{What is a stage?}
-    Level of nested quote
+\begin{frame}[fragile]{ステージとは何か?}
+    ネストした \( \TB \) の数
     \begin{exampleblock}{}
         \begin{center}
             \( \underbrace{\TB\ \overbrace{(\lambda x:\text{int}.x + 1)}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
         \end{center}
     \end{exampleblock}
 
-    Typing judgements and environments of \LTP include a stage.
+    \LTP の型判断と型環境はステージを含む
     \begin{center}
         \( x:\text{int}@1 \vdash x + 1 : \text{int} {\mathbf{@ 1}} \)
     \end{center}
-    \note{
-        What is a stage? A stage is a level of nested quote surrounding a term.
-        For example, this whole term is on stage 0 because there is no quote
-        around this term. However, the subterm lambda x dot x + 1 is on stage 1
-        because there is one quote around the subterm.  Typing judgements and
-        environments of lambda-TP include a stage.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Typing Rules of \LTP}
-    Cannot apply a term to a function in a different stage.
+\begin{frame}[fragile]{\LTP の型付け規則}
+    項を異なるステージの関数に適用できない
     \begin{center}
         {\footnotesize \infrule[\TApp]{
             \G\V M:\sigma \to \tau @ n \andalso
@@ -362,7 +324,7 @@
             \G\V M\ N : \tau @ n
         }}
     \end{center}
-    Increase and decrease stage using \( \TB \) and \( \TBL \).
+    \( \TB \)はステージを増加、\( \TBL \)はステージを減少させる
     \begin{center}
         {\footnotesize \infrule[{\TTB}]{
             \G\V M:\tau @ n+1
@@ -375,91 +337,56 @@
             \G\V\TBL M:\tau @ n + 1
         }}
     \end{center}
-    In general, we cannot use terms of one stage at other stages.
-    \note{
-        Let's have a look on some typing rules of lambda-TP. The application
-        rule is T-App. As Simply Typed Lambda Calculus, types of a function and
-        an argument must correspond. In addition to it, there is another
-        restriction. It is that the function and the argument must live in the
-        same stage. Typing rules of quote and unquote is T-quote and T-unquote.
-        They say that black triangles increase and decrease the stage of terms.
-        In general, we cannot use terms of one stage at other stages.
-    }
+    一般には異なるステージの項を使うことはできない
 \end{frame}
 
 \begin{frame}[fragile]{Cross Stage Persistence (CSP)}
-    Allow terms at lower stages to be used at higher stages. \\[3mm]
+    低いステージの項をより高いステージの中に埋め込むことを可能にする \\[3mm]
 
     \begin{exampleblock}{}
     \begin{center}
         \( \textbf{let}\ \underbrace{\text{mul5}}_{\text{stage }0}\ x = 5 * x\ \textbf{in} \TB\ \underbrace{(\% \text{mul5}\ 4)}_{\text{stage }1} \)
     \end{center}
     \end{exampleblock}
-    CSP symbol \( \% \) {\bf{lifts up}} mul5 from stage 0 to stage 1. \\
-    (In MetaOCaml, variables are lifted up implicitly.)
-    \note{
-        But we want to use terms at different stage, sometime. Cross Stage Persistence
-        (CSP) enables it. CSP allow terms at lower stages to be used at higher
-        stages. For example, when we define a mul5 function at stage 0, we
-        cannot use it other stages. However, when we insert \%, which is a
-        symbol of CSP, we can use mul5 at stage 1. CSP symbol \( \% \)
-        lifts up mul5 from stage 0 to stage 1.
-    }
+    CSP\( (\%) \) がmul5関数をステージ0から1に{\bf{持ち上げる}} \\
+    (MetaOCamlでは変数が暗黙のうちに持ち上げられる)
 \end{frame}
 
-\section{\LMD: Extension of \LTP with Dependent Types}
+\section{\LMD: \LTP の依存型による拡張}
 
-\begin{frame}{Contents}
+\begin{frame}{目次}
     \tableofcontents[currentsection]
-  \note{
-        Finally, I explain our work lambda-MD.
-  }
 \end{frame}
 
-\begin{frame}[fragile]{Overview of \LMD}
-    Extension of multi-stage calculus \LTP with dependent types
+\begin{frame}[fragile]{\LMD の概観}
+    \LTP の依存型による拡張
     \begin{itemize}
-        \item \LMD terms are the same as \LTP.
-        \item Types are extended with dependent function type.
-        \item There are equivalence rules for dependent types.
+        \item \LMD の項は\LTP と同じ
+        \item 型は依存型で拡張されている
+        \item 型の間の同値関係を定義する規則がある
     \end{itemize}
-    \note{
-        This is overview of lambda-MD. Lambda-MD is an extension of multi-stage
-        calculus lambda-TP with dependent types. Its terms are the same with
-        lambda-TP but types are extended with dependent function type. And
-        there are equivalence rules because dependent type system need them.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Types and Kinds of \LMD}
-    Add dependent function types to types of \LTP.
-    \begin{block}{Types}
+\begin{frame}[fragile]{\LMD の型とカインド}
+    \LTP の型 + 依存型
+    \begin{block}{型}
         \begin{tabbing}
-            \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (type-level constants) \\
-            \> \( \mid \TW\ \tau \) \> (code type) \\
-            \> \( \bm{\mid \Pi x:\tau.\tau} \) \> (dependent function type) \\
-            \> \( \bm{\mid \tau\ M} \) \> (application, e.g. \(\text{vec}\ 3\))
+            \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (型レベル定数) \\
+            \> \( \mid \TW\ \tau \) \> (コード型) \\
+            \> \( \bm{\mid \Pi x:\tau.\tau} \) \> (依存関数型) \\
+            \> \( \bm{\mid \tau\ M} \) \> (依存関数型への適用, e.g. \(\text{vec}\ 3\))
         \end{tabbing}
     \end{block}
-    \begin{block}{Kinds}
+    \begin{block}{カインド(型の型)}
         \( K ::= * \mid \Pi x:\tau.K \)
     \end{block}
-    \note{
-        These are types and kinds of lambda-MD. We add dependent function type
-        to lambda-TP. So, there is a pi type which means dependent function
-        type and application such as vec 3. There are kinds also in
-        lambda-MD in order to classify types into types of values which is
-        represented with star symbol and types dependent on terms which is
-        represented with pi x dot K.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Kinding rules of \LMD}
-    Kiding judgements as well include stages.
+\begin{frame}[fragile]{\LMD のカインド付け規則}
+    型は項を含みうるため、カインド付け判断もステージを含む
     \begin{center}
         \( \G \vdash \tau :: K @ n \)
     \end{center}
-    Because types may contains terms. (e.g. vec n)
     \begin{center}
         {\footnotesize
         \infrule[{\KApp}]{
@@ -473,18 +400,10 @@
             \G\V(\Pi x:\tau.\sigma) :: (\Pi x:\tau.J) @ n
         }}
     \end{center}
-    \note{
-        Kiding judgements also include stages. Because types may contains terms
-        such as n in vec n. It is natural that types dependent on a value live
-        in the same stage of the value. So, application rule, K-App, says that
-        if you want to apply term M to type sigma, they must live in the same
-        stage n. K-Abs says that when sigma is kinded at stage n and variable x
-        in the environment is on stage n also, you can abstract x using Pi.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{CSP in Types}
-    Code type \( \TW \) decreases the stage.
+\begin{frame}[fragile]{型の中のCSP}
+    コード型 \( \TW \) の中ではステージが1つ増える
     \begin{center}
         \infrule[{\KTW}]{
             \G\V \tau::*@ n + 1
@@ -492,21 +411,13 @@
             \G\V\TW \tau::*@ n
         }
     \end{center}
-    We need CSP in types also in order to use \( n \) in \( \TW \).
+    このためコード型の外の変数\( n \)を\( \TW \)の中で使うためにはCSPが必要である
     \begin{exampleblock}{}
         \begin{tabbing}
             \hspace{5mm} \= \text{val zeros} : \( \Pi n:\text{int}.(\text{vec}\ n) \) \\
             \> \( \lambda n:\text{int}. (\TB (\% \text{zeros}\ \% n)): \underbrace{\Pi n:\text{int}. \TW (\overbrace{\text{vec}\ \%n}^{\text{stage }1})}_{\text{stage }0} \)
         \end{tabbing}
     \end{exampleblock}
-    \note{
-        Code type decreases the stage as you can see in K-code.  So we need CSP
-        in types also. For example, let's consider a function which takes
-        integer n and returns a code of length n vector filled with zeros.
-        Because n is a variable at stage 0, you must insert \% symbol when you
-        use it in code type. But vec is used without \% symbol. I will explain
-        the reason in the next slide.
-    }
 \end{frame}
 
 \begin{frame}[fragile]{Constants and type-level constants of \LMD}
