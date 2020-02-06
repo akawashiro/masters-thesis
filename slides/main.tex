@@ -420,12 +420,12 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}[fragile]{Constants and type-level constants of \LMD}
+\begin{frame}[fragile]{\LMD の定数と型レベル定数}
     \begin{itemize}
-        \item Constants: \( 0,1,2,3,\dots \)
-        \item Type-level constants: int, vec, \dots
+        \item 定数: \( 0,1,2,3,\dots \)
+        \item 型レベル定数: int, vec, \dots
     \end{itemize}
-    can be used at any stage.
+    はどのステージでも使える
     \begin{exampleblock}{}
         \begin{tabbing}
             \hspace{5mm} \= \text{val double-at-0} : \( \text{vec }3 \to \text{vec }3 \) \\[2mm]
@@ -433,19 +433,10 @@
             \> \text{val double} : \( \TW \underbrace{(\text{vec }3 \to \text{vec }3)}_{\text{stage 1}} \)
         \end{tabbing}
     \end{exampleblock}
-    \note{
-        We design our lambda-MD so that we can use constants such as integer
-        numbers and type-level constants such as int, vec at any stage. For
-        example, when we have double-at-0 function which double the given
-        length 3 vector. It has type of vec 3 to vec 3. Then, we get double by
-        lifting up double-at-0 with CSP. double function has type of code of a
-        function from vec 3 to vec 3. And there is no problem in the type.
-        Because both vec and 3 are constants and we can use them at any stages.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{vadd-gen in \LMD}
-    Type tells us the length of vector.
+\begin{frame}[fragile]{\LMD におけるvadd-gen}
+    型によってベクトルの長さを指定できる
     \newcommand{\Vn}{\text{vec}\ \%n}
     \newcommand{\Vt}{\text{vec}\ \%3}
     \begin{exampleblock}{}
@@ -456,17 +447,10 @@
     \end{tabbing}
     \end{exampleblock}
     Now, vadd3 takes only vectors of length 3.
-    \note{
-        Let's return back to vadd-gen function.  vadd-gen is changed as follows
-        in \LMD.  The type of vadd-gen says that it takes integer n and returns
-        a code value of function which takes two \% n length vectors and
-        returns a \% n length vector.  Thanks to dependent types we can see it
-        takes only length 3 vectors.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Technical challenge of vadd3}
-    Hard to compose with other functions.
+\begin{frame}[fragile]{vadd3の技術的な問題}
+    他の関数と組み合わせるのが難しい
     \newcommand{\Vn}{\text{vec}\ \%n}
     \newcommand{\Vpt}{\text{vec}\ \%3}
     \newcommand{\Vt}{\text{vec}\ 3}
@@ -478,20 +462,13 @@
         \> \hspace{5mm} \( \TB (\underbrace{\TBL\text{double}}_{\Vt \to \Vt}\ \underbrace{(\TBL \text{vadd3}\ \TBL v\ \TBL w)}_{\Vpt});; \) \\
     \end{tabbing}
     \end{exampleblock}
-    We cannot compose because of type mismatch.
-    \note{
-        But there is a technical challenge in vadd3. vadd3 is hard to
-        compose with other functions. For example, as you have seen, vadd3 has
-        the type of code which takes two vec \% 3 values and returns vec \% 3
-        values. However, double has type of code from vec 3 to vec 3. So we
-        cannot compose them because \% symbol raises a type error.
-    }
+    型が合わないので組み合わせることができない
 \end{frame}
 
-\begin{frame}[fragile]{Solution}
+\begin{frame}[fragile]{解決}
     \newcommand{\Vt}{\text{vec}\ 3}
     \newcommand{\Vpt}{\text{vec}\ \%3}
-    Erase the CSP symbol \( \% \) when \(M \) is closed (\QPercent).
+    \( M \) が閉じた項の場合に限りCSP(\%)を消すことを許す (\QPercent)
     {\footnotesize{
     \begin{center}
         \infrule[{\QPercent}]{
@@ -514,79 +491,47 @@
                 \hspace{15mm} \( (\E  \TW (\Vpt \to \Vpt \to \Vpt)) \)
         \end{itemize}
     \end{exampleblock}
-    \note{
-        Our solution for this problem is erasing the CSP symbol \( \% \) when
-        \(M \) is closed. \QPercent says that if M is a closed term, \% M is
-        equivalent to M. And \TConv says we change the type of term to an
-        equivalent type. So, vec \% 3 is equivalent to vec 3 and vadd3 can be 
-        typed of code of function which takes two vec 3 values and returns a vec
-        3 value. And the type is equivalent to the original type of vadd3.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Properties}
-    We proved
+\begin{frame}[fragile]{性質}
+    以下の性質を証明した
     \begin{itemize}
-        \item Subject Reduction
-        \item Strong Normalization
-        \item Confluence
-        \item Progress
+        \item 代入補題
+        \item 強正規化性
+        \item 合流性
+        \item 進行性
     \end{itemize}
-    \note{
-        We proved following four properties Subject Reduction, Strong Normalization, Confluence, Progress. Type soundness is followed from these properties.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Related Work}
+\begin{frame}[fragile]{関連研究}
     \begin{itemize}
         \item \LTP [Hanada\&Igarashi'14]
         \item Concoqtion [Forgarty et al.'07]
             \begin{itemize}
-                \item Introduce indexed type into MetaOCaml.
-                \item Types are indexed by Coq terms. \\ (not full dependent types)
+                \item MetaOCamlに制限された形の依存型を導入
             \end{itemize}
         \item \( \lambda_{H\circ} \) [Pasalic'04]
             \begin{itemize}
-                \item Meta-programming with dependent types
-                \item No run or CSP
+                \item 依存型付きメタプログラミング言語
+                \item コードの評価とCSPがない
             \end{itemize}
     \end{itemize}
-    \note{
-        We list up some of related works. First one is lambda-TP which is the
-        base of lambda-MD. Second one is Concoqtion by Forgartys. They
-        introduced indexed type into MetaOCaml. Types are indexed by Coq term.
-        But it is restricted dependent type because we cannot use full language
-        features for indexes such as quote, unquote or run. lambda-H-circle by
-        Pasalic studied meta-programming with dependent types but there is no
-        run or CSP in it.
-    }
 \end{frame}
 
-\begin{frame}[fragile]{Conclusion}
-    We introduced dependent types into multi-stage calculus.
+\begin{frame}[fragile]{結論}
+    他段階計算に依存型を導入した
     \begin{itemize}
-        \item Avoid illegal use of generated code values with dependent types.
+        \item 依存型で生成されたコードの不正な仕様を防止
             \begin{itemize}
-                \item Full dependent types not restricted ones.
+                \item 制限されていない依存型
             \end{itemize}
-        \item Define equivalence rules.
+        \item 同値関係を定義
             \begin{itemize}
-                \item Especially for CSP
+                \item 特にCSPについて
             \end{itemize}
-        \item Prove type soundness.
-        \item Future work: algorithmic typing
+        \item 型推論のアルゴリズムを設計 
+        \item 型健全性を証明 
     \end{itemize}
-    \note{
-        Here is conclusion. We introduced dependent types into multi-stage
-        calculus. It can avoid illegal use of generated code values with
-        dependent types. And its dependent types is full dependent types not
-        restricted ones. We define equivalence rules for dependent types
-        especially for CSP. And we proved type soundness. There is a future
-        work of algorithmic typing but we have designed almost all rules of
-        algorithmic typing.
-
-        Thank you for listening.
-    }
 \end{frame}
 
 \begin{frame}[fragile]{Why a Stage is Needed?}
