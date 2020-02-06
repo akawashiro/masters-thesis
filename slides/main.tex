@@ -18,6 +18,8 @@
 \usepackage{lscape}
 \usepackage{pgfpages}
 \usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
 
 % beamer cheat sheet
 % http://www.cpt.univ-mrs.fr/~masson/latex/Beamer-appearance-cheat-sheet.pdf
@@ -132,7 +134,7 @@
 % I don't use sigma in this slides.
 \renewcommand{\V}{\vdash}
 
-\title{依存型付他段階計算体系}
+\title{依存型付多段階計算体系}
 \subtitle{Dependently Typed Multi-stage Calculus}
 \author{河田 旺}
 \institute{京都大学大学院情報学研究科}
@@ -152,7 +154,8 @@
 %   }
 % \end{frame}
 
-\section{他段階計算とは}
+\section{背景}
+\subsection{多段階計算}
 
 \begin{frame}{目次}
 
@@ -163,7 +166,7 @@
     \tableofcontents
 \end{frame}
 
-\begin{frame}[fragile]{他段階計算とはなにか}
+\begin{frame}[fragile]{多段階計算とはなにか}
     以下の2つを可能にするプログラミング手法
     \begin{itemize}
         \item 実行時のコード生成
@@ -176,107 +179,156 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{MetaOCamlによる他段階計算の例}
+\begin{frame}[fragile]{MetaOCamlによる多段階計算の例1}
+    \( \TB \) でコードの生成 ( \( \TW \)\ \verb|int| はint型のコードの型)
     \begin{exampleblock}{}
-        \begin{Verbatim}[numbers=left]
- # let a = < (1 + 2) >     (* Make code *)
- val a : int code = < (1 + 2) >
- # run a                   (* Run code *)
- - : int = 3
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+ # let a = $\TB$ (1 + 2)
+ val a : $\TW$ int = $\TB$ (1 + 2)
+        \end{Verbatim}
+    \end{exampleblock}
+    \( \TBL \)で生成したコードを他のコードに埋め込める
+    \begin{exampleblock}{}
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+ # let b = $\TB$ (($\TBL$ a) + ($\TBL$ a))
+ val b : int code = $\TB$ ((1 + 2) + (1 + 2))
+        \end{Verbatim}
+    \end{exampleblock}
+\end{frame}
 
- # let b = <(~a) + (~a)>   (* Embed code *)
- val b : int code = < ((1 + 2) + (1 + 2)) >
+\begin{frame}[fragile]{MetaOCamlによる多段階計算の例2}
+    \verb|run| でコードの実行
+    \begin{exampleblock}{}
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+ # run ($\TB$ (1 + 2))
+ - : int = 3
  # run b
  - : int = 6
         \end{Verbatim}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}[fragile]{他段階計算の応用例: vadd-gen}
-    特定の長さのベクトルに特化したベクトルの和を計算する関数を作る
+\begin{frame}[fragile]{多段階計算の応用例: vadd-gen}
+    特定の長さのベクトルの和を計算する関数を作る関数
     \begin{exampleblock}{}
-    \begin{Verbatim}[numbers=left]
- val vadd-gen : int -> (vec -> vec -> vec) code
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+ val vadd-gen : int -> $\TW$ (vec -> vec -> vec)
  # let vadd3 = vadd-gen 3
- val vadd3 : (vec -> vec -> vec) code
- (* vadd3 = < fun v w ->                 *)
- (*   let (v, w)=(~v, ~w) in             *)
- (*   [v[0]+w[0];v[1]+w[1];v[2]+w[2]] >  *)
+ val vadd3 : $\TW$ (vec -> vec -> vec)
+ (* vadd3 = $\TB$ (fun v w ->               *)
+ (*   let (v, w)=($\TBL$v, $\TBL$w) in            *)
+ (*   [v[0]+w[0];v[1]+w[1];v[2]+w[2]] )  *)
     \end{Verbatim}
     \end{exampleblock}
 \end{frame}
 
 \begin{frame}[fragile]{vadd-genによって生成されたvadd3の問題点}
-    誤った長さのベクトルを渡すと実行時エラーを起こす
+    誤った長さのベクトルを渡すと実行時エラーが起きる
     \begin{exampleblock}{}
-    \begin{Verbatim}[numbers=left]
- val vadd3 : (vec -> vec -> vec) code
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+ val vadd3 : $\TW$ (vec -> vec -> vec)
  # (run vadd3) [1;2;3] [4;5;6]
  - : vec = [5;7;9]
  # (run vadd3) [1;2] [4;5]
- Exception: Failure
+ ---> 実行時エラー発生
     \end{Verbatim}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]を用いた解決}
-    \renewcommand{\V}{\text{vec}\ }
-    依存型とは値に依存する型
-    \begin{itemize}
-        \item {\verb|vadd3|} 関数の誤使用を防ぐことができる
-    \end{itemize}
-    \begin{exampleblock}{}
- \begin{Verbatim}[numbers=left]
- [1;2]: vec 2
- vadd3 : (vec 3 -> vec 3 -> vec 3) code
+\subsection{依存型}
 
- # (run vadd3) [1;2] [4;5]
- [1;2] has type vec 2
- but a value of type Vec 3 was expected
+\begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]とは}
+    \renewcommand{\V}{\text{vec}\ }
+    依存型とは式をパラメータとして渡せる型
+    \begin{exampleblock}{}
+        \begin{Verbatim}
+ vec (1+2)         // vec に (1+2) という式を
+                   // パラメータとして渡せる
  \end{Verbatim}
     \end{exampleblock}
+    \begin{exampleblock}{}
+        \begin{Verbatim}
+ [1;2]: vec 2      // ベクトルの長さを表現できる
+        \end{Verbatim}
+    \end{exampleblock}
+    \begin{exampleblock}{}
+        \begin{Verbatim}
+ vec 3 = vec (1+2) // パラメータ同士は
+                   // 計算してから比較する
+        \end{Verbatim}
+    \end{exampleblock}
+% \begin{tikzpicture}[remember picture, overlay]
+%     \node[rectangle callout, fill=red!80, white, callout absolute pointer={(bgraph.north)}, above=of bgraph]{2部グラフ}; %
+% \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile]{多段階計算の問題の依存型による解決}
+    \renewcommand{\V}{\text{vec}\ }
+    {\verb|vadd3|} 関数の誤使用を防ぐことができる
+    \begin{exampleblock}{}
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+ [1;2]: vec 2
+ vadd3 : $\TW$ (vec 3 -> vec 3 -> vec 3)
+
+ # (run vadd3) [1;2] [4;5]
+ ---> 実行する前に型で誤りを検知
+ \end{Verbatim}
+    \end{exampleblock}
+ [1;2] はvec 2型のベクトルだが\\
+ vadd3はvec 3型のベクトルを受け取る
 \end{frame}
 
 \begin{frame}[fragile]{本研究の貢献: \LMD}
-    既存の他段階計算体系 \LTP [Hanada\&Igarashi'14] を拡張して
-    依存型付他段階計算体系 \LMD を設計した
+    既存の多段階計算体系 \LTP [Hanada\&Igarashi'14] を拡張して
+    依存型付多段階計算体系 \LMD を設計した
     \begin{itemize}
-        \item 他段階計算の機能
+        \item 多段階計算の機能
         \item 依存型の機能
     \end{itemize}
     技術的な貢献
     \begin{itemize}
         \item \LMD の型付け規則の設計
-        \item 型健全性の証明
-        \item 型推論アルゴリズムの設計と完全性・健全性の証明
+        \item 型安全性の証明
+        \item 型推論アルゴリズムの設計と正当性の証明
     \end{itemize}
 \end{frame}
 
-\section{既存の他段階計算体系 \LTP}
+\section{既存の多段階計算体系 \LTP}
 
 \begin{frame}{目次}
     \tableofcontents[currentsection]
 \end{frame}
 
-\begin{frame}[fragile]{\LTP [Hanada\&Igarashi'14] の概観}
-    \begin{table}
-        \begin{tabular}{ c | c | c }
-            & \LTP & MetaOCaml \\[2mm]
-            \hline
-            コードの作成 & \( \textbf{let } a = \TB (1 + 2) \) & \verb| let a = <(1+2)> | \\[2mm]
-            コードの埋め込み & \( (\TB (\TBL a + \TBL a)) \) & \verb| <(~a)+(~a)> | \\[2mm]
-            コード型 & \( \TW\ \text{int} \) & \verb| int code |
-        \end{tabular}
-    \end{table}
+% \begin{frame}[fragile]{\LTP [Hanada\&Igarashi'14] の概観}
+%     \begin{table}
+%         \begin{tabular}{ c | c | c }
+%             & \LTP & MetaOCaml \\[2mm]
+%             \hline
+%             コードの作成 & \( \textbf{let } a = \TB (1 + 2) \) & \verb| let a = <(1+2)> | \\[2mm]
+%             コードの埋め込み & \( (\TB (\TBL a + \TBL a)) \) & \verb| <(~a)+(~a)> | \\[2mm]
+%             コード型 & \( \TW\ \text{int} \) & \verb| int code |
+%         \end{tabular}
+%     \end{table}
+% \end{frame}
+
+\begin{frame}[fragile]{\LTP とは}
+    \begin{itemize}
+        \item Hanada, Igarashi による多段階計算体系
+        \item ステージを跨ぐコードの埋め込み(CSP)が可能
+        \item 今回の研究の拡張元
+    \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{\LTP の項}
     \begin{block}{項}
         \begin{tabbing}
-            \hspace{5mm} \( M \) \= \( ::= c \) \hspace{20mm} \= (constants) \\
-            \> \( \mid \TB M \) \> (quote) \\
-            \> \( \mid \TBL M \) \> (unquote) \\
-            \> \( \mid \% M \) \> (Cross Stage Persistence (CSP)) \\
+            \hspace{5mm} \( M \) \= \( ::= c \) \hspace{20mm} \= (定数) \\
+            \> \( \mid \TB M \) \> (コードの生成) \\
+            \> \( \mid \TBL M \) \> (コードの埋め込み) \\
+            \> \( \mid \verb|run|\ M \) \> (コードの実行) \\
+            \> \( \mid \% M \) \> (ステージを跨ぐ \\
+            \> \> \ コードの埋め込み (CSP)) \\
             \> \( \mid x \mid \lambda x:\tau.M \mid M\ M \)
         \end{tabbing}
     \end{block}
@@ -296,12 +348,13 @@
         \begin{center}
             \( \G \V M : \tau @ n \)
         \end{center}
-        * \( n \) はステージ.
+        * 「型環境\( \G \)の下で項\( M \)に型\( \tau \)がステージ\( n \)でつく」\\
+        ** \( n \) はステージ.
     \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{ステージとは何か?}
-    ネストした \( \TB \) の数
+    項の外側にある \( \TB \) の数
     \begin{exampleblock}{}
         \begin{center}
             \( \underbrace{\TB\ \overbrace{(\lambda x:\text{int}.x + 1)}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
@@ -340,8 +393,9 @@
     一般には異なるステージの項を使うことはできない
 \end{frame}
 
-\begin{frame}[fragile]{Cross Stage Persistence (CSP)}
-    低いステージの項をより高いステージの中に埋め込むことを可能にする \\[3mm]
+\begin{frame}[fragile]{ステージを跨ぐコードの埋め込み(CSP)}
+    低いステージの項をより高いステージの項の中に\\
+    埋め込むことを可能にする \\[3mm]
 
     \begin{exampleblock}{}
     \begin{center}
@@ -349,7 +403,6 @@
     \end{center}
     \end{exampleblock}
     CSP\( (\%) \) がmul5関数をステージ0から1に{\bf{持ち上げる}} \\
-    (MetaOCamlでは変数が暗黙のうちに持ち上げられる)
 \end{frame}
 
 \section{\LMD: \LTP の依存型による拡張}
@@ -446,7 +499,8 @@
         \> \( \text{val}\ \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\[2mm]
     \end{tabbing}
     \end{exampleblock}
-    Now, vadd3 takes only vectors of length 3.
+    vadd3が長さ3のベクトルだけを\\
+    引数として取ることが型で表現されている
 \end{frame}
 
 \begin{frame}[fragile]{vadd3の技術的な問題}
@@ -519,7 +573,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{結論}
-    他段階計算に依存型を導入した
+    多段階計算に依存型を導入した
     \begin{itemize}
         \item 依存型で生成されたコードの不正な仕様を防止
             \begin{itemize}
