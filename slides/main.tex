@@ -137,7 +137,7 @@
 \title{依存型付多段階計算体系}
 \subtitle{Dependently Typed Multi-stage Calculus}
 \author{河田 旺}
-\institute{京都大学大学院情報学研究科}
+\institute{五十嵐・末永研究室}
 \date{2020年2月12日}
 
 \begin{document}
@@ -155,16 +155,15 @@
 % \end{frame}
 
 \section{背景}
-\subsection{多段階計算}
 
-\begin{frame}{目次}
-
-    \setbeamertemplate{section in toc}{
-        \inserttocsectionnumber.\ \inserttocsection
-    }
-
-    \tableofcontents
-\end{frame}
+% \begin{frame}{目次}
+%
+%     \setbeamertemplate{section in toc}{
+%         \inserttocsectionnumber.\ \inserttocsection
+%     }
+%
+%     \tableofcontents
+% \end{frame}
 
 \begin{frame}[fragile]{多段階計算とはなにか}
     以下の2つを可能にするプログラミング手法
@@ -187,11 +186,11 @@
  val a : $\TW$ int = $\TB$ (1 + 2)
         \end{Verbatim}
     \end{exampleblock}
-    \( \TBL \)で生成したコードを他のコードに埋め込める
+    \( \TBL \)で、生成したコードを他のコードに埋め込める
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
  # let b = $\TB$ (($\TBL$ a) + ($\TBL$ a))
- val b : int code = $\TB$ ((1 + 2) + (1 + 2))
+ val b : $\TW$ int = $\TB$ ((1 + 2) + (1 + 2))
         \end{Verbatim}
     \end{exampleblock}
 \end{frame}
@@ -215,11 +214,11 @@
  val vadd-gen : int -> $\TW$ (vec -> vec -> vec)
  # let vadd3 = vadd-gen 3
  val vadd3 : $\TW$ (vec -> vec -> vec)
- (* vadd3 = $\TB$ (fun v w ->               *)
- (*   let (v, w)=($\TBL$v, $\TBL$w) in            *)
- (*   [v[0]+w[0];v[1]+w[1];v[2]+w[2]] )  *)
+           = $\TB$ (fun v w ->
+             [v[0]+w[0];v[1]+w[1];v[2]+w[2]])
     \end{Verbatim}
     \end{exampleblock}
+    吹き出し「ループが展開されて処理速度があがっている」
 \end{frame}
 
 \begin{frame}[fragile]{vadd-genによって生成されたvadd3の問題点}
@@ -235,37 +234,9 @@
     \end{exampleblock}
 \end{frame}
 
-\subsection{依存型}
-
-\begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]とは}
+\begin{frame}[fragile]{アイデア: 依存型の導入}
     \renewcommand{\V}{\text{vec}\ }
-    依存型とは式をパラメータとして渡せる型
-    \begin{exampleblock}{}
-        \begin{Verbatim}
- vec (1+2)         // vec に (1+2) という式を
-                   // パラメータとして渡せる
- \end{Verbatim}
-    \end{exampleblock}
-    \begin{exampleblock}{}
-        \begin{Verbatim}
- [1;2]: vec 2      // ベクトルの長さを表現できる
-        \end{Verbatim}
-    \end{exampleblock}
-    \begin{exampleblock}{}
-        \begin{Verbatim}
- vec 3 = vec (1+2) // パラメータ同士は
-                   // 計算してから比較する
-        \end{Verbatim}
-    \end{exampleblock}
-% \begin{tikzpicture}[remember picture, overlay]
-%     \node[rectangle callout, fill=red!80, white, callout absolute pointer={(bgraph.north)}, above=of bgraph]{2部グラフ}; %
-% \end{tikzpicture}
-\end{frame}
-
-
-\begin{frame}[fragile]{多段階計算の問題の依存型による解決}
-    \renewcommand{\V}{\text{vec}\ }
-    {\verb|vadd3|} 関数の誤使用を防ぐことができる
+    ベクトルの長さを表現できる型を導入する
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
  [1;2]: vec 2
@@ -275,8 +246,32 @@
  ---> 実行する前に型で誤りを検知
  \end{Verbatim}
     \end{exampleblock}
- [1;2] はvec 2型のベクトルだが\\
- vadd3はvec 3型のベクトルを受け取る
+    吹き出し「\verb|vec 2| \( \neq \) \verb|vec 3|」
+\end{frame}
+
+\begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]とは}
+    \renewcommand{\V}{\text{vec}\ }
+    依存型とは式をパラメータとして渡せる型
+    \begin{exampleblock}{}
+        \begin{Verbatim}
+ [1;2]: vec 2      // ベクトルの長さを表現できる
+        \end{Verbatim}
+    \end{exampleblock}
+    \begin{exampleblock}{}
+        \begin{Verbatim}
+ vec (1+2)         // vec に (1+2) という式を
+                   // パラメータとして渡せる
+ \end{Verbatim}
+    \end{exampleblock}
+    \begin{exampleblock}{}
+        \begin{Verbatim}
+ append: vec n -> vec m -> vec (n + m)
+ append [1;2] [3;4;5]: vec 5 
+        \end{Verbatim}
+    \end{exampleblock}
+% \begin{tikzpicture}[remember picture, overlay]
+%     \node[rectangle callout, fill=red!80, white, callout absolute pointer={(bgraph.north)}, above=of bgraph]{2部グラフ}; %
+% \end{tikzpicture}
 \end{frame}
 
 \begin{frame}[fragile]{本研究の貢献: \LMD}
@@ -288,17 +283,16 @@
     \end{itemize}
     技術的な貢献
     \begin{itemize}
-        \item \LMD の型付け規則の設計
         \item 型安全性の証明
         \item 型推論アルゴリズムの設計と正当性の証明
     \end{itemize}
 \end{frame}
 
-\section{既存の多段階計算体系 \LTP}
+% \section{既存の多段階計算体系 \LTP}
 
-\begin{frame}{目次}
-    \tableofcontents[currentsection]
-\end{frame}
+% \begin{frame}{目次}
+%     \tableofcontents[currentsection]
+% \end{frame}
 
 % \begin{frame}[fragile]{\LTP [Hanada\&Igarashi'14] の概観}
 %     \begin{table}
@@ -312,15 +306,15 @@
 %     \end{table}
 % \end{frame}
 
-\begin{frame}[fragile]{\LTP とは}
-    \begin{itemize}
-        \item Hanada, Igarashi による多段階計算体系
-        \item ステージを跨ぐコードの埋め込み(CSP)が可能
-        \item 今回の研究の拡張元
-    \end{itemize}
-\end{frame}
+% \begin{frame}[fragile]{\LTP とは}
+%     \begin{itemize}
+%         \item Hanada, Igarashi による多段階計算体系
+%         \item ステージを跨ぐコードの埋め込み(CSP)が可能
+%         \item 今回の研究の拡張元
+%     \end{itemize}
+% \end{frame}
 
-\begin{frame}[fragile]{\LTP の項}
+\begin{frame}[fragile]{\LMD の項}
     \begin{block}{項}
         \begin{tabbing}
             \hspace{5mm} \( M \) \= \( ::= c \) \hspace{20mm} \= (定数) \\
@@ -335,160 +329,66 @@
     * 説明の為に単純化しています
 \end{frame}
 
-\begin{frame}[fragile]{\LTP の型}
-    \begin{block}{型}
-        \begin{tabbing}
-            \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (intなどの型レベル定数) \\
-            \> \( \mid \TW\ \tau \) \> (コード型) \\
-            \> \( \mid \tau \to \tau \) \> (関数型)
-        \end{tabbing}
-    \end{block}
-
-    \begin{block}{型付け判断}
-        \begin{center}
-            \( \G \V M : \tau @ n \)
-        \end{center}
-        * 「型環境\( \G \)の下で項\( M \)に型\( \tau \)がステージ\( n \)でつく」\\
-        ** \( n \) はステージ.
-    \end{block}
-\end{frame}
-
-\begin{frame}[fragile]{ステージとは何か?}
-    項の外側にある \( \TB \) の数
-    \begin{exampleblock}{}
-        \begin{center}
-            \( \underbrace{\TB\ \overbrace{(\lambda x:\text{int}.x + 1)}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
-        \end{center}
-    \end{exampleblock}
-
-    \LTP の型判断と型環境はステージを含む
-    \begin{center}
-        \( x:\text{int}@1 \vdash x + 1 : \text{int} {\mathbf{@ 1}} \)
-    \end{center}
-\end{frame}
-
-\begin{frame}[fragile]{\LTP の型付け規則}
-    項を異なるステージの関数に適用できない
-    \begin{center}
-        {\footnotesize \infrule[\TApp]{
-            \G\V M:\sigma \to \tau @ n \andalso
-            \G\V N:\sigma @ n
-        }{
-            \G\V M\ N : \tau @ n
-        }}
-    \end{center}
-    \( \TB \)はステージを増加、\( \TBL \)はステージを減少させる
-    \begin{center}
-        {\footnotesize \infrule[{\TTB}]{
-            \G\V M:\tau @ n+1
-        }{
-            \G\V\TB M:\TW \tau @ n
-        } \hfil
-        \infrule[{\TTBL}]{
-            \G\V M:\TW \tau @ n
-        }{
-            \G\V\TBL M:\tau @ n + 1
-        }}
-    \end{center}
-    一般には異なるステージの項を使うことはできない
-\end{frame}
-
 \begin{frame}[fragile]{ステージを跨ぐコードの埋め込み(CSP)}
-    低いステージの項をより高いステージの項の中に\\
-    埋め込むことを可能にする \\[3mm]
+    任意の項をコードの中に埋め込むことを可能にする \\[3mm]
 
     \begin{exampleblock}{}
-    \begin{center}
-        \( \textbf{let}\ \underbrace{\text{mul5}}_{\text{stage }0}\ x = 5 * x\ \textbf{in} \TB\ \underbrace{(\% \text{mul5}\ 4)}_{\text{stage }1} \)
-    \end{center}
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+  $\lambda$x:int.($\TB$(x + 1))
+        \end{Verbatim}
     \end{exampleblock}
-    CSP\( (\%) \) がmul5関数をステージ0から1に{\bf{持ち上げる}} \\
+    吹き出し「xはコードでない通常の項」 \\
+    吹き出し「ここはコードの中」
 \end{frame}
 
-\section{\LMD: \LTP の依存型による拡張}
-
-\begin{frame}{目次}
-    \tableofcontents[currentsection]
-\end{frame}
-
-\begin{frame}[fragile]{\LMD の概観}
-    \LTP の依存型による拡張
-    \begin{itemize}
-        \item \LMD の項は\LTP と同じ
-        \item 型は依存型で拡張されている
-        \item 型の間の同値関係を定義する規則がある
-    \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{\LMD の型とカインド}
-    \LTP の型 + 依存型
+\begin{frame}[fragile]{\LMD の型}
     \begin{block}{型}
         \begin{tabbing}
             \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (型レベル定数) \\
             \> \( \mid \TW\ \tau \) \> (コード型) \\
-            \> \( \bm{\mid \Pi x:\tau.\tau} \) \> (依存関数型) \\
-            \> \( \bm{\mid \tau\ M} \) \> (依存関数型への適用, e.g. \(\text{vec}\ 3\))
+            \> \( \mid x:\tau \to \tau \) \> (依存関数型) \\
+            \> \( \mid \tau\ M \) \> (型の項への適用)
         \end{tabbing}
     \end{block}
-    \begin{block}{カインド(型の型)}
-        \( K ::= * \mid \Pi x:\tau.K \)
-    \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{\LMD のカインド付け規則}
-    型は項を含みうるため、カインド付け判断もステージを含む
-    \begin{center}
-        \( \G \vdash \tau :: K @ n \)
-    \end{center}
-    \begin{center}
-        {\footnotesize
-        \infrule[{\KApp}]{
-            \G\V \sigma:: (\Pi x:\tau.K) @ n \andalso \G\V M:\tau @ n
-        }{
-            \G\V \sigma\ M::K[x\mapsto M] @ n
-        } \\[2mm]
-        \infrule[{\KAbs}]{
-            \G\V \tau :: * @ n \andalso \G,x:\tau@ n \V \sigma::J@n
-        }{
-            \G\V(\Pi x:\tau.\sigma) :: (\Pi x:\tau.J) @ n
-        }}
-    \end{center}
-\end{frame}
-
-\begin{frame}[fragile]{型の中のCSP}
-    コード型 \( \TW \) の中ではステージが1つ増える
-    \begin{center}
-        \infrule[{\KTW}]{
-            \G\V \tau::*@ n + 1
-        }{
-            \G\V\TW \tau::*@ n
-        }
-    \end{center}
-    このためコード型の外の変数\( n \)を\( \TW \)の中で使うためにはCSPが必要である
+\begin{frame}[fragile]{\LMD の型の例}
+    依存関数型の例
     \begin{exampleblock}{}
-        \begin{tabbing}
-            \hspace{5mm} \= \text{val zeros} : \( \Pi n:\text{int}.(\text{vec}\ n) \) \\
-            \> \( \lambda n:\text{int}. (\TB (\% \text{zeros}\ \% n)): \underbrace{\Pi n:\text{int}. \TW (\overbrace{\text{vec}\ \%n}^{\text{stage }1})}_{\text{stage }0} \)
-        \end{tabbing}
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+  double: n:int -> vec n -> vec n
+        \end{Verbatim}
     \end{exampleblock}
-\end{frame}
-
-\begin{frame}[fragile]{\LMD の定数と型レベル定数}
-    \begin{itemize}
-        \item 定数: \( 0,1,2,3,\dots \)
-        \item 型レベル定数: int, vec, \dots
-    \end{itemize}
-    はどのステージでも使える
+    型の項への適用の例
     \begin{exampleblock}{}
-        \begin{tabbing}
-            \hspace{5mm} \= \text{val double-at-0} : \( \text{vec }3 \to \text{vec }3 \) \\[2mm]
-            \> \textbf{let } \text{double} = \( \TB (\%\ \text{double-at-0}) \) \\
-            \> \text{val double} : \( \TW \underbrace{(\text{vec }3 \to \text{vec }3)}_{\text{stage 1}} \)
-        \end{tabbing}
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+  double 3: vec 3 -> vec 3
+        \end{Verbatim}
+    \end{exampleblock}
+    コード型の例
+    \begin{exampleblock}{}
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+  $\TB$(double 3): $\TW$(vec 3 -> vec 3)
+        \end{Verbatim}
     \end{exampleblock}
 \end{frame}
 
 \begin{frame}[fragile]{\LMD におけるvadd-gen}
+    型によってベクトルの長さを指定できる
+    \newcommand{\Vn}{\text{vec}\ \%n}
+    \newcommand{\Vt}{\text{vec}\ \%3}
+    \begin{exampleblock}{}
+    \begin{tabbing}
+        \hspace{5mm} \= \( \text{vadd-gen} : \Pi n:\text{int}. \TW (\Vn \to \Vn \to \Vn) \) \\[2mm]
+        \> \( \textbf{let}\ \text{vadd3} = \text{vadd-gen}\ 3;; \) \\
+        \> \( \text{val}\ \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\[2mm]
+    \end{tabbing}
+    \end{exampleblock}
+    vadd3が長さ3のベクトルだけを\\
+    引数として取ることが型で表現されている
+\end{frame}
+
+\begin{frame}[fragile]{vadd-genの型}
     型によってベクトルの長さを指定できる
     \newcommand{\Vn}{\text{vec}\ \%n}
     \newcommand{\Vt}{\text{vec}\ \%3}
@@ -547,14 +447,10 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}[fragile]{性質}
-    以下の性質を証明した
-    \begin{itemize}
-        \item 代入補題
-        \item 強正規化性
-        \item 合流性
-        \item 進行性
-    \end{itemize}
+\begin{frame}[fragile]{型安全性}
+\end{frame}
+
+\begin{frame}[fragile]{型推論アルゴリズム}
 \end{frame}
 
 \begin{frame}[fragile]{関連研究}
@@ -575,35 +471,254 @@
 \begin{frame}[fragile]{結論}
     多段階計算に依存型を導入した
     \begin{itemize}
-        \item 依存型で生成されたコードの不正な仕様を防止
-            \begin{itemize}
-                \item 制限されていない依存型
-            \end{itemize}
-        \item 同値関係を定義
-            \begin{itemize}
-                \item 特にCSPについて
-            \end{itemize}
+        \item 依存型で、生成されたコードの不正な使用を防止
+        \item 型安全性を証明 
         \item 型推論のアルゴリズムを設計 
-        \item 型健全性を証明 
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Why a Stage is Needed?}
-    Without stage, \textbf{run} may causes a run-time error.
-    \begin{exampleblock}{}
-        \begin{center}
-    \( \TB (\lambda x:\tau. \TBL (\textbf{run}\ \TB x)) \)
-        \end{center}
-    \end{exampleblock}
-
-    With stage, the same code cannot be typed.\\
-    Because the subterm \( (\Lambda\alpha.\ \TB_\alpha x) \) is ill-typed.
-    \begin{exampleblock}{}
-        \begin{center}
-    \( \TB_\alpha (\lambda x:\tau. \TBL_\alpha ((\Lambda\alpha.\ \TB_\alpha x)\ \varepsilon)) \)
-        \end{center}
-    \end{exampleblock}
-\end{frame}
+% \begin{frame}[fragile]{\LTP の型}
+%     \begin{block}{型}
+%         \begin{tabbing}
+%             \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (intなどの型レベル定数) \\
+%             \> \( \mid \TW\ \tau \) \> (コード型) \\
+%             \> \( \mid \tau \to \tau \) \> (関数型)
+%         \end{tabbing}
+%     \end{block}
+%
+%     \begin{block}{型付け判断}
+%         \begin{center}
+%             \( \G \V M : \tau @ n \)
+%         \end{center}
+%         * 「型環境\( \G \)の下で項\( M \)に型\( \tau \)がステージ\( n \)でつく」\\
+%         ** \( n \) はステージ.
+%     \end{block}
+% \end{frame}
+%
+% \begin{frame}[fragile]{ステージとは何か?}
+%     項の外側にある \( \TB \) の数
+%     \begin{exampleblock}{}
+%         \begin{center}
+%             \( \underbrace{\TB\ \overbrace{(\lambda x:\text{int}.x + 1)}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
+%         \end{center}
+%     \end{exampleblock}
+%
+%     \LTP の型判断と型環境はステージを含む
+%     \begin{center}
+%         \( x:\text{int}@1 \vdash x + 1 : \text{int} {\mathbf{@ 1}} \)
+%     \end{center}
+% \end{frame}
+%
+% \begin{frame}[fragile]{\LTP の型付け規則}
+%     項を異なるステージの関数に適用できない
+%     \begin{center}
+%         {\footnotesize \infrule[\TApp]{
+%             \G\V M:\sigma \to \tau @ n \andalso
+%             \G\V N:\sigma @ n
+%         }{
+%             \G\V M\ N : \tau @ n
+%         }}
+%     \end{center}
+%     \( \TB \)はステージを増加、\( \TBL \)はステージを減少させる
+%     \begin{center}
+%         {\footnotesize \infrule[{\TTB}]{
+%             \G\V M:\tau @ n+1
+%         }{
+%             \G\V\TB M:\TW \tau @ n
+%         } \hfil
+%         \infrule[{\TTBL}]{
+%             \G\V M:\TW \tau @ n
+%         }{
+%             \G\V\TBL M:\tau @ n + 1
+%         }}
+%     \end{center}
+%     一般には異なるステージの項を使うことはできない
+% \end{frame}
+%
+% \section{\LMD: \LTP の依存型による拡張}
+%
+% \begin{frame}{目次}
+%     \tableofcontents[currentsection]
+% \end{frame}
+%
+% \begin{frame}[fragile]{\LMD の概観}
+%     \LTP の依存型による拡張
+%     \begin{itemize}
+%         \item \LMD の項は\LTP と同じ
+%         \item 型は依存型で拡張されている
+%         \item 型の間の同値関係を定義する規則がある
+%     \end{itemize}
+% \end{frame}
+%
+% \begin{frame}[fragile]{\LMD の型とカインド}
+%     \LTP の型 + 依存型
+%     \begin{block}{型}
+%         \begin{tabbing}
+%             \hspace{5mm} \( \tau \) \= ::= X \hspace{20mm} \= (型レベル定数) \\
+%             \> \( \mid \TW\ \tau \) \> (コード型) \\
+%             \> \( \bm{\mid \Pi x:\tau.\tau} \) \> (依存関数型) \\
+%             \> \( \bm{\mid \tau\ M} \) \> (依存関数型への適用, e.g. \(\text{vec}\ 3\))
+%         \end{tabbing}
+%     \end{block}
+%     \begin{block}{カインド(型の型)}
+%         \( K ::= * \mid \Pi x:\tau.K \)
+%     \end{block}
+% \end{frame}
+%
+% \begin{frame}[fragile]{\LMD のカインド付け規則}
+%     型は項を含みうるため、カインド付け判断もステージを含む
+%     \begin{center}
+%         \( \G \vdash \tau :: K @ n \)
+%     \end{center}
+%     \begin{center}
+%         {\footnotesize
+%         \infrule[{\KApp}]{
+%             \G\V \sigma:: (\Pi x:\tau.K) @ n \andalso \G\V M:\tau @ n
+%         }{
+%             \G\V \sigma\ M::K[x\mapsto M] @ n
+%         } \\[2mm]
+%         \infrule[{\KAbs}]{
+%             \G\V \tau :: * @ n \andalso \G,x:\tau@ n \V \sigma::*@n
+%         }{
+%             \G\V(\Pi x:\tau.\sigma) :: * @ n
+%         }}
+%     \end{center}
+% \end{frame}
+%
+% \begin{frame}[fragile]{型の中のCSP}
+%     コード型 \( \TW \) の中ではステージが1つ増える
+%     \begin{center}
+%         \infrule[{\KTW}]{
+%             \G\V \tau::*@ n + 1
+%         }{
+%             \G\V\TW \tau::*@ n
+%         }
+%     \end{center}
+%     このためコード型の外の変数\( n \)を\( \TW \)の中で使うためにはCSPが必要である
+%     \begin{exampleblock}{}
+%         \begin{tabbing}
+%             \hspace{5mm} \= \text{val zeros} : \( \Pi n:\text{int}.(\text{vec}\ n) \) \\
+%             \> \( \lambda n:\text{int}. (\TB (\% \text{zeros}\ \% n)): \underbrace{\Pi n:\text{int}. \TW (\overbrace{\text{vec}\ \%n}^{\text{stage }1})}_{\text{stage }0} \)
+%         \end{tabbing}
+%     \end{exampleblock}
+% \end{frame}
+%
+% \begin{frame}[fragile]{\LMD の定数と型レベル定数}
+%     \begin{itemize}
+%         \item 定数: \( 0,1,2,3,\dots \)
+%         \item 型レベル定数: int, vec, \dots
+%     \end{itemize}
+%     はどのステージでも使える
+%     \begin{exampleblock}{}
+%         \begin{tabbing}
+%             \hspace{5mm} \= \text{val double-at-0} : \( \text{vec }3 \to \text{vec }3 \) \\[2mm]
+%             \> \textbf{let } \text{double} = \( \TB (\%\ \text{double-at-0}) \) \\
+%             \> \text{val double} : \( \TW \underbrace{(\text{vec }3 \to \text{vec }3)}_{\text{stage 1}} \)
+%         \end{tabbing}
+%     \end{exampleblock}
+% \end{frame}
+%
+% \begin{frame}[fragile]{vadd3の技術的な問題}
+%     他の関数と組み合わせるのが難しい
+%     \newcommand{\Vn}{\text{vec}\ \%n}
+%     \newcommand{\Vpt}{\text{vec}\ \%3}
+%     \newcommand{\Vt}{\text{vec}\ 3}
+%     \begin{exampleblock}{}
+%     \begin{tabbing}
+%         \hspace{5mm} \= \( \text{val}\ \text{vadd3} : \TW (\Vpt \to \Vpt \to \Vpt) \) \\
+%         \> \( \text{val}\ \text{double} : \TW (\Vt \to \Vt) \) \\[2mm]
+%         \> \( \textbf{let}\ \text{add-double}\ v\ w = \) \\
+%         \> \hspace{5mm} \( \TB (\underbrace{\TBL\text{double}}_{\Vt \to \Vt}\ \underbrace{(\TBL \text{vadd3}\ \TBL v\ \TBL w)}_{\Vpt});; \) \\
+%     \end{tabbing}
+%     \end{exampleblock}
+%     型が合わないので組み合わせることができない
+% \end{frame}
+%
+% \begin{frame}[fragile]{解決}
+%     \newcommand{\Vt}{\text{vec}\ 3}
+%     \newcommand{\Vpt}{\text{vec}\ \%3}
+%     \( M \) が閉じた項の場合に限りCSP(\%)を消すことを許す (\QPercent)
+%     {\footnotesize{
+%     \begin{center}
+%         \infrule[{\QPercent}]{
+%             M \text{ is a closed term.}
+%         }{
+%             \G\vdash \% M \E M
+%         } \\[2mm]
+%         \infrule[{\TConv}]{
+%             \G\V M:\tau@n \andalso
+%             \G\V \tau\equiv \sigma @n
+%         }{
+%             \G\V M:\sigma@n
+%         }
+%     \end{center}
+%     }}
+%     \begin{exampleblock}{}
+%         \begin{itemize}
+%             \item \( \text{vec}\ \%3 \E \text{vec}\ 3 \)
+%             \item \( \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\
+%                 \hspace{15mm} \( (\E  \TW (\Vpt \to \Vpt \to \Vpt)) \)
+%         \end{itemize}
+%     \end{exampleblock}
+% \end{frame}
+%
+% \begin{frame}[fragile]{性質}
+%     以下の性質を証明した
+%     \begin{itemize}
+%         \item 代入補題
+%         \item 強正規化性
+%         \item 合流性
+%         \item 進行性
+%     \end{itemize}
+% \end{frame}
+%
+% \begin{frame}[fragile]{関連研究}
+%     \begin{itemize}
+%         \item \LTP [Hanada\&Igarashi'14]
+%         \item Concoqtion [Forgarty et al.'07]
+%             \begin{itemize}
+%                 \item MetaOCamlに制限された形の依存型を導入
+%             \end{itemize}
+%         \item \( \lambda_{H\circ} \) [Pasalic'04]
+%             \begin{itemize}
+%                 \item 依存型付きメタプログラミング言語
+%                 \item コードの評価とCSPがない
+%             \end{itemize}
+%     \end{itemize}
+% \end{frame}
+%
+% \begin{frame}[fragile]{結論}
+%     多段階計算に依存型を導入した
+%     \begin{itemize}
+%         \item 依存型で生成されたコードの不正な仕様を防止
+%             \begin{itemize}
+%                 \item 制限されていない依存型
+%             \end{itemize}
+%         \item 同値関係を定義
+%             \begin{itemize}
+%                 \item 特にCSPについて
+%             \end{itemize}
+%         \item 型推論のアルゴリズムを設計 
+%         \item 型健全性を証明 
+%     \end{itemize}
+% \end{frame}
+%
+% \begin{frame}[fragile]{Why a Stage is Needed?}
+%     Without stage, \textbf{run} may causes a run-time error.
+%     \begin{exampleblock}{}
+%         \begin{center}
+%     \( \TB (\lambda x:\tau. \TBL (\textbf{run}\ \TB x)) \)
+%         \end{center}
+%     \end{exampleblock}
+%
+%     With stage, the same code cannot be typed.\\
+%     Because the subterm \( (\Lambda\alpha.\ \TB_\alpha x) \) is ill-typed.
+%     \begin{exampleblock}{}
+%         \begin{center}
+%     \( \TB_\alpha (\lambda x:\tau. \TBL_\alpha ((\Lambda\alpha.\ \TB_\alpha x)\ \varepsilon)) \)
+%         \end{center}
+%     \end{exampleblock}
+% \end{frame}
 
 % \begin{frame}[fragile]{Styles of Multi-stage Programming}
 %     \begin{itemize}
