@@ -23,6 +23,7 @@
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \newcommand{\cmark}{\ding{51}}%
 \newcommand{\xmark}{\ding{55}}%
+\usetikzlibrary{shapes.callouts}
 
 % beamer cheat sheet
 % http://www.cpt.univ-mrs.fr/~masson/latex/Beamer-appearance-cheat-sheet.pdf
@@ -249,7 +250,7 @@
  ---> 実行する前に型で誤りを検知
  \end{Verbatim}
     \end{exampleblock}
-    吹き出し「\verb|vec 2| \( \neq \) \verb|vec 3|」
+    % 吹き出し「\verb|vec 2| \( \neq \) \verb|vec 3|」
 \end{frame}
 
 \begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]とは}
@@ -361,12 +362,16 @@
     低いステージの項をより高いステージの中に\\埋め込むことを可能にする \\[3mm]
 
     \begin{exampleblock}{}
-        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  $\lambda$x:int.($\TB$(%x + 1))
-        \end{Verbatim}
+        \hspace{5mm} $\lambda$\tikz[remember picture, baseline=(stage0.base)]{\node (stage0){\alt<2->{\underline{\tt x:int}}{\tt x:int}};}{\tt .(}$\TB${\tt (}\tikz[remember picture, baseline=(stage1.base)]{\node (stage1){\alt<3->{\underline{\tt \%x + 1}}{\tt \%x + 1}};}{\tt ))}
+        \onslide<2->{
+        \begin{tikzpicture}[remember picture, overlay]
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage0.south)}] at (-5.4,-2.5) {xはステージ0の項};
+        \end{tikzpicture}}
+    \onslide<3->{
+        \begin{tikzpicture}[remember picture, overlay]
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage1.south)}] at (-1,-1) {ここはステージ1なので\%が必要};
+        \end{tikzpicture}}
     \end{exampleblock}
-    吹き出し「xはステージ0の項」 \\
-    吹き出し「ここはステージ1」
 \end{frame}
 
 \begin{frame}[fragile]{\LMD の型}
@@ -446,11 +451,17 @@
         \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)| \\
         \hspace{5mm} \verb|val double-code : |$\TW$\verb|(vec 3 -> vec 3)| \\[3mm]
         \hspace{1mm}\onslide<2->{\xmark}\ \verb|let add-double =| $\TB$($\lambda$\verb|v:vec %3.|$\lambda$\verb|w:vec %3.| \\
-        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} $\TBL${\tt double-code }($\TBL$\verb|vadd3 | \verb|v | \verb|w|))
+        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<2->{\underline{$\TBL${\tt double-code }}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<3->{\underline{$\TBL${\tt vadd3 }}}{$\TBL${\tt vadd3 }}}} \verb|v | \verb|w|))
     \end{exampleblock}
-    吹き出し「\verb|vec 3 -> vec 3|」\\
-    吹き出し[\verb|vec %3|」\\
-    \onslide<2->{型が合わないので組み合わせることができない}
+        \onslide<2->{
+        \begin{tikzpicture}[remember picture, overlay]
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(double.south)}, below=0.2cm of double.south] {{\tt vec 3 -> vec 3}};
+        \end{tikzpicture}}
+    \onslide<3->{
+        \begin{tikzpicture}[remember picture, overlay]
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(vadd3.south)}, below right=0.2cm and 0.2cm of vadd3.south] {{\tt vec \%3}};
+        \end{tikzpicture}}
+    \onslide<4->{\begin{alertblock}{}型が合わないので組み合わせることができない\end{alertblock}}
 \end{frame}
 
 \begin{frame}[fragile]{解決策}
