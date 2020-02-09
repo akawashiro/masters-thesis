@@ -478,11 +478,37 @@
         \(\Gamma \vdash M : \tau \)ならば項\(M\)の実行は必ず停止する
     \end{theorem}
     \begin{theorem}[合流性]
-        \(\Gamma \vdash M : \tau \)であり、項\(M\)を実行して2つの異なる項\(M'\)と\(M''\)を得たとき、適切に\(M'\)と\(M''\)を実行すれば同一の項\(M'''\)にたどり着く
+        \(\Gamma \vdash M : \tau \)であり、項\(M\)を実行して2つの異なる項\(M'\)と\(M''\)を得たなら、適切に\(M'\)と\(M''\)を実行すれば同一の項\(M'''\)にたどり着く
     \end{theorem}
 \end{frame}
 
-\begin{frame}[fragile]{型推論アルゴリズム}
+\begin{frame}[fragile]{\LMD の型推論アルゴリズム}
+    型推論とは
+    \begin{itemize}
+        \item 入力: \LMD の項 $M$ と型環境 $\Gamma$
+        \item 出力: \( \tau \) \hspace{10mm} (\( \Gamma \vdash M : \tau \)) \\
+            \hspace{10mm} \hspace{4mm} {\tt Fail} (そのような\( \tau \)が存在しないとき)
+    \end{itemize}
+
+    \onslide<2->{
+        \begin{alertblock}{通常の型判断\( \Gamma \vdash M : \tau \)の問題点}
+            通常の型判断\( \Gamma \vdash M : \tau \)を元に型推論アルゴリズムを\\設計するとアルゴリズムが停止しない
+        \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{アルゴリズム的型判断}
+    \begin{itemize}
+    \item 型推論アルゴリズムが停止する\\
+        型判断\( \Gamma \AV M : \tau \)を新たに設計
+    \item 更に以下を証明した
+    \begin{itemize}
+            \item \( \Gamma \AV M : \tau \)ならば\( \Gamma \vdash M : \tau \)
+            \item \( \Gamma \vdash M : \tau \)ならば\( \Gamma \AV M : \tau \)
+    \end{itemize}
+
+    \item ここからアルゴリズム的型判断を元に設計した\\型推論アルゴリズムの正当性が導かれる
+    \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{関連研究}
