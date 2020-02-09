@@ -343,16 +343,30 @@
     * 説明の為に単純化しています
 \end{frame}
 
+\begin{frame}[fragile]{ステージとは何か?}
+    項の外側にある \( \TB \) の数
+    \begin{exampleblock}{}
+        \begin{center}
+            \( \underbrace{\lambda \texttt{x:int}.\TB\overbrace{(\lambda \texttt{y:int.y+1})}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
+        \end{center}
+    \end{exampleblock}
+    \begin{itemize}
+        \item {\tt x}は{\tt int}型のステージ0の変数、\\{\tt y}は{\tt int}型のステージ1の変数
+        \item 異なるステージの項を使うことはできない\\
+            \xmark\ $\lambda$\texttt{x:int}.$\TB$($\lambda$\texttt{y:int.}{\tt x}\texttt{+1})
+    \end{itemize}
+\end{frame}
+
 \begin{frame}[fragile]{ステージを跨ぐコードの埋め込み(CSP)}
-    任意の項をコードの中に埋め込むことを可能にする \\[3mm]
+    低いステージの項をより高いステージの中に\\埋め込むことを可能にする \\[3mm]
 
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
   $\lambda$x:int.($\TB$(%x + 1))
         \end{Verbatim}
     \end{exampleblock}
-    吹き出し「xはコードでない通常の項」 \\
-    吹き出し「ここはコードの中」
+    吹き出し「xはステージ0の項」 \\
+    吹き出し「ここはステージ1」
 \end{frame}
 
 \begin{frame}[fragile]{\LMD の型}
@@ -398,8 +412,8 @@
     \onslide<2->{
         \begin{alertblock}{注意}
             \begin{center}
-                長さnはコード($\TB$)の外で定義されているので、\\
-            コードの中で使うにはCSP(\%)が必要
+                長さnはステージ0で定義されているので、\\
+                ステージ1($\TB$の中)で使うにはCSP(\%)が必要
             \end{center}
         \end{alertblock}
     }
@@ -455,7 +469,17 @@
     \onslide<2->{このような同一視をしても型安全性に影響はない}
 \end{frame}
 
-\begin{frame}[fragile]{型安全性}
+\begin{frame}[fragile]{\LMD の性質}
+    \begin{theorem}[型安全性]
+        項\(M\)に型\(\tau\)が導出される(\(\Gamma \vdash M : \tau \))ならば\\
+        項\(M\)の実行中に型エラーは発生しない
+    \end{theorem}
+    \begin{theorem}[強正規化性]
+        \(\Gamma \vdash M : \tau \)ならば項\(M\)の実行は必ず停止する
+    \end{theorem}
+    \begin{theorem}[合流性]
+        \(\Gamma \vdash M : \tau \)であり、項\(M\)を実行して2つの異なる項\(M'\)と\(M''\)を得たとき、適切に\(M'\)と\(M''\)を実行すれば同一の項\(M'''\)にたどり着く
+    \end{theorem}
 \end{frame}
 
 \begin{frame}[fragile]{型推論アルゴリズム}
