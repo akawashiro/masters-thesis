@@ -447,12 +447,12 @@
     \newcommand{\Vn}{\text{vec}\ \%n}
     \newcommand{\Vpt}{\text{vec}\ \%3}
     \newcommand{\Vt}{\text{vec}\ 3}
-    \begin{exampleblock}{2つのベクトルを足し合わせて2倍する関数のコード}
+    \begin{alertblock}{2つのベクトルを足し合わせて2倍する関数のコード}
         \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)| \\
         \hspace{5mm} \verb|val double-code : |$\TW$\verb|(vec 3 -> vec 3)| \\[3mm]
         \hspace{1mm}\onslide<2->{\xmark}\ \verb|let add-double =| $\TB$($\lambda$\verb|v:vec %3.|$\lambda$\verb|w:vec %3.| \\
         \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<2->{\underline{$\TBL${\tt double-code }}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<3->{\underline{$\TBL${\tt vadd3 }}}{$\TBL${\tt vadd3 }}}} \verb|v | \verb|w|))
-    \end{exampleblock}
+    \end{alertblock}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
             \node[rectangle callout, fill=red!80, white, callout absolute pointer={(double.south)}, below=0.2cm of double.south] {{\tt vec 3 -> vec 3}};
