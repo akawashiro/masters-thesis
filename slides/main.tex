@@ -254,27 +254,38 @@
 
 \begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]とは}
     \renewcommand{\V}{\text{vec}\ }
-    依存型とは式をパラメータとして渡せる型
-    \begin{exampleblock}{}
+    依存型とは項をパラメータとして渡せる型
+    \begin{exampleblock}{ベクトルの長さを表現できる}
         \begin{Verbatim}
- [1;2]: vec 2      // ベクトルの長さを表現できる
+ [1;2;3]: vec 3
         \end{Verbatim}
     \end{exampleblock}
-    \begin{exampleblock}{}
+    \begin{exampleblock}{パラメータは数字とは限らない任意の項}
         \begin{Verbatim}
- vec (1+2)         // vec に (1+2) という式を
-                   // パラメータとして渡せる
- \end{Verbatim}
-    \end{exampleblock}
-    \begin{exampleblock}{}
-        \begin{Verbatim}
- append: vec n -> vec m -> vec (n + m)
- append [1;2] [3;4;5]: vec 5 
+ [1;2;3]: vec (1+2) 
         \end{Verbatim}
     \end{exampleblock}
-% \begin{tikzpicture}[remember picture, overlay]
-%     \node[rectangle callout, fill=red!80, white, callout absolute pointer={(bgraph.north)}, above=of bgraph]{2部グラフ}; %
-% \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]{依存型における型の同値関係}
+    見た目だけでは同値関係が判定できない
+    \begin{itemize}
+        \item \verb|vec 3|と\verb|vec (1+2)|は同値であって欲しい
+    \end{itemize}
+    型の間の同値関係(\( \tau \E \tau'\))を定める規則がある\\
+    \begin{itemize}
+    \item 例: 項 \(M \) と\(M'\)が同値なら型\( \tau\ M \)と\( \tau\ M'\)も同値 \\[2mm]
+    \hspace{15mm} {\small \infrule
+    { M \E M' }
+    { \tau\ M \E \tau\ M'}}
+\item \verb|3| \( \E \) \verb|1+2| なので \verb|vec 3| \( \E \) \verb|vec (1+2)|になる
+    \end{itemize}
+ %    \begin{exampleblock}{}
+ %        \begin{Verbatim}
+ % append: vec n -> vec m -> vec (n + m)
+ % append [1;2] [3;4;5]: vec 5 
+ %        \end{Verbatim}
+ %    \end{exampleblock}
 \end{frame}
 
 \begin{frame}[fragile]{本研究の貢献: \LMD}
@@ -429,7 +440,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{解決策}
-    \( M \) と \( \%M \)をある条件下で同一視する
+    項\( M \) と 項\( \%M \)をある条件下で同一視する
     \begin{itemize}
         \item 条件1: \( M \)が自由変数を含まない
         \item 条件2: \( M \)は型の引数である
