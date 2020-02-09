@@ -20,6 +20,9 @@
 \usepackage{bm}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
 
 % beamer cheat sheet
 % http://www.cpt.univ-mrs.fr/~masson/latex/Beamer-appearance-cheat-sheet.pdf
@@ -334,7 +337,7 @@
 
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  $\lambda$x:int.($\TB$(x + 1))
+  $\lambda$x:int.($\TB$(%x + 1))
         \end{Verbatim}
     \end{exampleblock}
     吹き出し「xはコードでない通常の項」 \\
@@ -356,19 +359,21 @@
     依存関数型の例
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  double: n:int -> vec n -> vec n
+  val double: n:int -> vec n -> vec n
         \end{Verbatim}
     \end{exampleblock}
     型の項への適用の例
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  double 3: vec 3 -> vec 3
+  double 3
+  - : vec 3 -> vec 3
         \end{Verbatim}
     \end{exampleblock}
     コード型の例
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  $\TB$(double 3): $\TW$(vec 3 -> vec 3)
+  let double-code = $\TB$(%double 3)
+  val double-code : $\TW$(vec 3 -> vec 3)
         \end{Verbatim}
     \end{exampleblock}
 \end{frame}
@@ -402,51 +407,41 @@
     %     \> \( \text{val}\ \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\[2mm]
     % \end{tabbing}
     \end{exampleblock}
-    生成した関数(vadd3)が長さ3のベクトルだけを\\受け取ることが型の中に現れている
+    生成した関数(vadd3)が長さ3のベクトルだけを\\受け取ることが型から判断できる
 \end{frame}
 
 \begin{frame}[fragile]{vadd3の技術的な問題}
     他の関数と組み合わせるのが難しい
+
+    
     \newcommand{\Vn}{\text{vec}\ \%n}
     \newcommand{\Vpt}{\text{vec}\ \%3}
     \newcommand{\Vt}{\text{vec}\ 3}
-    \begin{exampleblock}{}
-    \begin{tabbing}
-        \hspace{5mm} \= \( \text{val}\ \text{vadd3} : \TW (\Vpt \to \Vpt \to \Vpt) \) \\
-        \> \( \text{val}\ \text{double} : \TW (\Vt \to \Vt) \) \\[2mm]
-        \> \( \textbf{let}\ \text{add-double}\ v\ w = \) \\
-        \> \hspace{5mm} \( \TB (\underbrace{\TBL\text{double}}_{\Vt \to \Vt}\ \underbrace{(\TBL \text{vadd3}\ \TBL v\ \TBL w)}_{\Vpt});; \) \\
-    \end{tabbing}
+    \begin{exampleblock}{2つのベクトルを足し合わせて2倍する関数のコード}
+        \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)| \\
+        \hspace{5mm} \verb|val double-code : |$\TW$\verb|(vec 3 -> vec 3)| \\[3mm]
+        \hspace{1mm}\onslide<2->{\xmark}\ \verb|let add-double =| $\TB$($\lambda$\verb|v:vec %3.|$\lambda$\verb|w:vec %3.| \\
+        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} $\TBL${\tt double-code }($\TBL$\verb|vadd3 | \verb|v | \verb|w|))
     \end{exampleblock}
-    型が合わないので組み合わせることができない
+    吹き出し「\verb|vec 3 -> vec 3|」\\
+    吹き出し[\verb|vec %3|」\\
+    \onslide<2->{型が合わないので組み合わせることができない}
 \end{frame}
 
-\begin{frame}[fragile]{解決}
-    \newcommand{\Vt}{\text{vec}\ 3}
-    \newcommand{\Vpt}{\text{vec}\ \%3}
-    \( M \) が閉じた項の場合に限りCSP(\%)を消すことを許す (\QPercent)
-    {\footnotesize{
-    \begin{center}
-        \infrule[{\QPercent}]{
-            M \text{ is a closed term.}
-        }{
-            \G\vdash \% M \E M
-        } \\[2mm]
-        \infrule[{\TConv}]{
-            \G\V M:\tau@n \andalso
-            \G\V \tau\equiv \sigma @n
-        }{
-            \G\V M:\sigma@n
-        }
-    \end{center}
-    }}
-    \begin{exampleblock}{}
+\begin{frame}[fragile]{解決策}
+    \( M \) と \( \%M \)をある条件下で同一視する
+    \begin{itemize}
+        \item 条件1: \( M \)が自由変数を含まない
+        \item 条件2: \( M \)は型の引数である
+    \end{itemize}
+    \begin{exampleblock}{同一視される型の例}
         \begin{itemize}
-            \item \( \text{vec}\ \%3 \E \text{vec}\ 3 \)
-            \item \( \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\
-                \hspace{15mm} \( (\E  \TW (\Vpt \to \Vpt \to \Vpt)) \)
+            \item \verb|vec %3| \( \E \) \verb|vec 3|
+            \item \(\TW\)\verb|(vec 3 -> vec 3 -> vec 3)| \\
+                \( \E \)\ \(\TW\)\verb|(vec %3 -> vec %3 -> vec %3)|
         \end{itemize}
     \end{exampleblock}
+    \onslide<2->{このような同一視をしても型安全性に影響はない}
 \end{frame}
 
 \begin{frame}[fragile]{型安全性}
@@ -458,6 +453,10 @@
 \begin{frame}[fragile]{関連研究}
     \begin{itemize}
         \item \LTP [Hanada\&Igarashi'14]
+            \begin{itemize}
+                    \item 本研究の拡張元
+                    \item CSPを含む他段階計算体系
+            \end{itemize}
         \item Concoqtion [Forgarty et al.'07]
             \begin{itemize}
                 \item MetaOCamlに制限された形の依存型を導入
