@@ -208,7 +208,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{多段階計算の応用例: vadd-gen}
-    特定の長さのベクトルの和を計算する関数を作る関数
+    ベクトルの長さを受け取って、\\その長さのベクトルを足し合わせる関数を作る関数
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
  val vadd-gen : int -> $\TW$ (vec -> vec -> vec)
@@ -374,33 +374,35 @@
 \end{frame}
 
 \begin{frame}[fragile]{\LMD におけるvadd-gen}
-    型によってベクトルの長さを指定できる
-    \newcommand{\Vn}{\text{vec}\ \%n}
-    \newcommand{\Vt}{\text{vec}\ \%3}
+    ベクトルの長さ(\verb|n|)を受け取って、\\その長さのベクトルを足し合わせる関数を作る関数
     \begin{exampleblock}{}
-    \begin{tabbing}
-        \hspace{5mm} \= \( \text{vadd-gen} : \Pi n:\text{int}. \TW (\Vn \to \Vn \to \Vn) \) \\[2mm]
-        \> \( \textbf{let}\ \text{vadd3} = \text{vadd-gen}\ 3;; \) \\
-        \> \( \text{val}\ \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\[2mm]
-    \end{tabbing}
+        \hspace{5mm} \verb|let rec vadd-gen = |$\lambda$\verb|n:int.| \\
+        \hspace{10mm} $\TB$ \verb|(| $\lambda$\verb|v1:(vec |\onslide<2->{\%}\verb|n).|$\lambda$\verb|v2:(vec |\onslide<2->{\%}\verb|n).| ... \verb|)|
     \end{exampleblock}
-    vadd3が長さ3のベクトルだけを\\
-    引数として取ることが型で表現されている
+    \onslide<2->{
+        \begin{alertblock}{注意}
+            \begin{center}
+                長さnはコード($\TB$)の外で定義されているので、\\
+            コードの中で使うにはCSP(\%)が必要
+            \end{center}
+        \end{alertblock}
+    }
 \end{frame}
 
-\begin{frame}[fragile]{vadd-genの型}
-    型によってベクトルの長さを指定できる
+\begin{frame}[fragile]{vadd-genとvadd-genで生成した関数の型}
     \newcommand{\Vn}{\text{vec}\ \%n}
     \newcommand{\Vt}{\text{vec}\ \%3}
     \begin{exampleblock}{}
-    \begin{tabbing}
-        \hspace{5mm} \= \( \text{vadd-gen} : \Pi n:\text{int}. \TW (\Vn \to \Vn \to \Vn) \) \\[2mm]
-        \> \( \textbf{let}\ \text{vadd3} = \text{vadd-gen}\ 3;; \) \\
-        \> \( \text{val}\ \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\[2mm]
-    \end{tabbing}
+        \hspace{5mm} \verb|val vadd-gen : n:int -> | \\
+        \hspace{20mm} ($\TW$(\verb|vec %n -> vec %n -> vec %n|)) \\[2mm]
+        \hspace{5mm} \verb|let vadd3 = vadd-gen 3;;| \\
+        \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)|
+    % \begin{tabbing}
+    %     \> \( \textbf{let}\ \text{vadd3} = \text{vadd-gen}\ 3;; \) \\
+    %     \> \( \text{val}\ \text{vadd3} : \TW (\Vt \to \Vt \to \Vt) \) \\[2mm]
+    % \end{tabbing}
     \end{exampleblock}
-    vadd3が長さ3のベクトルだけを\\
-    引数として取ることが型で表現されている
+    生成した関数(vadd3)が長さ3のベクトルだけを\\受け取ることが型の中に現れている
 \end{frame}
 
 \begin{frame}[fragile]{vadd3の技術的な問題}
