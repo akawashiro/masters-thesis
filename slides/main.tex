@@ -214,15 +214,16 @@
 \begin{frame}[fragile]{多段階計算の応用例: vadd-gen}
     ベクトルの長さを受け取って、\\その長さのベクトルを足し合わせる関数を作る関数
     \begin{exampleblock}{}
-        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
- val vadd-gen : int -> $\TW$ (vec -> vec -> vec)
- # let vadd3 = vadd-gen 3
- val vadd3 : $\TW$ (vec -> vec -> vec)
-           = $\TB$ (fun v w ->
-             [v[0]+w[0];v[1]+w[1];v[2]+w[2]])
-    \end{Verbatim}
+        \hspace{5mm} {\tt val vadd-gen : int -> $\TW$ (vec -> vec -> vec)} \\
+        \hspace{5mm} {\tt \# let vadd3 = vadd-gen 3} \\
+        \hspace{5mm} {\tt val vadd3 : $\TW$ (vec -> vec -> vec)} \\
+        \hspace{20mm} {\tt = $\TB$ (fun v w -> } \\
+        \hspace{25mm} \tikz[remember picture, baseline=(unrolled.base)]{\node (unrolled){\alt<2->{\underline{{\tt [v[0]+w[0];v[1]+w[1];v[2]+w[2]]}}}{{\tt [v[0]+w[0];v[1]+w[1];v[2]+w[2]] }}}}{\tt )}
     \end{exampleblock}
-    吹き出し「ループが展開されて処理速度があがっている」
+        \onslide<2->{
+        \begin{tikzpicture}[remember picture, overlay]
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(unrolled.south)}, below=0.2cm of unrolled.south] {ループ展開による高速化};
+        \end{tikzpicture}}
 \end{frame}
 
 \begin{frame}[fragile]{vadd-genによって生成されたvadd3の問題点}
@@ -353,7 +354,7 @@
     \end{exampleblock}
     \begin{itemize}
         \item {\tt x}は{\tt int}型のステージ0の変数、\\{\tt y}は{\tt int}型のステージ1の変数
-        \item 異なるステージの項を使うことはできない\\
+        \item 原則として異なるステージの項は使えない\\
             \xmark\ $\lambda$\texttt{x:int}.$\TB$($\lambda$\texttt{y:int.}{\tt x}\texttt{+1})
     \end{itemize}
 \end{frame}
@@ -389,7 +390,7 @@
     依存関数型の例
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  val double: n:int -> vec n -> vec n
+  val double: (n:int -> vec n -> vec n)
         \end{Verbatim}
     \end{exampleblock}
     型の項への適用の例
@@ -412,7 +413,7 @@
     ベクトルの長さ(\verb|n|)を受け取って、\\その長さのベクトルを足し合わせる関数を作る関数
     \begin{exampleblock}{}
         \hspace{5mm} \verb|let rec vadd-gen = |$\lambda$\verb|n:int.| \\
-        \hspace{10mm} $\TB$ \verb|(| $\lambda$\verb|v1:(vec |\onslide<2->{\%}\verb|n).|$\lambda$\verb|v2:(vec |\onslide<2->{\%}\verb|n).| ... \verb|)|
+        \hspace{10mm} $\TB$ \verb|(| $\lambda$\verb|v1:(vec |\onslide<2->{\underline{\%}}\verb|n).|$\lambda$\verb|v2:(vec |\onslide<2->{\underline{\%}}\verb|n).| ... \verb|)|
     \end{exampleblock}
     \onslide<2->{
         \begin{alertblock}{注意}
@@ -451,7 +452,7 @@
         \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)| \\
         \hspace{5mm} \verb|val double-code : |$\TW$\verb|(vec 3 -> vec 3)| \\[3mm]
         \hspace{1mm}\onslide<2->{\xmark}\ \verb|let add-double =| $\TB$($\lambda$\verb|v:vec %3.|$\lambda$\verb|w:vec %3.| \\
-        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<2->{\underline{$\TBL${\tt double-code }}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<3->{\underline{$\TBL${\tt vadd3 }}}{$\TBL${\tt vadd3 }}}} \verb|v | \verb|w|))
+        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<2->{\underline{$\TBL${\tt double-code}}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<3->{\underline{$\TBL${\tt vadd3}}}{$\TBL${\tt vadd3 }}}} \verb|v | \verb|w|))
     \end{alertblock}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
@@ -467,8 +468,7 @@
 \begin{frame}[fragile]{解決策}
     項\( M \) と 項\( \%M \)をある条件下で同一視する
     \begin{itemize}
-        \item 条件1: \( M \)が自由変数を含まない
-        \item 条件2: \( M \)は型の引数である
+        \item 条件: \( M \)が自由変数を含まない
     \end{itemize}
     \begin{exampleblock}{同一視される型の例}
         \begin{itemize}
@@ -477,7 +477,10 @@
                 \( \E \)\ \(\TW\)\verb|(vec %3 -> vec %3 -> vec %3)|
         \end{itemize}
     \end{exampleblock}
-    \onslide<2->{このような同一視をしても型安全性に影響はない}
+    \onslide<2->{
+        \begin{block}{}
+            このような同一視をしても型安全性に影響はない
+        \end{block}}
 \end{frame}
 
 \begin{frame}[fragile]{\LMD の性質}
@@ -498,7 +501,7 @@
     \begin{itemize}
         \item 入力: \LMD の項 $M$ と型環境 $\Gamma$
         \item 出力: \( \tau \) \hspace{10mm} (\( \Gamma \vdash M : \tau \)) \\
-            \hspace{10mm} \hspace{4mm} {\tt Fail} (そのような\( \tau \)が存在しないとき)
+            \hspace{10mm} \hspace{2mm} {\tt Fail} \hspace{1mm} (そのような\( \tau \)が存在しないとき)
     \end{itemize}
 
     \onslide<2->{
