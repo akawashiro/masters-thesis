@@ -158,7 +158,7 @@
 %   }
 % \end{frame}
 
-\section{背景}
+\section{背景: 他段階計算とその問題点}
 
 % \begin{frame}{目次}
 %
@@ -168,6 +168,10 @@
 %
 %     \tableofcontents
 % \end{frame}
+
+\begin{frame}{目次}
+    \tableofcontents[currentsection]
+\end{frame}
 
 \begin{frame}[fragile]{多段階計算とはなにか}
     以下の2つを可能にするプログラミング手法
@@ -239,6 +243,12 @@
     \end{exampleblock}
 \end{frame}
 
+\section{問題解決のためのアイデア}
+
+\begin{frame}{目次}
+    \tableofcontents[currentsection]
+\end{frame}
+
 \begin{frame}[fragile]{アイデア: 依存型の導入}
     \renewcommand{\V}{\text{vec}\ }
     ベクトルの長さを表現できる型を導入する
@@ -288,6 +298,14 @@
  % append [1;2] [3;4;5]: vec 5 
  %        \end{Verbatim}
  %    \end{exampleblock}
+\end{frame}
+
+\section{本研究について}
+
+\subsection{依存型付多段階計算体系 \LMD}
+
+\begin{frame}{目次}
+    \tableofcontents[currentsection]
 \end{frame}
 
 \begin{frame}[fragile]{本研究の貢献: \LMD}
@@ -349,13 +367,13 @@
     項の外側にある \( \TB \) の数
     \begin{exampleblock}{}
         \begin{center}
-            \( \underbrace{\lambda \texttt{x:int}.\TB\overbrace{(\lambda \texttt{y:int.y+1})}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
+            \( \underbrace{\lambda \texttt{x:int.(}\TB\overbrace{{\texttt{(}}\lambda \texttt{y:int.y+1))}}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
         \end{center}
     \end{exampleblock}
     \begin{itemize}
         \item {\tt x}は{\tt int}型のステージ0の変数、\\{\tt y}は{\tt int}型のステージ1の変数
         \item 原則として異なるステージの項は使えない\\
-            \xmark\ $\lambda$\texttt{x:int}.$\TB$($\lambda$\texttt{y:int.}{\tt x}\texttt{+1})
+            \xmark\ $\lambda$\texttt{x:int}.$\TB$\texttt{((}$\lambda$\texttt{y:int.}{\tt x}\texttt{+1))}
     \end{itemize}
 \end{frame}
 
@@ -363,7 +381,7 @@
     低いステージの項をより高いステージの中に\\埋め込むことを可能にする \\[3mm]
 
     \begin{exampleblock}{}
-        \hspace{5mm} $\lambda$\tikz[remember picture, baseline=(stage0.base)]{\node (stage0){\alt<2->{\underline{\tt x:int}}{\tt x:int}};}{\tt .(}$\TB${\tt (}\tikz[remember picture, baseline=(stage1.base)]{\node (stage1){\alt<3->{\underline{\tt \%x + 1}}{\tt \%x + 1}};}{\tt ))}
+        \hspace{5mm} $\lambda$\tikz[remember picture, baseline=(stage0.base)]{\node (stage0){\alt<2->{\underline{\tt{x:int}}}{\tt{x:int}}};}{\tt{.(}}$\TB${\tt (}\tikz[remember picture, baseline=(stage1.base)]{\node (stage1){\alt<3->{\underline{$\lambda$\tt y:int.\%x+1}}{$\lambda$\tt y:int.\%x+1}};}{\tt ))}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
             \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage0.south)}] at (-5.4,-2.5) {xはステージ0の項};
@@ -452,7 +470,7 @@
         \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)| \\
         \hspace{5mm} \verb|val double-code : |$\TW$\verb|(vec 3 -> vec 3)| \\[3mm]
         \hspace{1mm}\onslide<2->{\xmark}\ \verb|let add-double =| $\TB$($\lambda$\verb|v:vec %3.|$\lambda$\verb|w:vec %3.| \\
-        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<2->{\underline{$\TBL${\tt double-code}}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<3->{\underline{$\TBL${\tt vadd3}}}{$\TBL${\tt vadd3 }}}} \verb|v | \verb|w|))
+        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<2->{\underline{$\TBL${\tt double-code}}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<3->{\underline{$\TBL${\tt vadd3 v w}}}{$\TBL${\tt vadd3 v w}}}}{\tt ))}
     \end{alertblock}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
@@ -496,6 +514,12 @@
     \end{theorem}
 \end{frame}
 
+\subsection{\LMD の型推論アルゴリズム}
+
+\begin{frame}{目次}
+    \tableofcontents[currentsection]
+\end{frame}
+
 \begin{frame}[fragile]{\LMD の型推論アルゴリズム}
     型推論とは
     \begin{itemize}
@@ -524,6 +548,13 @@
     \item ここからアルゴリズム的型判断を元に設計した\\型推論アルゴリズムの正当性が導かれる
     \end{itemize}
 \end{frame}
+
+\section{まとめ}
+
+\begin{frame}{目次}
+    \tableofcontents[currentsection]
+\end{frame}
+
 
 \begin{frame}[fragile]{関連研究}
     \begin{itemize}
