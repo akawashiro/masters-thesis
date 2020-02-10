@@ -327,6 +327,7 @@
     \end{itemize}
     技術的な貢献
     \begin{itemize}
+        \item \LMD の形式化
         \item 型安全性の証明
         \item 型推論アルゴリズムの設計と正当性の証明
     \end{itemize}
@@ -361,13 +362,13 @@
 \begin{frame}[fragile]{\LMD の項}
     \begin{block}{項}
         \begin{tabbing}
-            \hspace{5mm} \( M \) \= \( ::= c \) \hspace{45mm} \= (定数) \\
+            \hspace{5mm} \( M \) \= \( ::= \) \hspace{50mm} \= \\
+            \> \( c \mid x \mid \lambda x:\tau.M \mid M\ M \) \> (通常の$\lambda$計算の項) \\
             \> \( \mid \TB M \) \> (コードの生成) \\
             \> \( \mid \TBL M \) \> (コードの埋め込み) \\
             \> \( \mid \verb|run|\ M \) \> (コードの実行) \\
             \> \( \mid \% M \) \> (ステージを跨ぐ \\
-            \> \> \ コードの埋め込み (CSP)) \\
-            \> \( \mid x \mid \lambda x:\tau.M \mid M\ M \) \> (通常の$\lambda$計算の項)
+            \> \> \ コードの埋め込み (CSP))
         \end{tabbing}
     \end{block}
     * 説明の為に単純化しています
@@ -380,27 +381,37 @@
             \( \underbrace{\lambda \texttt{x:int.(}\TB\overbrace{{\texttt{(}}\lambda \texttt{y:int.y+1))}}^{\let\scriptstyle\textstyle\substack{\text{stage }1}}}_{\let\scriptstyle\textstyle\substack{\text{stage }0}} \)
         \end{center}
     \end{exampleblock}
+    各項には型とステージがある
     \begin{itemize}
-        \item {\tt x}は{\tt int}型のステージ0の変数、\\{\tt y}は{\tt int}型のステージ1の変数
-        \item 原則として異なるステージの項は使えない\\
-            \xmark\ $\lambda$\texttt{x:int}.$\TB$\texttt{((}$\lambda$\texttt{y:int.}{\tt x}\texttt{+1))}
+        \item {\tt x}は{\tt int}型のステージ0の変数
+        \item {\tt y}は{\tt int}型のステージ1の変数
     \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{ステージの存在意義}
+    計算の順序を指定する
+    \begin{alertblock}{原則として異なるステージの項は使えない}
+        \xmark\ $\lambda$\texttt{x:int}.\texttt{(}$\TB$\texttt{(}$\lambda$\texttt{y:int.}{\tt x}\texttt{+1))}
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}[fragile]{ステージを跨ぐコードの埋め込み(CSP)}
-    低いステージの項をより高いステージの中に\\埋め込むことを可能にする \\[3mm]
+    計算の順序を保ちつつ\\
+    低いステージの項をより高いステージの中に\\
+    埋め込むことを可能にする \\[3mm]
 
     \begin{exampleblock}{}
         \hspace{5mm} $\lambda$\tikz[remember picture, baseline=(stage0.base)]{\node (stage0){\alt<2->{\underline{\tt{x:int}}}{\tt{x:int}}};}{\tt{.(}}$\TB${\tt (}\tikz[remember picture, baseline=(stage1.base)]{\node (stage1){\alt<3->{\underline{$\lambda$\tt y:int.\%x+1}}{$\lambda$\tt y:int.\%x+1}};}{\tt ))}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage0.south)}] at (-7,-2.5) {xはステージ0の項};
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage0.south)}] at (-7,-2.3) {xはステージ0の項};
         \end{tikzpicture}}
     \onslide<3->{
         \begin{tikzpicture}[remember picture, overlay]
             \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage1.south)}] at (-2,-1.2) {ここはステージ1なので\%が必要};
         \end{tikzpicture}}
     \end{exampleblock}
+    \vspace{20mm}
 \end{frame}
 
 \begin{frame}[fragile]{\LMD の型}
