@@ -107,8 +107,14 @@
 \setbeamertemplate{section in toc}{
     \inserttocsectionnumber.\ \bf{\underline{\inserttocsection}}
 }
+\setbeamertemplate{subsection in toc}{
+    \hspace{5mm} \inserttocsectionnumber.\inserttocsubsectionnumber.\  {\bf{\underline{\inserttocsubsection}}} \\[1mm]
+}
 \setbeamertemplate{section in toc shaded}{
     \inserttocsectionnumber.\  \inserttocsection
+}
+\setbeamertemplate{subsection in toc shaded}{
+    \hspace{5mm} \inserttocsectionnumber.\inserttocsubsectionnumber.\  \inserttocsubsection \\[1mm]
 }
 
 \setbeamertemplate{bibliography item}{\insertbiblabel}
@@ -158,7 +164,7 @@
 %   }
 % \end{frame}
 
-\section{背景: 他段階計算とその問題点}
+\section{背景: 多段階計算とその問題点}
 
 % \begin{frame}{目次}
 %
@@ -251,7 +257,7 @@
 
 \begin{frame}[fragile]{アイデア: 依存型の導入}
     \renewcommand{\V}{\text{vec}\ }
-    ベクトルの長さを表現できる型を導入する
+    ベクトルの長さを表現できる型(依存型)を導入する
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
  [1;2]: vec 2
@@ -305,12 +311,12 @@
 \subsection{依存型付多段階計算体系 \LMD}
 
 \begin{frame}{目次}
-    \tableofcontents[currentsection]
+    \tableofcontents[currentsubsection]
 \end{frame}
 
 \begin{frame}[fragile]{本研究の貢献: \LMD}
-    既存の多段階計算体系 \LTP [Hanada\&Igarashi'14] を拡張して
-    依存型付多段階計算体系 \LMD を設計した
+    既存の多段階計算体系 \LTP [Hanada\&Igarashi'14] を//
+    拡張して依存型付多段階計算体系 \LMD を設計した
     \begin{itemize}
         \item 多段階計算の機能
         \item 依存型の機能
@@ -351,13 +357,13 @@
 \begin{frame}[fragile]{\LMD の項}
     \begin{block}{項}
         \begin{tabbing}
-            \hspace{5mm} \( M \) \= \( ::= c \) \hspace{20mm} \= (定数) \\
+            \hspace{5mm} \( M \) \= \( ::= c \) \hspace{45mm} \= (定数) \\
             \> \( \mid \TB M \) \> (コードの生成) \\
             \> \( \mid \TBL M \) \> (コードの埋め込み) \\
             \> \( \mid \verb|run|\ M \) \> (コードの実行) \\
             \> \( \mid \% M \) \> (ステージを跨ぐ \\
             \> \> \ コードの埋め込み (CSP)) \\
-            \> \( \mid x \mid \lambda x:\tau.M \mid M\ M \)
+            \> \( \mid x \mid \lambda x:\tau.M \mid M\ M \) \> (通常の$\lambda$計算の項)
         \end{tabbing}
     \end{block}
     * 説明の為に単純化しています
@@ -384,11 +390,11 @@
         \hspace{5mm} $\lambda$\tikz[remember picture, baseline=(stage0.base)]{\node (stage0){\alt<2->{\underline{\tt{x:int}}}{\tt{x:int}}};}{\tt{.(}}$\TB${\tt (}\tikz[remember picture, baseline=(stage1.base)]{\node (stage1){\alt<3->{\underline{$\lambda$\tt y:int.\%x+1}}{$\lambda$\tt y:int.\%x+1}};}{\tt ))}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage0.south)}] at (-5.4,-2.5) {xはステージ0の項};
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage0.south)}] at (-7,-2.5) {xはステージ0の項};
         \end{tikzpicture}}
     \onslide<3->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage1.south)}] at (-1,-1) {ここはステージ1なので\%が必要};
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage1.south)}] at (-2,-1.2) {ここはステージ1なので\%が必要};
         \end{tikzpicture}}
     \end{exampleblock}
 \end{frame}
@@ -470,17 +476,17 @@
         \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)| \\
         \hspace{5mm} \verb|val double-code : |$\TW$\verb|(vec 3 -> vec 3)| \\[3mm]
         \hspace{1mm}\onslide<2->{\xmark}\ \verb|let add-double =| $\TB$($\lambda$\verb|v:vec %3.|$\lambda$\verb|w:vec %3.| \\
-        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<2->{\underline{$\TBL${\tt double-code}}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<3->{\underline{$\TBL${\tt vadd3 v w}}}{$\TBL${\tt vadd3 v w}}}}{\tt ))}
+        \hspace{1mm}\onslide<2->{\xmark}\hspace{10mm} \tikz[remember picture, baseline=(double.base)]{\node (double){\alt<3->{\underline{$\TBL${\tt double-code}}}{$\TBL${\tt double-code }}}}(\tikz[remember picture, baseline=(vadd3.base)]{\node (vadd3){\alt<4->{\underline{$\TBL${\tt vadd3 v w}}}{$\TBL${\tt vadd3 v w}}}}{\tt ))}
     \end{alertblock}
-        \onslide<2->{
+        \onslide<3->{
         \begin{tikzpicture}[remember picture, overlay]
             \node[rectangle callout, fill=red!80, white, callout absolute pointer={(double.south)}, below=0.2cm of double.south] {{\tt vec 3 -> vec 3}};
         \end{tikzpicture}}
-    \onslide<3->{
+    \onslide<4->{
         \begin{tikzpicture}[remember picture, overlay]
             \node[rectangle callout, fill=red!80, white, callout absolute pointer={(vadd3.south)}, below right=0.2cm and 0.2cm of vadd3.south] {{\tt vec \%3}};
         \end{tikzpicture}}
-    \onslide<4->{\begin{alertblock}{}型が合わないので組み合わせることができない\end{alertblock}}
+    \onslide<5->{\begin{alertblock}{}型が合わないので組み合わせることができない\end{alertblock}}
 \end{frame}
 
 \begin{frame}[fragile]{解決策}
@@ -503,21 +509,21 @@
 
 \begin{frame}[fragile]{\LMD の性質}
     \begin{theorem}[型安全性]
-        項\(M\)に型\(\tau\)が導出される(\(\Gamma \vdash M : \tau \))ならば\\
-        項\(M\)の実行中に型エラーは発生しない
+        項\(M\)に型\(\tau\)がつく(\(\Gamma \vdash M : \tau \))ならば\\
+        \(M\)の簡約中に型エラーは起きない
     \end{theorem}
     \begin{theorem}[強正規化性]
-        \(\Gamma \vdash M : \tau \)ならば項\(M\)の実行は必ず停止する
+        \(\Gamma \vdash M : \tau \)ならば\(M\)から始まる無限簡約列はない
     \end{theorem}
     \begin{theorem}[合流性]
-        \(\Gamma \vdash M : \tau \)であり、項\(M\)を実行して2つの異なる項\(M'\)と\(M''\)を得たなら、適切に\(M'\)と\(M''\)を実行すれば同一の項\(M'''\)にたどり着く
+        \(\Gamma \vdash M : \tau \)であり、\(M\)を簡約して2つの異なる項\(M'\)と\(M''\)を得たとき、適切に\(M'\)と\(M''\)を簡約すれば同一の項\(M'''\)を得る
     \end{theorem}
 \end{frame}
 
 \subsection{\LMD の型推論アルゴリズム}
 
 \begin{frame}{目次}
-    \tableofcontents[currentsection]
+    \tableofcontents[currentsubsection]
 \end{frame}
 
 \begin{frame}[fragile]{\LMD の型推論アルゴリズム}
@@ -561,7 +567,7 @@
         \item \LTP [Hanada\&Igarashi'14]
             \begin{itemize}
                     \item 本研究の拡張元
-                    \item CSPを含む他段階計算体系
+                    \item CSPを含む多段階計算体系
             \end{itemize}
         \item Concoqtion [Forgarty et al.'07]
             \begin{itemize}
@@ -582,6 +588,12 @@
         \item 型安全性を証明 
         \item 型推論のアルゴリズムを設計 
     \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{なぜ最初から$\Gamma \AV M : \tau$でやらないのか?}
+\end{frame}
+
+\begin{frame}[fragile]{なぜ$\Gamma \V M : \tau$による型推論は停止しないのか?}
 \end{frame}
 
 % \begin{frame}[fragile]{\LTP の型}
