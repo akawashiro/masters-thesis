@@ -187,8 +187,8 @@
     \end{itemize}
     応用例
     \begin{itemize}
-        \item 実行時の情報を使ったプログラムの高速化
-        \item 領域特化言語(DSL)
+        \item 実行時の情報を使ったプログラムの高速化[Taha'07]
+        \item 領域特化言語(DSL)の実装[Kiselyov'18]
     \end{itemize}
 \end{frame}
 
@@ -232,7 +232,7 @@
     \end{exampleblock}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(unrolled.south)}, below=0.2cm of unrolled.south] {ループ展開による高速化};
+            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(unrolled.south)}, below=0.2cm of unrolled.south] {ループを使わないプログラム};
         \end{tikzpicture}}
 \end{frame}
 
@@ -257,7 +257,11 @@
 
 \begin{frame}[fragile]{アイデア: 依存型の導入}
     \renewcommand{\V}{\text{vec}\ }
-    ベクトルの長さを表現できる型(依存型)を導入する
+    依存型とは
+    \begin{itemize}
+        \item 項をパラメータとしてついている型
+        \item ベクトルの長さが表現できる
+    \end{itemize}
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
  [1;2]: vec 2
@@ -270,41 +274,41 @@
     % 吹き出し「\verb|vec 2| \( \neq \) \verb|vec 3|」
 \end{frame}
 
-\begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]とは}
-    \renewcommand{\V}{\text{vec}\ }
-    依存型とは項をパラメータとして渡せる型
-    \begin{exampleblock}{ベクトルの長さを表現できる}
-        \begin{Verbatim}
- [1;2;3]: vec 3
-        \end{Verbatim}
-    \end{exampleblock}
-    \begin{exampleblock}{パラメータは数字とは限らない任意の項}
-        \begin{Verbatim}
- [1;2;3]: vec (1+2) 
-        \end{Verbatim}
-    \end{exampleblock}
-\end{frame}
-
-\begin{frame}[fragile]{依存型における型の同値関係}
-    見た目だけでは同値関係が判定できない
-    \begin{itemize}
-        \item \verb|vec 3|と\verb|vec (1+2)|は同値であって欲しい
-    \end{itemize}
-    型の間の同値関係(\( \tau \E \tau'\))を定める規則がある\\
-    \begin{itemize}
-    \item 例: 項 \(M \) と\(M'\)が同値なら型\( \tau\ M \)と\( \tau\ M'\)も同値 \\[2mm]
-    \hspace{15mm} {\small \infrule
-    { M \E M' }
-    { \tau\ M \E \tau\ M'}}
-\item \verb|3| \( \E \) \verb|1+2| なので \verb|vec 3| \( \E \) \verb|vec (1+2)|になる
-    \end{itemize}
- %    \begin{exampleblock}{}
- %        \begin{Verbatim}
- % append: vec n -> vec m -> vec (n + m)
- % append [1;2] [3;4;5]: vec 5 
- %        \end{Verbatim}
- %    \end{exampleblock}
-\end{frame}
+% \begin{frame}[fragile]{依存型[Martin-L{\"o}f'73]とは}
+%     \renewcommand{\V}{\text{vec}\ }
+%     依存型とは項をパラメータとして渡せる型
+%     \begin{exampleblock}{ベクトルの長さを表現できる}
+%         \begin{Verbatim}
+%  [1;2;3]: vec 3
+%         \end{Verbatim}
+%     \end{exampleblock}
+%     \begin{exampleblock}{パラメータは数字とは限らない任意の項}
+%         \begin{Verbatim}
+%  [1;2;3]: vec (1+2) 
+%         \end{Verbatim}
+%     \end{exampleblock}
+% \end{frame}
+%
+% \begin{frame}[fragile]{依存型における型の同値関係}
+%     見た目だけでは同値関係が判定できない
+%     \begin{itemize}
+%         \item \verb|vec 3|と\verb|vec (1+2)|は同値であって欲しい
+%     \end{itemize}
+%     型の間の同値関係(\( \tau \E \tau'\))を定める規則がある\\
+%     \begin{itemize}
+%     \item 例: 項 \(M \) と\(M'\)が同値なら型\( \tau\ M \)と\( \tau\ M'\)も同値 \\[2mm]
+%     \hspace{15mm} {\small \infrule
+%     { M \E M' }
+%     { \tau\ M \E \tau\ M'}}
+% \item \verb|3| \( \E \) \verb|1+2| なので \verb|vec 3| \( \E \) \verb|vec (1+2)|になる
+%     \end{itemize}
+%  %    \begin{exampleblock}{}
+%  %        \begin{Verbatim}
+%  % append: vec n -> vec m -> vec (n + m)
+%  % append [1;2] [3;4;5]: vec 5 
+%  %        \end{Verbatim}
+%  %    \end{exampleblock}
+% \end{frame}
 
 \section{本研究について}
 
