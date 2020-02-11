@@ -31,6 +31,11 @@
 % Make Japanese font gothic
 \renewcommand{\kanjifamilydefault}{\gtdefault}
 
+\uselanguage{japanese}
+\languagepath{japanese}
+\deftranslation[to=japanese]{Theorem}{定理}
+\deftranslation[to=japanese]{theorem}{定理}
+
 % Make note pages suer simple.
 % \setbeamertemplate{note page}[plain]
 
@@ -516,7 +521,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{解決策}
-    項\( M \) と 項\( \%M \)をある条件下で同一視する
+    項\( M \) と 項\( \%M \)を以下の条件下で同一視する
     \begin{itemize}
         \item 条件: \( M \)が自由変数を含まない
     \end{itemize}
@@ -630,7 +635,8 @@
 \begin{frame}[fragile]{結論}
     多段階計算に依存型を導入した
     \begin{itemize}
-        \item 依存型で、生成されたコードの不正な使用を防止
+        \item 生成されたコードの不正な使用を依存型で防止
+        \item \LMD の形式化
         \item 型安全性を証明 
         \item 型推論のアルゴリズムを設計 
     \end{itemize}
