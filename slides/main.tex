@@ -188,7 +188,7 @@
     応用例
     \begin{itemize}
         \item 実行時の情報を使ったプログラムの高速化[Taha'07]
-        \item 領域特化言語(DSL)の実装[Kiselyov'18]
+        \item 領域特化言語(DSL)の効率的な実装[Kiselyov'18]
     \end{itemize}
 \end{frame}
 
@@ -232,12 +232,12 @@
     \end{exampleblock}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(unrolled.south)}, below=0.2cm of unrolled.south] {ループを使わないプログラム};
+            \node[rectangle callout, draw, callout absolute pointer={(unrolled.south)}, below=0.2cm of unrolled.south] {ループを使わないプログラム};
         \end{tikzpicture}}
 \end{frame}
 
 \begin{frame}[fragile]{vadd-genによって生成されたvadd3の問題点}
-    誤った長さのベクトルを渡すと実行時エラーが起きる
+    誤った長さのベクトルを渡せてしまう
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
  val vadd3 : $\TW$ (vec -> vec -> vec)
@@ -259,7 +259,7 @@
     \renewcommand{\V}{\text{vec}\ }
     依存型とは
     \begin{itemize}
-        \item 項をパラメータとしてついている型
+        \item 項がパラメータとしてついている型
         \item ベクトルの長さが表現できる
     \end{itemize}
     \begin{exampleblock}{}
@@ -354,7 +354,6 @@
 % \begin{frame}[fragile]{\LTP とは}
 %     \begin{itemize}
 %         \item Hanada, Igarashi による多段階計算体系
-%         \item ステージを跨ぐコードの埋め込み(CSP)が可能
 %         \item 今回の研究の拡張元
 %     \end{itemize}
 % \end{frame}
@@ -362,13 +361,13 @@
 \begin{frame}[fragile]{\LMD の項}
     \begin{block}{項}
         \begin{tabbing}
-            \hspace{5mm} \( M \) \= \( ::= \) \hspace{50mm} \= \\
+            \hspace{2mm} \( M \) \= \( ::= \) \hspace{50mm} \= \\
             \> \( c \mid x \mid \lambda x:\tau.M \mid M\ M \) \> (通常の$\lambda$計算の項) \\
             \> \( \mid \TB M \) \> (コードの生成) \\
             \> \( \mid \TBL M \) \> (コードの埋め込み) \\
             \> \( \mid \verb|run|\ M \) \> (コードの実行) \\
-            \> \( \mid \% M \) \> (ステージを跨ぐ \\
-            \> \> \ コードの埋め込み (CSP))
+            \> \( \mid \% M \) \> (ステージを跨ぐ項の \\
+            \> \> \ コードへの埋め込み (CSP))
         \end{tabbing}
     \end{block}
     * 説明の為に単純化しています
@@ -389,31 +388,41 @@
 \end{frame}
 
 \begin{frame}[fragile]{ステージの存在意義}
-    計算の順序を指定する
+    簡約を正しい順序で行う
     \begin{exampleblock}{}
-    \begin{*align}
-
-    \end{*align}
+        \hspace{16mm} \tikz[remember picture, baseline=(runterm.base)]{\node (runterm){\( \underbrace{\texttt{run (}\TB\overbrace{\texttt{(1+2)}}^{\text{stage 1}}\texttt{)}}_{\text{stage 0}}\)}} \\[2mm]
+        \hspace{5mm} \onslide<2->{\( \longrightarrow \texttt{1+2} \)} \\
+        \hspace{5mm} \onslide<3->{\( \longrightarrow \texttt{3}} \)
     \end{exampleblock}
+    \onslide<5->{
     \begin{alertblock}{原則として異なるステージの項は使えない}
         \xmark\ $\lambda$\texttt{x:int}.\texttt{(}$\TB$\texttt{(}$\lambda$\texttt{y:int.}{\tt x}\texttt{+1))}
-    \end{alertblock}
+    \end{alertblock}}
+    
+    \onslide<4->{
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[rectangle callout, draw, callout absolute pointer={(runterm.east)}, right=of runterm, align=left] {
+            誤った簡約順序\\
+            \( \longrightarrow \texttt{run (}\TB\texttt{3)} \) \\
+            \( \longrightarrow \texttt{3} \)
+        };
+    \end{tikzpicture}}
 \end{frame}
 
-\begin{frame}[fragile]{ステージを跨ぐコードの埋め込み(CSP)}
-    計算の順序を保ちつつ\\
+\begin{frame}[fragile]{ステージを跨ぐ項のコードへの埋め込み(CSP)}
+    簡約の順序を保ちつつ\\
     低いステージの項をより高いステージの中に\\
-    埋め込むことを可能にする \\[3mm]
+    埋め込むための機能 \\[3mm]
 
     \begin{exampleblock}{}
         \hspace{5mm} $\lambda$\tikz[remember picture, baseline=(stage0.base)]{\node (stage0){\alt<2->{\underline{\tt{x:int}}}{\tt{x:int}}};}{\tt{.(}}$\TB${\tt (}\tikz[remember picture, baseline=(stage1.base)]{\node (stage1){\alt<3->{\underline{$\lambda$\tt y:int.\%x+1}}{$\lambda$\tt y:int.\%x+1}};}{\tt ))}
         \onslide<2->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage0.south)}] at (-7,-2.3) {xはステージ0の項};
+            \node[rectangle callout, draw, callout absolute pointer={(stage0.south)}] at (-7,-2.3) {xはステージ0の項};
         \end{tikzpicture}}
     \onslide<3->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(stage1.south)}] at (-2,-1.2) {ここはステージ1なので\%が必要};
+            \node[rectangle callout, draw, callout absolute pointer={(stage1.south)}] at (-2,-1.2) {ここはステージ1なので\%が必要};
         \end{tikzpicture}}
     \end{exampleblock}
     \vspace{20mm}
@@ -434,20 +443,16 @@
     依存関数型の例
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
+  (* 長さnのベクトルの各要素を2倍する関数 *)
   val double: (n:int -> vec n -> vec n)
-        \end{Verbatim}
-    \end{exampleblock}
-    型の項への適用の例
-    \begin{exampleblock}{}
-        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  double 3
+  # double 3
   - : vec 3 -> vec 3
         \end{Verbatim}
     \end{exampleblock}
     コード型の例
     \begin{exampleblock}{}
         \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`^=7}]
-  let double-code = $\TB$(%double 3)
+  # let double-code = $\TB$(%(double 3))
   val double-code : $\TW$(vec 3 -> vec 3)
         \end{Verbatim}
     \end{exampleblock}
@@ -475,6 +480,7 @@
     \begin{exampleblock}{}
         \hspace{5mm} \verb|val vadd-gen : n:int -> | \\
         \hspace{20mm} ($\TW$(\verb|vec %n -> vec %n -> vec %n|)) \\[2mm]
+        \hspace{5mm} (* $\TB$と同様に$\TW$の場合も\verb|%|が必要 *) \\[5mm]
         \hspace{5mm} \verb|let vadd3 = vadd-gen 3;;| \\
         \hspace{5mm} \verb|val vadd3: |$\TW$\verb|(vec %3 -> vec %3 -> vec %3)|
     % \begin{tabbing}
@@ -500,11 +506,11 @@
     \end{alertblock}
         \onslide<3->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(double.south)}, below=0.2cm of double.south] {{\tt vec 3 -> vec 3}};
+            \node[rectangle callout, draw, callout absolute pointer={(double.south)}, below=0.2cm of double.south] {{\tt vec 3 -> vec 3}};
         \end{tikzpicture}}
     \onslide<4->{
         \begin{tikzpicture}[remember picture, overlay]
-            \node[rectangle callout, fill=red!80, white, callout absolute pointer={(vadd3.south)}, below right=0.2cm and 0.2cm of vadd3.south] {{\tt vec \%3}};
+            \node[rectangle callout, draw, callout absolute pointer={(vadd3.south)}, below right=0.2cm and 0.2cm of vadd3.south] {{\tt vec \%3}};
         \end{tikzpicture}}
     \onslide<5->{\begin{alertblock}{}型が合わないので組み合わせることができない\end{alertblock}}
 \end{frame}
@@ -516,15 +522,36 @@
     \end{itemize}
     \begin{exampleblock}{同一視される型の例}
         \begin{itemize}
-            \item \verb|vec %3| \( \E \) \verb|vec 3|
+            \item \verb|vec %3| と \verb|vec 3|
             \item \(\TW\)\verb|(vec 3 -> vec 3 -> vec 3)| \\
-                \( \E \)\ \(\TW\)\verb|(vec %3 -> vec %3 -> vec %3)|
+                と \(\TW\)\verb|(vec %3 -> vec %3 -> vec %3)|
         \end{itemize}
     \end{exampleblock}
     \onslide<2->{
         \begin{block}{}
-            このような同一視をしても型安全性に影響はない
+            このような同一視をしても型安全性に\\影響がないことを示した
         \end{block}}
+\end{frame}
+
+\begin{frame}[fragile]{\LMD の形式化}
+    \begin{itemize}
+        \item 項\(M\), 型\(\tau\)
+        \item 簡約関係\(M \longrightarrow M'\) \\[2mm]
+            \hspace{5mm} {\footnotesize{\( (\lambda x:\tau.M) N \longrightarrow_\beta M[x \mapsto N] \)}} \\
+            \hspace{5mm} {\footnotesize{\( \TBL_\alpha (\TB_\alpha M)\longrightarrow_\blacklozenge M \)}} \\
+            \hspace{5mm} {\footnotesize{\( (\Lambda \alpha.M)\ A \longrightarrow_\Lambda M[\alpha \mapsto A] \)}}
+        \item 型判断 \( \Gamma \vdash M : \tau @ A \)
+            {\scriptsize
+            \begin{center}
+                \infrule[\TVar]{x:\tau @A \in \G}{\G \V x:\tau @A} \hfil
+                \infrule[\TCsp]{
+                    \G\V M:\tau@A \andalso \G\V \tau::*@{A\alpha}
+                }{
+                    \G\V \%_\alpha M:\tau@{A\alpha}
+                }
+            \end{center}
+            }
+    \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{\LMD の性質}
@@ -556,7 +583,7 @@
 
     \onslide<2->{
         \begin{alertblock}{通常の型判断\( \Gamma \vdash M : \tau \)の問題点}
-            通常の型判断\( \Gamma \vdash M : \tau \)を元に型推論アルゴリズムを\\設計するとアルゴリズムが停止しない
+            通常の型判断\( \Gamma \vdash M : \tau \)の導出規則からは\\型推論アルゴリズムが構築できない
         \end{alertblock}
     }
 \end{frame}
@@ -567,8 +594,7 @@
         型判断\( \Gamma \AV M : \tau \)を新たに設計
     \item 更に以下を証明した
     \begin{itemize}
-            \item \( \Gamma \AV M : \tau \)ならば\( \Gamma \vdash M : \tau \)
-            \item \( \Gamma \vdash M : \tau \)ならば\( \Gamma \AV M : \tau \)
+            \item \( \Gamma \AV M : \tau \) iff \( \Gamma \vdash M : \tau \)
     \end{itemize}
 
     \item ここからアルゴリズム的型判断を元に設計した\\型推論アルゴリズムの正当性が導かれる
@@ -610,10 +636,26 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{なぜ最初から$\Gamma \AV M : \tau$でやらないのか?}
+% From here, I turned off the page number.
+% Because these slides are for the Q and A time.
+\setbeamertemplate{footline}{}
+
+\begin{frame}[fragile, noframenumbering]{なぜ最初から$\Gamma \AV M : \tau$でやらないのか?}
+    $\Gamma \vdash M : \tau$ と $\Gamma \AV M : \tau$ の比較 \\[5mm]
+    \begin{tabular}{|c|c|c|} \hline
+        & $\Gamma \vdash M : \tau$ & $\Gamma \AV M : \tau$ \\ \hline
+        型安全性の証明 & 容易 & 困難 \\ \hline
+        型推論アルゴリズム & 設計不可能 & 設計可能 \\ \hline
+    \end{tabular}
 \end{frame}
 
-\begin{frame}[fragile]{なぜ$\Gamma \V M : \tau$による型推論は停止しないのか?}
+\begin{frame}[fragile, noframenumbering]{なぜ$\Gamma \V M : \tau$の導出規則から\\型推論アルゴリズムを設計できないのか?}
+    構文主導(Syntax-directed)でない導出規則があるから
+    \begin{center}
+    {\footnotesize
+        \infrule[\TConv]{\G\V M:\underline{\tau} @A \andalso \G\V \underline{\tau}\equiv \sigma :: K@A}{\G\V M:\sigma@A}
+    }
+    \end{center}
 \end{frame}
 
 % \begin{frame}[fragile]{\LTP の型}
