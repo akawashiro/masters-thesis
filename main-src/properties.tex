@@ -94,13 +94,13 @@ Preservation.
 \begin{lemma}[Type and Equivalence Preservation]\
     \label{lemma:TypeAndEquivalencePreservationon}
     \begin{itemize}
-    \item If \( \G \V M : \tau @ A \) and \( M \longrightarrow_0 M' \), then \( \G \V M' : \tau @ A \).
-    \item If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow_0 M'' \), then \( \G \V M'' \E M' : \tau @ A \).
+    \item If \( \G \V M : \tau @ A \) and \( M \longrightarrow M' \), then \( \G \V M' : \tau @ A \).
+    \item If \( \G \V M \E M' : \tau @ A \) and \( M \longrightarrow M'' \), then \( \G \V M'' \E M' : \tau @ A \).
     \end{itemize}
 \end{lemma}
 
 \begin{proof}
-    First, there are three base cases for $M \longrightarrow_0 M'$.  They are $M
+    First, there are three base cases for $M \longrightarrow M'$.  They are $M
     \longrightarrow_\beta M'$, $M \longrightarrow_\Lambda M'$, and $M
     \longrightarrow_\blacklozenge M'$.  For each case, we can use
     straightforward induction on derivations.
